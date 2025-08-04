@@ -21,6 +21,7 @@ $apiRoutes = [
     '/login',
     '/logout',
     '/session',
+    '/usuarios-login',
     '/usuarios',
     '/traza/',
     '/alertas'

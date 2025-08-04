@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Control de Panadería</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    .login-container {
+      max-width: 400px;
+      margin: 5em auto;
+      padding: 2em;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #f9f9f9;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+    
+    .login-form input {
+      padding: 0.8em;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+    
+    .login-btn {
+      background: #007bff;
+      color: white;
+      padding: 0.8em;
+      border: none;
+      border-radius: 4px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    
+    .login-btn:hover {
+      background: #0056b3;
+    }
+    
+    .login-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+    
+    .error-message {
+      color: #dc3545;
+      text-align: center;
+      margin-top: 1em;
+      padding: 0.5em;
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h1 style="text-align: center; margin-bottom: 1.5em; color: #333;">
+      🥖 Control de Panadería
+    </h1>
+    
+    <form id="form-login" class="login-form">
+      <h2 style="text-align: center; margin-bottom: 1em;">Iniciar Sesión</h2>
+      
+      <label>
+        Usuario
+        <select name="usuario_id" id="select-usuario" required>
+          <option value="">-- Seleccionar usuario --</option>
+        </select>
+      </label>
+      
+      <label>
+        Contraseña
+        <input type="password" name="password" required placeholder="Ingresa tu contraseña">
+      </label>
+      
+      <button type="submit" class="login-btn" id="btn-login">
+        <span id="btn-text">Ingresar</span>
+        <span id="btn-loading" style="display: none;">Verificando...</span>
+      </button>
+      
+      <div id="error-message" class="error-message" style="display: none;"></div>
+    </form>
+    
+    <div style="margin-top: 2em; padding-top: 1em; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 0.9em;">
+      <p><strong>Para crear usuarios:</strong></p>
+      <p>1. Crear empleado en "Datos Maestros"</p>
+      <p>2. Crear rol en "Administración de Roles"</p>
+      <p>3. Crear usuario en "Gestión de Usuarios"</p>
+    </div>
+  </div>
+
+  <script>
+    // Cargar lista de usuarios al cargar la página
+    async function cargarUsuarios() {
+      try {
+        const response = await fetch('/usuarios-login');
+        if (response.ok) {
+          const usuarios = await response.json();
+          const select = document.getElementById('select-usuario');
+          
+          // Limpiar opciones existentes (excepto la primera)
+          select.innerHTML = '<option value="">-- Seleccionar usuario --</option>';
+          
+          // Agregar usuarios
+          usuarios.forEach(usuario => {
+            const option = document.createElement('option');
+            option.value = usuario.id;
+            option.textContent = `${usuario.empleado_nombre} (${usuario.rol_nombre})`;
+            select.appendChild(option);
+          });
+        }
+      } catch (error) {
+        console.error('Error cargando usuarios:', error);
+      }
+    }
+
+    document.getElementById('form-login').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const btnLogin = document.getElementById('btn-login');
+      const btnText = document.getElementById('btn-text');
+      const btnLoading = document.getElementById('btn-loading');
+      const errorDiv = document.getElementById('error-message');
+      
+      // UI de loading
+      btnLogin.disabled = true;
+      btnText.style.display = 'none';
+      btnLoading.style.display = 'inline';
+      errorDiv.style.display = 'none';
+      
+      const formData = new FormData(this);
+      const data = {
+        usuario_id: formData.get('usuario_id'),
+        password: formData.get('password')
+      };
+      
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Login exitoso - redirigir al dashboard
+          window.location.href = '/dashboard.html';
+        } else {
+          // Mostrar error
+          errorDiv.textContent = result.error || 'Error de autenticación';
+          errorDiv.style.display = 'block';
+        }
+        
+      } catch (error) {
+        console.error('Error en login:', error);
+        errorDiv.textContent = 'Error de conexión. Intenta nuevamente.';
+        errorDiv.style.display = 'block';
+      } finally {
+        // Restaurar UI
+        btnLogin.disabled = false;
+        btnText.style.display = 'inline';
+        btnLoading.style.display = 'none';
+      }
+    });
+    
+    // Verificar si ya está logueado al cargar la página
+    async function checkSession() {
+      try {
+        const response = await fetch('/session');
+        if (response.ok) {
+          const result = await response.json();
+          if (result.authenticated) {
+            // Ya está logueado, ir al dashboard
+            window.location.href = '/dashboard.html';
+          }
+        }
+      } catch (error) {
+        console.log('No hay sesión activa');
+      }
+    }
+    
+    // Inicializar página
+    async function initLogin() {
+      await cargarUsuarios();
+      await checkSession();
+    }
+    
+    // Ejecutar al cargar la página
+    initLogin();
+  </script>
+</body>
+</html>

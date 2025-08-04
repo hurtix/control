@@ -1353,23 +1353,44 @@ $app->delete('/usuarios/{id}', function ($request, $response, $args) {
     }
 });
 
+// Endpoint para obtener lista de usuarios activos para login
+$app->get('/usuarios-login', function ($request, $response) {
+    try {
+        $usuarios = Usuario::join('maestros', 'usuarios.empleado_id', '=', 'maestros.id')
+            ->join('roles', 'usuarios.rol_id', '=', 'roles.id')
+            ->where('usuarios.activo', true)
+            ->where('maestros.tipo', 'empleado')
+            ->select('usuarios.id', 'maestros.dni', 'maestros.nombre as empleado_nombre', 'roles.nombre as rol_nombre')
+            ->orderBy('maestros.nombre')
+            ->get();
+            
+        $response->getBody()->write(json_encode($usuarios));
+        return $response->withHeader('Content-Type', 'application/json');
+        
+    } catch (Exception $e) {
+        error_log('Error obteniendo usuarios para login: ' . $e->getMessage());
+        $response->getBody()->write(json_encode(['error' => 'Error interno del servidor']));
+        return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+    }
+});
+
 // Endpoint de login
 $app->post('/login', function ($request, $response) {
     try {
         $data = $request->getParsedBody();
         error_log('Intento de login: ' . json_encode($data));
         
-        if (!isset($data['dni']) || !isset($data['password'])) {
-            $response->getBody()->write(json_encode(['error' => 'DNI y password son requeridos']));
+        if (!isset($data['usuario_id']) || !isset($data['password'])) {
+            $response->getBody()->write(json_encode(['error' => 'Usuario y password son requeridos']));
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
         
-        // Buscar usuario por DNI del empleado asociado
-        $usuario = Usuario::join('empleados', 'usuarios.empleado_id', '=', 'empleados.id')
+        // Buscar usuario por ID
+        $usuario = Usuario::join('maestros', 'usuarios.empleado_id', '=', 'maestros.id')
             ->join('roles', 'usuarios.rol_id', '=', 'roles.id')
-            ->where('empleados.dni', $data['dni'])
+            ->where('usuarios.id', $data['usuario_id'])
             ->where('usuarios.activo', true)
-            ->select('usuarios.*', 'empleados.nombre as empleado_nombre', 'empleados.dni', 'roles.nombre as rol_nombre')
+            ->select('usuarios.*', 'maestros.nombre as empleado_nombre', 'maestros.dni', 'roles.nombre as rol_nombre')
             ->first();
             
         if (!$usuario) {
