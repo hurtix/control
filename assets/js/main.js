@@ -114,10 +114,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     input.style.display = 'none';
   });
 
-  // Cargar opciones en formularios
-  await cargarOpciones('/opciones/empleados', 'select-empleado');
-  await cargarOpciones('/opciones/empleados', 'select-empleado-despacho');
-  await cargarOpciones('/opciones/empleados', 'select-empleado-recepcion');
+  // Ya no necesitamos cargar opciones de empleados para los formularios
+  // que ahora usan automáticamente el usuario actual
+  // Los IDs de empleado ahora son campos ocultos que se completan automáticamente
   
   // Cargar lotes para trazabilidad (todos los lotes, no solo pendientes)
   await cargarLotesParaTrazabilidad();

@@ -27,6 +27,9 @@
       <label>Fecha Requerida <input type="date" name="fecha_requerida" required></label>
     </div>
     
+    <!-- Campo de empleado oculto que se llenará automáticamente -->
+    <input type="hidden" name="empleado" id="select-empleado-pedido">
+    
     <h3>Productos y Tiendas</h3>
     <div id="productos-tiendas-container">
       <div class="producto-tienda-item">
@@ -67,13 +70,8 @@
       <div id="productos-lote-lista"></div>
     </div>
     
-    <div class="form-row">
-      <label>Empleado 
-        <select name="empleado" id="select-empleado">
-          <option value="">-- Seleccionar empleado --</option>
-        </select>
-      </label>
-    </div>
+    <!-- Campo de empleado oculto que se llenará automáticamente -->
+    <input type="hidden" name="empleado" id="select-empleado">
     
     <label>Observaciones <textarea name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
     <button type="submit">Registrar Producción</button>
@@ -100,13 +98,8 @@
       <div id="distribucion-despacho-lista"></div>
     </div>
     
-    <div class="form-row">
-      <label>Empleado 
-        <select name="empleado" id="select-empleado-despacho">
-          <option value="">-- Seleccionar empleado --</option>
-        </select>
-      </label>
-    </div>
+    <!-- Campo de empleado oculto que se llenará automáticamente -->
+    <input type="hidden" name="empleado" id="select-empleado-despacho">
     
     <label>Observaciones <textarea name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
     <button type="submit">Despachar Automáticamente</button>
@@ -143,13 +136,8 @@
       <div id="despachos-tienda-lista"></div>
     </div>
     
-    <div class="form-row">
-      <label>Empleado 
-        <select name="empleado" id="select-empleado-recepcion">
-          <option value="">-- Seleccionar empleado --</option>
-        </select>
-      </label>
-    </div>
+    <!-- Campo de empleado oculto que se llenará automáticamente -->
+    <input type="hidden" name="empleado" id="select-empleado-recepcion">
     
     <label>Observaciones <textarea name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
     <button type="submit">Registrar Recepción de Tienda</button>
@@ -436,6 +424,21 @@
       const userInfo = document.getElementById('user-info');
       if (currentUser) {
         userInfo.textContent = `${currentUser.nombre} (${currentUser.rol})`;
+        
+        // Establecer automáticamente el nombre del empleado en todos los formularios
+        if (currentUser.nombre) {
+          // Establecer el valor en los campos ocultos de empleado
+          document.querySelectorAll('[id^="select-empleado"]').forEach(select => {
+            console.log(`Actualizando campo empleado: ${select.id} con valor ${currentUser.nombre}`);
+            select.value = currentUser.nombre;
+          });
+          
+          // Establecer explícitamente el valor del campo oculto de producción
+          if (document.getElementById('select-empleado')) {
+            document.getElementById('select-empleado').value = currentUser.nombre;
+            console.log(`Campo select-empleado actualizado con: ${currentUser.nombre}`);
+          }
+        }
       }
     }
     

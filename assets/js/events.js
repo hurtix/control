@@ -8,6 +8,7 @@ formPedido.onsubmit = async e => {
   const data = {
     fecha_pedido: obtenerFechaActualISO(), // Usar fecha actual automática
     fecha_requerida: fd.get('fecha_requerida'),
+    empleado: fd.get('empleado') || (currentUser ? currentUser.nombre : ''), // Incluir el empleado actual
     items: []
   };
   
@@ -92,6 +93,12 @@ formProduccion.onsubmit = async e => {
   // Usar fecha actual automática
   data.fecha = obtenerFechaActualISO();
   
+  // Asegurarse de que el nombre del empleado esté presente
+  if (!data.empleado && currentUser && currentUser.nombre) {
+    console.log("Empleado no encontrado en el formulario. Usando nombre del usuario autenticado:", currentUser.nombre);
+    data.empleado = currentUser.nombre;
+  }
+  
   // Recopilar productos y cantidades producidas
   const productosInputs = document.querySelectorAll('.cantidad-producida-input');
   const productos = [];
@@ -103,7 +110,8 @@ formProduccion.onsubmit = async e => {
     if (producto && cantidadProducida > 0) {
       productos.push({
         producto: producto,
-        cantidad_producida: cantidadProducida
+        cantidad_producida: cantidadProducida,
+        empleado: data.empleado // Asegurar que cada producto tenga el empleado
       });
     }
   });
@@ -124,10 +132,10 @@ formProduccion.onsubmit = async e => {
   document.getElementById('productos-lote-container').style.display = 'none';
   document.getElementById('productos-lote-lista').innerHTML = '';
   
-  // Recargar lotes pendientes y opciones después de producir
+  // Recargar lotes pendientes después de producir
   setTimeout(async () => {
     await cargarLotesPendientes();
-    if (data.empleado) await cargarOpciones('/opciones/empleados', 'select-empleado');
+    // Ya no necesitamos recargar opciones de empleados
   }, 500);
 };
 
@@ -139,6 +147,12 @@ formDespacho.onsubmit = async e => {
   
   // Usar fecha actual automática
   data.fecha = obtenerFechaActualISO();
+  
+  // Asegurarse de que el nombre del empleado esté presente
+  if (!data.empleado && currentUser && currentUser.nombre) {
+    console.log("Empleado no encontrado en el formulario de despacho. Usando nombre del usuario autenticado:", currentUser.nombre);
+    data.empleado = currentUser.nombre;
+  }
   
   data.lote_id = Number(data.lote_id);
   
@@ -153,7 +167,7 @@ formDespacho.onsubmit = async e => {
   // Recargar lotes producidos después de despachar
   setTimeout(async () => {
     await cargarLotesProducidos();
-    if (data.empleado) await cargarOpciones('/opciones/empleados', 'select-empleado-despacho');
+    // Ya no necesitamos recargar opciones de empleados
   }, 500);
 };
 
@@ -165,6 +179,12 @@ formRecepcion.onsubmit = async e => {
   
   // Usar fecha actual automática
   data.fecha = obtenerFechaActualISO();
+  
+  // Asegurarse de que el nombre del empleado esté presente
+  if (!data.empleado && currentUser && currentUser.nombre) {
+    console.log("Empleado no encontrado en el formulario de recepción. Usando nombre del usuario autenticado:", currentUser.nombre);
+    data.empleado = currentUser.nombre;
+  }
   
   // Obtener tienda seleccionada
   const tiendaSeleccionada = document.getElementById('select-tienda-recepcion').value;
@@ -253,8 +273,8 @@ formRecepcion.onsubmit = async e => {
     }
   }
   
-  // Recargar opciones de empleados si es necesario
-  setTimeout(async () => {
-    if (data.empleado) await cargarOpciones('/opciones/empleados', 'select-empleado-recepcion');
+  // Ya no necesitamos recargar opciones de empleados
+  setTimeout(() => {
+    // Mantener el timeout para consistencia pero sin cargar opciones de empleados
   }, 500);
 };

@@ -89,7 +89,7 @@ class Lote extends Model {
 class Pedido extends Model {
     protected $table = 'pedidos';
     public $timestamps = true;
-    protected $fillable = ['fecha_pedido', 'fecha_requerida', 'estado'];
+    protected $fillable = ['fecha_pedido', 'fecha_requerida', 'estado', 'empleado'];
     
     public function items() {
         return $this->hasMany(PedidoItem::class);

@@ -389,6 +389,7 @@ function mostrarTrazabilidadFormateada(trazabilidad) {
   html += `<p><strong>📅 Fecha y Hora del Pedido:</strong> ${new Date(trazabilidad.pedido.fecha_pedido).toLocaleString('es-ES')}</p>`;
   html += `<p><strong>📅 Fecha Requerida:</strong> ${new Date(trazabilidad.pedido.fecha_requerida).toLocaleDateString('es-ES')}</p>`;
   html += `<p><strong>🏷️ Estado:</strong> ${trazabilidad.pedido.estado}</p>`;
+  html += `<p><strong>👤 Empleado:</strong> ${trazabilidad.pedido.empleado || 'No especificado'}</p>`;
   html += `<h5 style="margin: 1em 0 0.5em 0;">🛒 Productos Solicitados:</h5>`;
   html += `<ul style="margin: 0; padding-left: 1.5em;">`;
   trazabilidad.pedido.items.forEach(item => {
@@ -519,11 +520,10 @@ formEmpleadoMaestro.onsubmit = async e => {
     resultEmpleadoMaestro.textContent = JSON.stringify(res, null, 2);
     formEmpleadoMaestro.reset();
     
-    // Recargar lista de empleados
-    setTimeout(async () => {
-      await cargarOpciones('/opciones/empleados', 'select-empleado');
-      await cargarOpciones('/opciones/empleados', 'select-empleado-despacho');
-      await cargarOpciones('/opciones/empleados', 'select-empleado-recepcion');
+    // Ya no necesitamos recargar opciones para los campos ocultos de empleados
+    // que se completan automáticamente con el usuario actual
+    setTimeout(() => {
+      // Mantener el timeout para consistencia pero sin cargar opciones
     }, 500);
   } catch (error) {
     resultEmpleadoMaestro.textContent = 'Error: ' + error.message;
@@ -547,9 +547,8 @@ formTiendaMaestro.onsubmit = async e => {
       setTimeout(async () => {
         await cargarLotesParaTrazabilidad();
         await cargarOpcionesEnSelect('/opciones/productos', document.querySelector('.producto-select'));
-        await cargarOpciones('/opciones/empleados', 'select-empleado');
-        await cargarOpciones('/opciones/empleados', 'select-empleado-despacho');
-        await cargarOpciones('/opciones/empleados', 'select-empleado-recepcion');
+        // Ya no necesitamos recargar opciones para los campos ocultos de empleados
+        // que se completan automáticamente con el usuario actual
         await cargarTiendasDisponibles();
       }, 500);
     }, 200);

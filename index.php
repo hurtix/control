@@ -27,6 +27,18 @@ $app->get('/index.html', function ($request, $response, $args) {
     return $response->withHeader('Content-Type', 'text/html');
 });
 
+$app->get('/dashboard.html', function ($request, $response, $args) {
+    $html = file_get_contents(__DIR__ . '/dashboard.html');
+    $response->getBody()->write($html);
+    return $response->withHeader('Content-Type', 'text/html');
+});
+
+$app->get('/login.html', function ($request, $response, $args) {
+    $html = file_get_contents(__DIR__ . '/login.html');
+    $response->getBody()->write($html);
+    return $response->withHeader('Content-Type', 'text/html');
+});
+
 // Gestión de pedidos
 $app->post('/pedidos', function ($request, $response) {
     $data = $request->getParsedBody();
@@ -36,7 +48,8 @@ $app->post('/pedidos', function ($request, $response) {
     $pedido = Pedido::create([
         'fecha_pedido' => $data['fecha_pedido'],
         'fecha_requerida' => $data['fecha_requerida'],
-        'estado' => 'pendiente'
+        'estado' => 'pendiente',
+        'empleado' => isset($data['empleado']) ? $data['empleado'] : null
     ]);
     
     // Crear los ítems del pedido
@@ -710,6 +723,7 @@ $app->get('/traza/lote/{lote_id}', function ($request, $response, $args) {
                 'fecha_pedido' => $pedido->fecha_pedido,
                 'fecha_requerida' => $pedido->fecha_requerida,
                 'estado' => $pedido->estado,
+                'empleado' => $pedido->empleado ?? '',
                 'created_at' => $pedido->created_at,
                 'items' => $pedido->items->map(function($item) {
                     return [
@@ -1411,6 +1425,7 @@ $app->post('/login', function ($request, $response) {
         $_SESSION['user_nombre'] = $usuario->empleado_nombre;
         $_SESSION['user_rol'] = $usuario->rol_nombre;
         $_SESSION['rol_id'] = $usuario->rol_id;
+        $_SESSION['empleado_id'] = $usuario->empleado_id;
         
         $response->getBody()->write(json_encode([
             'success' => true,
@@ -1419,7 +1434,8 @@ $app->post('/login', function ($request, $response) {
                 'dni' => $usuario->dni,
                 'nombre' => $usuario->empleado_nombre,
                 'rol' => $usuario->rol_nombre,
-                'rol_id' => $usuario->rol_id
+                'rol_id' => $usuario->rol_id,
+                'empleado_id' => $usuario->empleado_id
             ]
         ]));
         return $response->withHeader('Content-Type', 'application/json');
@@ -1456,7 +1472,8 @@ $app->get('/session', function ($request, $response) {
             'dni' => $_SESSION['user_dni'],
             'nombre' => $_SESSION['user_nombre'],
             'rol' => $_SESSION['user_rol'],
-            'rol_id' => $_SESSION['rol_id']
+            'rol_id' => $_SESSION['rol_id'],
+            'empleado_id' => $_SESSION['empleado_id']
         ]
     ]));
     return $response->withHeader('Content-Type', 'application/json');
