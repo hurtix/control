@@ -1353,4 +1353,92 @@ $app->delete('/usuarios/{id}', function ($request, $response, $args) {
     }
 });
 
+// Endpoint de login
+$app->post('/login', function ($request, $response) {
+    try {
+        $data = $request->getParsedBody();
+        error_log('Intento de login: ' . json_encode($data));
+        
+        if (!isset($data['dni']) || !isset($data['password'])) {
+            $response->getBody()->write(json_encode(['error' => 'DNI y password son requeridos']));
+            return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
+        }
+        
+        // Buscar usuario por DNI del empleado asociado
+        $usuario = Usuario::join('empleados', 'usuarios.empleado_id', '=', 'empleados.id')
+            ->join('roles', 'usuarios.rol_id', '=', 'roles.id')
+            ->where('empleados.dni', $data['dni'])
+            ->where('usuarios.activo', true)
+            ->select('usuarios.*', 'empleados.nombre as empleado_nombre', 'empleados.dni', 'roles.nombre as rol_nombre')
+            ->first();
+            
+        if (!$usuario) {
+            $response->getBody()->write(json_encode(['error' => 'Usuario no encontrado o inactivo']));
+            return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
+        }
+        
+        // Verificar password
+        if (!password_verify($data['password'], $usuario->password)) {
+            $response->getBody()->write(json_encode(['error' => 'Password incorrecto']));
+            return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
+        }
+        
+        // Login exitoso - crear sesión simple
+        session_start();
+        $_SESSION['user_id'] = $usuario->id;
+        $_SESSION['user_dni'] = $usuario->dni;
+        $_SESSION['user_nombre'] = $usuario->empleado_nombre;
+        $_SESSION['user_rol'] = $usuario->rol_nombre;
+        $_SESSION['rol_id'] = $usuario->rol_id;
+        
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'usuario' => [
+                'id' => $usuario->id,
+                'dni' => $usuario->dni,
+                'nombre' => $usuario->empleado_nombre,
+                'rol' => $usuario->rol_nombre,
+                'rol_id' => $usuario->rol_id
+            ]
+        ]));
+        return $response->withHeader('Content-Type', 'application/json');
+        
+    } catch (Exception $e) {
+        error_log('Error en login: ' . $e->getMessage());
+        $response->getBody()->write(json_encode(['error' => 'Error interno del servidor']));
+        return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+    }
+});
+
+// Endpoint de logout
+$app->post('/logout', function ($request, $response) {
+    session_start();
+    session_destroy();
+    
+    $response->getBody()->write(json_encode(['success' => true, 'mensaje' => 'Sesión cerrada']));
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
+// Endpoint para verificar sesión
+$app->get('/session', function ($request, $response) {
+    session_start();
+    
+    if (!isset($_SESSION['user_id'])) {
+        $response->getBody()->write(json_encode(['authenticated' => false]));
+        return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
+    }
+    
+    $response->getBody()->write(json_encode([
+        'authenticated' => true,
+        'usuario' => [
+            'id' => $_SESSION['user_id'],
+            'dni' => $_SESSION['user_dni'],
+            'nombre' => $_SESSION['user_nombre'],
+            'rol' => $_SESSION['user_rol'],
+            'rol_id' => $_SESSION['rol_id']
+        ]
+    ]));
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
 $app->run();
