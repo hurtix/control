@@ -58,11 +58,12 @@
   <form id="form-produccion">
     <div class="form-row">
       <label>Fecha <input type="text" name="fecha" readonly class="fecha-auto"></label>
-      <label>Lote 
-        <select name="lote_id" id="select-lote" required onchange="actualizarProductoLote()">
-          <option value="">-- Seleccionar lote --</option>
-        </select>
-      </label>
+      <input type="hidden" name="lote_id" id="input-lote-id" required>
+    </div>
+    
+    <div>
+      <h3>Seleccionar Lote</h3>
+      <div id="lotes-cards-container" class="lotes-cards-container"></div>
     </div>
     
     <div id="productos-lote-container" style="display: none;">
@@ -83,11 +84,12 @@
   <form id="form-despacho">
     <div class="form-row">
       <label>Fecha <input type="text" name="fecha" readonly class="fecha-auto"></label>
-      <label>Lote 
-        <select name="lote_id" id="select-lote-despacho" required onchange="actualizarDistribucionDespacho()">
-          <option value="">-- Seleccionar lote --</option>
-        </select>
-      </label>
+      <input type="hidden" name="lote_id" id="input-lote-id-despacho" required>
+    </div>
+    
+    <div>
+      <h3>Seleccionar Lote</h3>
+      <div id="lotes-despacho-cards-container" class="lotes-cards-container"></div>
     </div>
     
     <div id="distribucion-despacho-container" style="display: none;">

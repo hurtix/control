@@ -132,6 +132,12 @@ formProduccion.onsubmit = async e => {
   document.getElementById('productos-lote-container').style.display = 'none';
   document.getElementById('productos-lote-lista').innerHTML = '';
   
+  // Quitar selección de todas las tarjetas
+  document.querySelectorAll('.lote-card').forEach(card => card.classList.remove('selected'));
+  
+  // Limpiar el campo hidden
+  document.getElementById('input-lote-id').value = '';
+  
   // Recargar lotes pendientes después de producir
   setTimeout(async () => {
     await cargarLotesPendientes();
@@ -163,6 +169,12 @@ formDespacho.onsubmit = async e => {
   formDespacho.reset();
   document.getElementById('distribucion-despacho-container').style.display = 'none';
   document.getElementById('distribucion-despacho-lista').innerHTML = '';
+  
+  // Quitar selección de todas las tarjetas
+  document.querySelectorAll('#lotes-despacho-cards-container .lote-card').forEach(card => card.classList.remove('selected'));
+  
+  // Limpiar el campo hidden
+  document.getElementById('input-lote-id-despacho').value = '';
   
   // Recargar lotes producidos después de despachar
   setTimeout(async () => {

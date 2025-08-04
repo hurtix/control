@@ -1,13 +1,14 @@
 // Funciones para actualizar datos de producción, despacho y recepción
-const actualizarProductoLote = () => {
-  const select = document.getElementById('select-lote');
-  const selectedOption = select.options[select.selectedIndex];
+const actualizarProductoLote = (loteId, productosData) => {
   const container = document.getElementById('productos-lote-container');
   const lista = document.getElementById('productos-lote-lista');
   
-  if (selectedOption.value) {
+  if (loteId) {
     try {
-      const productos = JSON.parse(selectedOption.dataset.productos || '{}');
+      // Si productosData es un string, parsearlo
+      const productos = typeof productosData === 'string' ? 
+                         JSON.parse(productosData) : 
+                         productosData;
       
       // Mostrar el contenedor
       container.style.display = 'block';
@@ -48,16 +49,18 @@ const actualizarProductoLote = () => {
   }
 };
 
-const actualizarDistribucionDespacho = async () => {
-  const select = document.getElementById('select-lote-despacho');
-  const selectedOption = select.options[select.selectedIndex];
+const actualizarDistribucionDespacho = async (loteId) => {
   const container = document.getElementById('distribucion-despacho-container');
   const lista = document.getElementById('distribucion-despacho-lista');
   
-  if (selectedOption.value) {
+  if (!loteId) {
+    loteId = document.getElementById('input-lote-id-despacho').value;
+  }
+  
+  if (loteId) {
     try {
       // Obtener datos de distribución del endpoint
-      const distribucion = await api(`/despacho/lote/${selectedOption.value}/disponible`);
+      const distribucion = await api(`/despacho/lote/${loteId}/disponible`);
       
       // Mostrar el contenedor
       container.style.display = 'block';
