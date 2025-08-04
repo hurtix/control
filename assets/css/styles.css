@@ -1,0 +1,148 @@
+body { 
+  font-family: Arial, sans-serif; 
+  margin: 2em; 
+}
+
+h2 { 
+  margin-top: 2em; 
+}
+
+h3 { 
+  margin-top: 0; 
+  color: #333; 
+  font-size: 1.1em; 
+}
+
+form, .result { 
+  margin-bottom: 2em; 
+}
+
+label { 
+  display: block; 
+  margin-top: 1em; 
+}
+
+input, select { 
+  margin-top: 0.5em; 
+  padding: 5px; 
+  border: 1px solid #ccc; 
+  border-radius: 3px; 
+}
+
+.fecha-auto {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  font-weight: bold;
+  cursor: not-allowed;
+}
+
+textarea { 
+  margin-top: 0.5em; 
+  padding: 5px; 
+  border: 1px solid #ccc; 
+  border-radius: 3px; 
+  width: 100%; 
+  min-height: 60px; 
+  resize: vertical; 
+}
+
+button { 
+  margin-top: 1em; 
+  padding: 8px 16px; 
+  background: #007cba; 
+  color: white; 
+  border: none; 
+  border-radius: 3px; 
+  cursor: pointer; 
+}
+
+button:hover { 
+  background: #005a87; 
+}
+
+.result { 
+  background: #f9f9f9; 
+  padding: 1em; 
+  border-radius: 5px; 
+  max-height: 300px; 
+  overflow-y: auto; 
+  font-size: 0.9em; 
+}
+
+.endpoint { 
+  color: #888; 
+  font-size: 0.8em; 
+}
+
+.form-row { 
+  display: flex; 
+  gap: 1em; 
+  align-items: end; 
+}
+
+.form-row label { 
+  flex: 1; 
+}
+
+.producto-item { 
+  background: #f5f5f5; 
+  padding: 1em; 
+  margin: 0.5em 0; 
+  border-radius: 5px; 
+  border: 1px solid #ddd; 
+}
+
+#productos-container { 
+  margin: 1em 0; 
+}
+
+.producto-lote-item { 
+  background: #e8f4f8; 
+  padding: 0.8em; 
+  margin: 0.3em 0; 
+  border-radius: 3px; 
+  border: 1px solid #b8dae6; 
+}
+
+.producto-lote-item label { 
+  margin-top: 0.5em; 
+}
+
+.producto-tienda-item { 
+  background: #f9f9f9; 
+  padding: 1em; 
+  margin: 0.5em 0; 
+  border-radius: 5px; 
+  border: 1px solid #ddd; 
+}
+
+.tiendas-cantidades { 
+  background: #f0f8ff; 
+  padding: 1em; 
+  margin-top: 1em; 
+  border-radius: 3px; 
+  border: 1px solid #b0d4f1; 
+}
+
+.tiendas-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+  gap: 1em; 
+  margin-top: 0.5em; 
+}
+
+.tienda-cantidad { 
+  display: flex; 
+  align-items: center; 
+  gap: 0.5em; 
+}
+
+.tienda-cantidad label { 
+  margin: 0; 
+  font-weight: bold; 
+  min-width: 100px; 
+}
+
+.tienda-cantidad input { 
+  flex: 1; 
+}

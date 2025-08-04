@@ -1,0 +1,14 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Iniciar servidor Slim",
+      "type": "shell",
+      "command": "php",
+      "args": ["-S", "localhost:8080", "index.php"],
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}

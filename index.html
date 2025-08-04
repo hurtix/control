@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Control de Panadería</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+  <h1>Control de Panadería</h1>
+
+  <h2>Registrar Pedido</h2>
+  <form id="form-pedido">
+    <div class="form-row">
+      <label>Fecha Pedido <input type="text" name="fecha_pedido" readonly class="fecha-auto"></label>
+      <label>Fecha Requerida <input type="date" name="fecha_requerida" required></label>
+    </div>
+    
+    <h3>Productos y Tiendas</h3>
+    <div id="productos-tiendas-container">
+      <div class="producto-tienda-item">
+        <div class="form-row">
+          <label>Producto 
+            <select class="producto-select" onchange="actualizarTiendasProducto(this)">
+              <option value="">-- Seleccionar producto --</option>
+            </select>
+          </label>
+        </div>
+        <div class="tiendas-cantidades" style="display: none;">
+          <h4>Cantidades por tienda:</h4>
+          <div class="tiendas-grid" id="tiendas-grid-0"></div>
+          <button type="button" onclick="removerProductoPedido(this)" style="background: #dc3545; margin-top: 1em;">Remover Producto</button>
+        </div>
+      </div>
+    </div>
+    
+    <button type="button" onclick="agregarProductoPedido()" style="background: #28a745;">+ Agregar Producto</button>
+    <button type="submit">Registrar Pedido</button>
+    <div class="endpoint">POST /pedidos</div>
+  </form>
+  <div id="result-pedido" class="result"></div>
+
+  <h2>Registrar Producción</h2>
+  <form id="form-produccion">
+    <div class="form-row">
+      <label>Fecha <input type="text" name="fecha" readonly class="fecha-auto"></label>
+      <label>Lote 
+        <select name="lote_id" id="select-lote" required onchange="actualizarProductoLote()">
+          <option value="">-- Seleccionar lote --</option>
+        </select>
+      </label>
+    </div>
+    
+    <div id="productos-lote-container" style="display: none;">
+      <h3>Productos del Lote</h3>
+      <div id="productos-lote-lista"></div>
+    </div>
+    
+    <div class="form-row">
+      <label>Empleado 
+        <select name="empleado" id="select-empleado">
+          <option value="">-- Seleccionar empleado --</option>
+        </select>
+      </label>
+    </div>
+    
+    <label>Observaciones <textarea name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
+    <button type="submit">Registrar Producción</button>
+    <div class="endpoint">POST /produccion</div>
+  </form>
+  <div id="result-produccion" class="result"></div>
+
+  <h2>Registrar Despacho</h2>
+  <form id="form-despacho">
+    <div class="form-row">
+      <label>Fecha <input type="text" name="fecha" readonly class="fecha-auto"></label>
+      <label>Lote 
+        <select name="lote_id" id="select-lote-despacho" required onchange="actualizarDistribucionDespacho()">
+          <option value="">-- Seleccionar lote --</option>
+        </select>
+      </label>
+    </div>
+    
+    <div id="distribucion-despacho-container" style="display: none;">
+      <h3>Distribución Automática</h3>
+      <p style="color: #666; font-size: 0.9em; margin-bottom: 1em;">
+        Las cantidades se distribuirán automáticamente entre las tiendas según las proporciones del pedido original.
+      </p>
+      <div id="distribucion-despacho-lista"></div>
+    </div>
+    
+    <div class="form-row">
+      <label>Empleado 
+        <select name="empleado" id="select-empleado-despacho">
+          <option value="">-- Seleccionar empleado --</option>
+        </select>
+      </label>
+    </div>
+    
+    <label>Observaciones <textarea name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
+    <button type="submit">Despachar Automáticamente</button>
+    <div class="endpoint">POST /despacho (distribución automática)</div>
+  </form>
+  <div id="result-despacho" class="result"></div>
+
+  <h2>Registrar Recepción</h2>
+  <form id="form-recepcion">
+    <div class="form-row">
+      <label>Fecha <input type="text" name="fecha" readonly class="fecha-auto"></label>
+      <label>Lote 
+        <select name="lote_id" id="select-lote-recepcion" required onchange="actualizarTiendasLote()">
+          <option value="">-- Seleccionar lote --</option>
+        </select>
+      </label>
+    </div>
+    
+    <div id="tiendas-lote-container" style="display: none;">
+      <div class="form-row">
+        <label>Tienda 
+          <select name="tienda" id="select-tienda-recepcion" required onchange="actualizarDespachosLoteTienda()">
+            <option value="">-- Seleccionar tienda --</option>
+          </select>
+        </label>
+      </div>
+    </div>
+    
+    <div id="despachos-tienda-container" style="display: none;">
+      <h3>Items a Recibir por la Tienda</h3>
+      <p style="color: #666; font-size: 0.9em; margin-bottom: 1em;">
+        Confirme las cantidades recibidas para esta tienda específica.
+      </p>
+      <div id="despachos-tienda-lista"></div>
+    </div>
+    
+    <div class="form-row">
+      <label>Empleado 
+        <select name="empleado" id="select-empleado-recepcion">
+          <option value="">-- Seleccionar empleado --</option>
+        </select>
+      </label>
+    </div>
+    
+    <label>Observaciones <textarea name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
+    <button type="submit">Registrar Recepción de Tienda</button>
+    <div class="endpoint">POST /recepcion (por tienda individual)</div>
+  </form>
+  <div id="result-recepcion" class="result"></div>
+
+  <h2>Consultas y Reportes</h2>
+  <button onclick="consultar('pedidos')">Consultar Pedidos</button>
+  <button onclick="consultar('produccion')">Consultar Producción</button>
+  <button onclick="consultar('despacho')">Consultar Despachos</button>
+  <button onclick="consultar('recepcion')">Consultar Recepciones</button>
+  <button onclick="consultar('alertas')">Ver Alertas</button>
+  <div class="endpoint">GET /pedidos, /produccion, /despacho, /recepcion, /alertas</div>
+  <div id="result-consultas" class="result"></div>
+
+  <h2>Trazabilidad</h2>
+  <form id="form-traza">
+    <label>Lote 
+      <select name="lote" id="select-lote-traza">
+        <option value="">-- Seleccionar lote --</option>
+      </select>
+    </label>
+    <button type="submit">Consultar Trazabilidad</button>
+    <div class="endpoint">GET /traza/lote/{lote_id}</div>
+  </form>
+  <div id="result-traza" class="result"></div>
+
+  <h2>Gestión de Datos Maestros</h2>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2em; margin-top: 1em;">
+    
+    <div>
+      <h3>Productos</h3>
+      <form id="form-producto">
+        <label>Nombre del Producto <input type="text" name="nombre" required placeholder="Ej: Pan Integral"></label>
+        <button type="submit">Agregar Producto</button>
+        <div class="endpoint">POST /maestros/producto</div>
+      </form>
+      <div id="result-producto" class="result"></div>
+    </div>
+
+    <div>
+      <h3>Empleados</h3>
+      <form id="form-empleado-maestro">
+        <label>DNI <input type="text" name="dni" pattern="[0-9]{7,8}" title="Solo números, 7-8 dígitos" required placeholder="12345678"></label>
+        <label>Nombre del Empleado <input type="text" name="nombre" required placeholder="Ej: Juan Pérez"></label>
+        <button type="submit">Agregar Empleado</button>
+        <div class="endpoint">POST /maestros/empleado</div>
+      </form>
+      <div id="result-empleado-maestro" class="result"></div>
+    </div>
+
+    <div>
+      <h3>Tiendas</h3>
+      <form id="form-tienda-maestro">
+        <label>Nombre de la Tienda <input type="text" name="nombre" required placeholder="Ej: Sucursal Norte"></label>
+        <button type="submit">Agregar Tienda</button>
+        <div class="endpoint">POST /maestros/tienda</div>
+      </form>
+      <div id="result-tienda-maestro" class="result"></div>
+    </div>
+
+  </div>
+
+  <h2>Datos Maestros Registrados</h2>
+  <div style="margin-top: 1em;">
+    <button onclick="verMaestros('all')" style="background: #007bff; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; margin-right: 0.5em; cursor: pointer;">📋 Ver Todos</button>
+    <button onclick="verMaestros('producto')" style="background: #0056b3; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; margin-right: 0.5em; cursor: pointer;">📦 Productos</button>
+    <button onclick="verMaestros('empleado')" style="background: #28a745; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; margin-right: 0.5em; cursor: pointer;">👥 Empleados</button>
+    <button onclick="verMaestros('tienda')" style="background: #dc3545; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; margin-right: 0.5em; cursor: pointer;">🏪 Tiendas</button>
+    <div class="endpoint">GET /maestros</div>
+  </div>
+  <div id="result-maestros-list" class="result"></div>
+
+  <h2>Administración de Roles</h2>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-top: 1em;">
+    
+    <!-- Gestión de Roles -->
+    <div>
+      <h3>Gestión de Roles</h3>
+      
+      <!-- Crear nuevo rol -->
+      <form id="form-nuevo-rol">
+        <label>Nombre del Rol <input type="text" name="nombre" required></label>
+        <label>Descripción <input type="text" name="descripcion" required></label>
+        <button type="submit">Crear Rol</button>
+        <div class="endpoint">POST /roles</div>
+      </form>
+      <div id="result-nuevo-rol" class="result"></div>
+      
+      <!-- Listar roles -->
+      <div style="margin-top: 2em;">
+        <button onclick="listarRoles()">Ver Roles</button>
+        <div class="endpoint">GET /roles</div>
+      </div>
+      <div id="result-roles" class="result"></div>
+    </div>
+    
+    <!-- Gestión de Permisos -->
+    <div>
+      <h3>Gestión de Permisos</h3>
+      
+      <!-- Crear nuevo permiso -->
+      <form id="form-nuevo-permiso">
+        <label>Endpoint <input type="text" name="endpoint" placeholder="/nuevo-endpoint" required></label>
+        <label>Método 
+          <select name="metodo">
+            <option value="*">Todos (*)</option>
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+        </label>
+        <label>Descripción <input type="text" name="descripcion" required></label>
+        <button type="submit">Crear Permiso</button>
+        <div class="endpoint">POST /permisos</div>
+      </form>
+      <div id="result-nuevo-permiso" class="result"></div>
+      
+      <!-- Listar permisos -->
+      <div style="margin-top: 2em;">
+        <button onclick="listarPermisos()">Ver Permisos</button>
+        <div class="endpoint">GET /permisos</div>
+      </div>
+      <div id="result-permisos" class="result"></div>
+    </div>
+  </div>
+  
+  <!-- Asignación de Permisos a Roles -->
+  <div style="margin-top: 2em;">
+    <h3>Asignar Permisos a Roles</h3>
+    <form id="form-asignar-permisos">
+      <div class="form-row">
+        <label>Rol <select id="select-rol-permisos" name="rol_id" required></select></label>
+        <button type="button" onclick="cargarPermisosDelRol()">Ver Permisos Actuales</button>
+      </div>
+      
+      <div id="permisos-disponibles" style="margin-top: 1em; max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 1em; background: #f9f9f9;">
+        <p>Selecciona un rol para ver los permisos disponibles</p>
+      </div>
+      
+      <button type="submit">Asignar Permisos Seleccionados</button>
+      <div class="endpoint">POST /roles/{id}/permisos</div>
+    </form>
+    <div id="result-asignar-permisos" class="result"></div>
+  </div>
+  
+  <!-- Verificador de Permisos -->
+  <div style="margin-top: 2em;">
+    <h3>Verificar Permisos</h3>
+    <form id="form-verificar-permiso">
+      <div class="form-row">
+        <label>Rol <input type="text" name="rol_nombre" placeholder="admin" required></label>
+        <label>Endpoint <input type="text" name="endpoint" placeholder="/pedidos" required></label>
+        <label>Método 
+          <select name="metodo">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+          </select>
+        </label>
+        <button type="submit">Verificar</button>
+      </div>
+      <div class="endpoint">GET /roles/{nombre}/permiso</div>
+    </form>
+    <div id="result-verificar-permiso" class="result"></div>
+  </div>
+
+  <h2>Gestión de Usuarios</h2>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-top: 1em;">
+    
+    <!-- Crear Usuario -->
+    <div>
+      <h3>Crear Usuario</h3>
+      <form id="form-nuevo-usuario">
+        <label>Empleado 
+          <select name="empleado_id" id="select-empleado-usuario" required>
+            <option value="">-- Seleccionar empleado --</option>
+          </select>
+        </label>
+        <label>Password <input type="password" name="password" required></label>
+        <label>Rol 
+          <select name="rol_id" id="select-rol-usuario" required>
+            <option value="">-- Seleccionar rol --</option>
+          </select>
+        </label>
+        <p style="color: #666; font-size: 0.9em; margin-top: 0.5em;">
+          El usuario se crea para el empleado seleccionado. El DNI y nombre se toman del empleado.
+        </p>
+        <button type="submit">Crear Usuario</button>
+        <div class="endpoint">POST /usuarios</div>
+      </form>
+      <div id="result-nuevo-usuario" class="result"></div>
+    </div>
+    
+    <!-- Listar Usuarios -->
+    <div>
+      <h3>Usuarios Registrados</h3>
+      <button onclick="listarUsuarios()">Ver Usuarios</button>
+      <div class="endpoint">GET /usuarios</div>
+      <div id="result-usuarios" class="result"></div>
+    </div>
+  </div>
+  
+  <!-- Editar Usuario -->
+  <div style="margin-top: 2em;">
+    <h3>Editar Usuario</h3>
+    <form id="form-editar-usuario" style="display: none;">
+      <input type="hidden" name="id">
+      <div class="form-row">
+        <label>Empleado 
+          <select name="empleado_id" id="select-empleado-editar" required>
+            <option value="">-- Seleccionar empleado --</option>
+          </select>
+        </label>
+        <label>Nuevo Password (opcional) <input type="password" name="password" placeholder="Dejar vacío para mantener el actual"></label>
+      </div>
+      <div class="form-row">
+        <label>Rol 
+          <select name="rol_id" id="select-rol-editar" required>
+            <option value="">-- Seleccionar rol --</option>
+          </select>
+        </label>
+        <label>Estado 
+          <select name="activo" required>
+            <option value="1">Activo</option>
+            <option value="0">Inactivo</option>
+          </select>
+        </label>
+      </div>
+      <div class="form-row">
+        <button type="button" onclick="cancelarEdicionUsuario()" style="background: #6c757d;">Cancelar</button>
+        <button type="submit">Actualizar Usuario</button>
+      </div>
+      <div class="endpoint">PUT /usuarios/{id}</div>
+    </form>
+    <div id="result-editar-usuario" class="result"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/forms.js"></script>
+  <script src="assets/js/lotes.js"></script>
+  <script src="assets/js/pedidos.js"></script>
+  <script src="assets/js/workflow.js"></script>
+  <script src="assets/js/events.js"></script>
+  <script src="assets/js/maestros.js"></script>
+  <script src="assets/js/roles.js"></script>
+  <script src="assets/js/usuarios.js"></script>
+</body>
+</html>
