@@ -233,7 +233,7 @@ async function cargarLotesParaRecepcion() {
     
     if (!tiendaNombre) {
       console.error('El usuario no tiene tienda asignada');
-      alert('Error: No tienes una tienda asignada. Contacta al administrador.');
+      // Quitado el alert que mostraba mensaje de error por tienda no asignada
       return;
     }
     

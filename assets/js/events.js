@@ -201,7 +201,7 @@ formRecepcion.onsubmit = async e => {
   // Obtener la tienda del usuario actual
   const tiendaUsuarioActual = document.getElementById('tienda-usuario-actual').value;
   if (!tiendaUsuarioActual) {
-    alert('Error: No se ha detectado una tienda vinculada a tu usuario. Contacta al administrador.');
+    // Quitado el alert que mostraba mensaje de error por tienda no asignada
     return;
   }
   

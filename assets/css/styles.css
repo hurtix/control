@@ -1,4 +1,7 @@
-body { 
+:root {
+
+}
+/* body { 
   font-family: Arial, sans-serif; 
   margin: 2em; 
 }
@@ -11,23 +14,47 @@ h3 {
   margin-top: 0; 
   color: #333; 
   font-size: 1.1em; 
+} */
+h1,h2,h3, h4, h5, h6 {
+  font-weight: bold;
+}
+
+h1{font-size: 1.5em;}
+h2{font-size: 1.3em;}
+h3{font-size: 1.2em;}
+h4{font-size: 1.1em;}
+h5{font-size: 1em;}
+h6{font-size: 0.9em;}
+
+input[type="number"] { 
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.input[readonly] {
+  pointer-events: none;
+  user-select: none;
+  color: green;
 }
 
 form, .result { 
   margin-bottom: 2em; 
 }
 
-label { 
+/* label { 
   display: block; 
   margin-top: 1em; 
-}
+} */
 
-input, select { 
+
+
+
+/* input, select { 
   margin-top: 0.5em; 
   padding: 5px; 
   border: 1px solid #ccc; 
   border-radius: 3px; 
-}
+} */
 
 .fecha-auto {
   background-color: #f8f9fa;
@@ -36,7 +63,7 @@ input, select {
   cursor: not-allowed;
 }
 
-textarea { 
+/* textarea { 
   margin-top: 0.5em; 
   padding: 5px; 
   border: 1px solid #ccc; 
@@ -44,9 +71,9 @@ textarea {
   width: 100%; 
   min-height: 60px; 
   resize: vertical; 
-}
+} */
 
-button { 
+/* button { 
   margin-top: 1em; 
   padding: 8px 16px; 
   background: #007cba; 
@@ -58,7 +85,7 @@ button {
 
 button:hover { 
   background: #005a87; 
-}
+} */
 
 .result { 
   background: #f9f9f9; 

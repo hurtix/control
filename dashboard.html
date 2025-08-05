@@ -4,16 +4,22 @@
   <meta charset="UTF-8">
   <title>Control de Panadería</title>
   <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/basecoat.cdn.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/js/all.min.js" defer></script>
+
 </head>
+
 <body>
   <!-- Header de autenticación -->
-  <div id="auth-header" style="background: #007bff; color: white; padding: 1em; margin-bottom: 2em; display: flex; justify-content: between; align-items: center;">
-    <div>
-      <span>👤 <span id="user-info">Cargando...</span></span>
+  <div id="auth-header" class="bg-black text-white p-4 mb-8 flex flex-wrap justify-between items-center gap-2">
+    <div class="flex items-center flex-wrap gap-2">
+      <span class="flex items-center">👤 <span id="user-info" class="ml-1">Cargando...</span></span>
+      <!-- Aquí se insertará la notificación si es necesaria -->
     </div>
-    <div style="margin-left: auto;">
-      <button onclick="logout()" style="background: #dc3545; color: white; border: none; padding: 0.5em 1em; border-radius: 4px; cursor: pointer;">
-        🚪 Cerrar Sesión
+    <div>
+      <button class="btn-destructive" onclick="logout()">
+        Cerrar Sesión
       </button>
     </div>
   </div>
@@ -22,20 +28,26 @@
 
   <h2>Registrar Pedido</h2>
   <form id="form-pedido">
-    <div class="form-row">
-      <label>Fecha Pedido <input type="text" name="fecha_pedido" readonly class="fecha-auto"></label>
-      <label>Fecha Requerida <input type="date" name="fecha_requerida" required></label>
+    <div class="flex justify-start gap-x-8">
+    <div class="grid gap-3">
+      <label class="label">Fecha Pedido</label>
+      <input class="input" type="text" name="fecha_pedido" readonly class="fecha-auto"></label>
+      </div>
+    <div class="grid gap-3">
+      <label class="label">Fecha Requerida</label>
+      <input class="input" type="date" name="fecha_requerida" required></label>
+    </div>
     </div>
     
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado-pedido">
-    
+
     <h3>Productos y Tiendas</h3>
     <div id="productos-tiendas-container">
       <div class="producto-tienda-item">
         <div class="form-row">
           <label>Producto 
-            <select class="producto-select" onchange="actualizarTiendasProducto(this)">
+            <select class="producto-select select" onchange="actualizarTiendasProducto(this)">
               <option value="">-- Seleccionar producto --</option>
             </select>
           </label>
@@ -43,21 +55,22 @@
         <div class="tiendas-cantidades" style="display: none;">
           <h4>Cantidades por tienda:</h4>
           <div class="tiendas-grid" id="tiendas-grid-0"></div>
-          <button type="button" onclick="removerProductoPedido(this)" style="background: #dc3545; margin-top: 1em;">Remover Producto</button>
+          <button type="button" class="btn-destructive" onclick="removerProductoPedido(this)">Remover Producto</button>
         </div>
       </div>
     </div>
-    
-    <button type="button" onclick="agregarProductoPedido()" style="background: #28a745;">+ Agregar Producto</button>
-    <button type="submit">Registrar Pedido</button>
+
+    <button type="button" class="btn-outline" onclick="agregarProductoPedido()">+ Agregar Producto</button>
+    <button type="submit" class="btn">Registrar Pedido</button>
     <div class="endpoint">POST /pedidos</div>
   </form>
   <div id="result-pedido" class="result"></div>
 
   <h2>Registrar Producción</h2>
   <form id="form-produccion">
-    <div class="form-row">
-      <label>Fecha <input type="text" name="fecha" readonly class="fecha-auto"></label>
+    <div class="grid gap-3">
+      <label class="label">Fecha</label>
+      <input class="input" type="text" name="fecha" readonly class="fecha-auto">
       <input type="hidden" name="lote_id" id="input-lote-id" required>
     </div>
     
@@ -74,16 +87,17 @@
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado">
     
-    <label>Observaciones <textarea name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
-    <button type="submit">Registrar Producción</button>
+    <label>Observaciones <textarea class="textarea" name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
+    <button type="submit" class="btn">Registrar Producción</button>
     <div class="endpoint">POST /produccion</div>
   </form>
   <div id="result-produccion" class="result"></div>
 
   <h2>Registrar Despacho</h2>
   <form id="form-despacho">
-    <div class="form-row">
-      <label>Fecha <input type="text" name="fecha" readonly class="fecha-auto"></label>
+    <div class="grid gap-3">
+      <label class="label">Fecha</label>
+      <input class="input" type="text" name="fecha" readonly class="fecha-auto">
       <input type="hidden" name="lote_id" id="input-lote-id-despacho" required>
     </div>
     
@@ -103,16 +117,17 @@
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado-despacho">
     
-    <label>Observaciones <textarea name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
-    <button type="submit">Despachar Automáticamente</button>
+    <label>Observaciones <textarea class="textarea" name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
+    <button class="btn" type="submit">Despachar Automáticamente</button>
     <div class="endpoint">POST /despacho (distribución automática)</div>
   </form>
   <div id="result-despacho" class="result"></div>
 
   <h2>Registrar Recepción</h2>
   <form id="form-recepcion">
-    <div class="form-row">
-      <label>Fecha <input type="text" name="fecha" readonly class="fecha-auto"></label>
+    <div class="grid gap-3">
+      <label class="label">Fecha</label>
+      <input class="input" type="text" name="fecha" readonly class="fecha-auto">
     </div>
     
     <div class="form-row">
@@ -143,29 +158,29 @@
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado-recepcion">
     
-    <label>Observaciones <textarea name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
-    <button type="submit">Registrar Recepción de Tienda</button>
+    <label>Observaciones <textarea class="textarea" name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
+    <button class="btn" type="submit">Registrar Recepción de Tienda</button>
     <div class="endpoint">POST /recepcion (por tienda individual)</div>
   </form>
   <div id="result-recepcion" class="result"></div>
 
   <h2>Consultas y Reportes</h2>
-  <button onclick="consultar('pedidos')">Consultar Pedidos</button>
-  <button onclick="consultar('produccion')">Consultar Producción</button>
-  <button onclick="consultar('despacho')">Consultar Despachos</button>
-  <button onclick="consultar('recepcion')">Consultar Recepciones</button>
-  <button onclick="consultar('alertas')">Ver Alertas</button>
+  <button class="btn-outline" onclick="consultar('pedidos')">Consultar Pedidos</button>
+  <button class="btn-outline" onclick="consultar('produccion')">Consultar Producción</button>
+  <button class="btn-outline" onclick="consultar('despacho')">Consultar Despachos</button>
+  <button class="btn-outline" onclick="consultar('recepcion')">Consultar Recepciones</button>
+  <button class="btn-outline" onclick="consultar('alertas')">Ver Alertas</button>
   <div class="endpoint">GET /pedidos, /produccion, /despacho, /recepcion, /alertas</div>
   <div id="result-consultas" class="result"></div>
 
   <h2>Trazabilidad</h2>
   <form id="form-traza">
     <label>Lote 
-      <select name="lote" id="select-lote-traza">
+      <select class="select w-[180px]" name="lote" id="select-lote-traza">
         <option value="">-- Seleccionar lote --</option>
       </select>
     </label>
-    <button type="submit">Consultar Trazabilidad</button>
+    <button class="btn" type="submit">Consultar Trazabilidad</button>
     <div class="endpoint">GET /traza/lote/{lote_id}</div>
   </form>
   <div id="result-traza" class="result"></div>
@@ -176,8 +191,11 @@
     <div>
       <h3>Productos</h3>
       <form id="form-producto">
-        <label>Nombre del Producto <input type="text" name="nombre" required placeholder="Ej: Pan Integral"></label>
-        <button type="submit">Agregar Producto</button>
+        <div class="grid gap-3">
+            <label class="label">Nombre del Producto</label>
+            <input class="input" type="text" name="nombre" required placeholder="Ej: Pan Integral">
+        </div>
+        <button class="btn" type="submit">Agregar Producto</button>
         <div class="endpoint">POST /maestros/producto</div>
       </form>
       <div id="result-producto" class="result"></div>
@@ -186,9 +204,15 @@
     <div>
       <h3>Empleados</h3>
       <form id="form-empleado-maestro">
-        <label>DNI <input type="text" name="dni" pattern="[0-9]{7,8}" title="Solo números, 7-8 dígitos" required placeholder="12345678"></label>
-        <label>Nombre del Empleado <input type="text" name="nombre" required placeholder="Ej: Juan Pérez"></label>
-        <button type="submit">Agregar Empleado</button>
+        <div class="grid gap-3">
+            <label class="label">DNI</label>
+            <input class="input" type="text" name="dni" pattern="[0-9]{7,8}" title="Solo números, 7-8 dígitos" required placeholder="12345678">
+        </div>
+        <div class="grid gap-3">
+          <label class="label">Nombre del Empleado</label>
+          <input class="input" type="text" name="nombre" required placeholder="Ej: Juan Pérez">
+        </div>
+        <button class="btn" type="submit">Agregar Empleado</button>
         <div class="endpoint">POST /maestros/empleado</div>
       </form>
       <div id="result-empleado-maestro" class="result"></div>
@@ -197,8 +221,11 @@
     <div>
       <h3>Tiendas</h3>
       <form id="form-tienda-maestro">
-        <label>Nombre de la Tienda <input type="text" name="nombre" required placeholder="Ej: Sucursal Norte"></label>
-        <button type="submit">Agregar Tienda</button>
+        <div class="grid gap-3">
+          <label class="label">Nombre de la Tienda</label>
+          <input class="input" type="text" name="nombre" required placeholder="Ej: Sucursal Norte">
+        </div>
+        <button class="btn" type="submit">Agregar Tienda</button>
         <div class="endpoint">POST /maestros/tienda</div>
       </form>
       <div id="result-tienda-maestro" class="result"></div>
@@ -208,10 +235,10 @@
 
   <h2>Datos Maestros Registrados</h2>
   <div style="margin-top: 1em;">
-    <button onclick="verMaestros('all')" style="background: #007bff; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; margin-right: 0.5em; cursor: pointer;">📋 Ver Todos</button>
-    <button onclick="verMaestros('producto')" style="background: #0056b3; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; margin-right: 0.5em; cursor: pointer;">📦 Productos</button>
-    <button onclick="verMaestros('empleado')" style="background: #28a745; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; margin-right: 0.5em; cursor: pointer;">👥 Empleados</button>
-    <button onclick="verMaestros('tienda')" style="background: #dc3545; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; margin-right: 0.5em; cursor: pointer;">🏪 Tiendas</button>
+    <button class="btn-outline" onclick="verMaestros('all')">📋 Ver Todos</button>
+    <button class="btn-outline" onclick="verMaestros('producto')">📦 Productos</button>
+    <button class="btn-outline" onclick="verMaestros('empleado')">👥 Empleados</button>
+    <button class="btn-outline" onclick="verMaestros('tienda')">🏪 Tiendas</button>
     <div class="endpoint">GET /maestros</div>
   </div>
   <div id="result-maestros-list" class="result"></div>
@@ -225,16 +252,22 @@
       
       <!-- Crear nuevo rol -->
       <form id="form-nuevo-rol">
-        <label>Nombre del Rol <input type="text" name="nombre" required></label>
-        <label>Descripción <input type="text" name="descripcion" required></label>
-        <button type="submit">Crear Rol</button>
+        <div class="grid gap-3">
+          <label class="label">Nombre del Rol</label>
+          <input class="input" type="text" name="nombre" required>
+        </div>
+        <div class="grid gap-3">
+          <label class="label">Descripción</label>
+          <input class="input" type="text" name="descripcion" required>
+        </div>
+        <button class="btn" type="submit">Crear Rol</button>
         <div class="endpoint">POST /roles</div>
       </form>
       <div id="result-nuevo-rol" class="result"></div>
       
       <!-- Listar roles -->
       <div style="margin-top: 2em;">
-        <button onclick="listarRoles()">Ver Roles</button>
+        <button class="btn-outline" onclick="listarRoles()">Ver Roles</button>
         <div class="endpoint">GET /roles</div>
       </div>
       <div id="result-roles" class="result"></div>
@@ -246,9 +279,13 @@
       
       <!-- Crear nuevo permiso -->
       <form id="form-nuevo-permiso">
-        <label>Endpoint <input type="text" name="endpoint" placeholder="/nuevo-endpoint" required></label>
-        <label>Método 
-          <select name="metodo">
+        <div class="grid gap-3">
+          <label class="label">Endpoint</label>
+          <input class="input" type="text" name="endpoint" placeholder="/nuevo-endpoint" required>
+        </div>
+        <div class="grid gap-3">
+          <label class="label">Método</label>
+          <select class="select" name="metodo">
             <option value="*">Todos (*)</option>
             <option value="GET">GET</option>
             <option value="POST">POST</option>
@@ -256,15 +293,18 @@
             <option value="DELETE">DELETE</option>
           </select>
         </label>
-        <label>Descripción <input type="text" name="descripcion" required></label>
-        <button type="submit">Crear Permiso</button>
+        <div class="grid gap-3">
+          <label class="label">Descripción</label>
+          <input class="input" type="text" name="descripcion" required>
+        </div>
+        <button class="btn" type="submit">Crear Permiso</button>
         <div class="endpoint">POST /permisos</div>
       </form>
       <div id="result-nuevo-permiso" class="result"></div>
       
       <!-- Listar permisos -->
       <div style="margin-top: 2em;">
-        <button onclick="listarPermisos()">Ver Permisos</button>
+        <button class="btn-outline" onclick="listarPermisos()">Ver Permisos</button>
         <div class="endpoint">GET /permisos</div>
       </div>
       <div id="result-permisos" class="result"></div>
@@ -276,15 +316,18 @@
     <h3>Asignar Permisos a Roles</h3>
     <form id="form-asignar-permisos">
       <div class="form-row">
-        <label>Rol <select id="select-rol-permisos" name="rol_id" required></select></label>
-        <button type="button" onclick="cargarPermisosDelRol()">Ver Permisos Actuales</button>
+        <div class="grid gap-3">
+          <label class="label">Rol</label>
+          <select id="select-rol-permisos" class="select" name="rol_id" required></select>
+        </div>
+        <button class="btn-outline" type="button" onclick="cargarPermisosDelRol()">Ver Permisos Actuales</button>
       </div>
       
       <div id="permisos-disponibles" style="margin-top: 1em; max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 1em; background: #f9f9f9;">
         <p>Selecciona un rol para ver los permisos disponibles</p>
       </div>
       
-      <button type="submit">Asignar Permisos Seleccionados</button>
+      <button class="btn" type="submit">Asignar Permisos Seleccionados</button>
       <div class="endpoint">POST /roles/{id}/permisos</div>
     </form>
     <div id="result-asignar-permisos" class="result"></div>
@@ -295,19 +338,26 @@
     <h3>Verificar Permisos</h3>
     <form id="form-verificar-permiso">
       <div class="form-row">
-        <label>Rol <input type="text" name="rol_nombre" placeholder="admin" required></label>
-        <label>Endpoint <input type="text" name="endpoint" placeholder="/pedidos" required></label>
-        <label>Método 
-          <select name="metodo">
+        <div class="grid gap-3">
+          <label class="label">Rol</label>
+          <input class="input" type="text" name="rol_nombre" placeholder="admin" required>
+        </div>
+        <div class="grid gap-3">
+          <label class="label">Endpoint</label>
+          <input class="input" type="text" name="endpoint" placeholder="/pedidos" required>
+        </div>
+        <div class="grid gap-3">
+          <label class="label">Método</label>
+          <select class="select" name="metodo">
             <option value="GET">GET</option>
             <option value="POST">POST</option>
             <option value="PUT">PUT</option>
             <option value="DELETE">DELETE</option>
           </select>
         </label>
-        <button type="submit">Verificar</button>
+        <button class="btn" type="submit">Verificar</button>
       </div>
-      <div class="endpoint">GET /roles/{nombre}/permiso</div>
+      <!-- <div class="endpoint">GET /roles/{nombre}/permiso</div> -->
     </form>
     <div id="result-verificar-permiso" class="result"></div>
   </div>
@@ -319,23 +369,28 @@
     <div>
       <h3>Crear Usuario</h3>
       <form id="form-nuevo-usuario">
-        <label>Empleado 
-          <select name="empleado_id" id="select-empleado-usuario" required>
+        <div class="grid gap-3">
+          <label class="label">Empleado</label>
+          <select class="select" name="empleado_id" id="select-empleado-usuario" required>
             <option value="">-- Seleccionar empleado --</option>
           </select>
-        </label>
-        <label>Password <input type="password" name="password" required></label>
-        <label>Rol 
-          <select name="rol_id" id="select-rol-usuario" required onchange="mostrarCampoTienda()">
+        </div>
+        <div class="grid gap-3">
+          <label class="label">Password</label>
+          <input class="input" type="password" name="password" required>
+        </div>
+        <div class="grid gap-3">
+          <label class="label">Rol</label>
+          <select class="select" name="rol_id" id="select-rol-usuario" required onchange="mostrarCampoTienda()">
             <option value="">-- Seleccionar rol --</option>
           </select>
-        </label>
+        </div> 
+
         <div id="campo-tienda-usuario" style="display: none;">
-          <label>Tienda 
-            <select name="tienda_id" id="select-tienda-usuario">
-              <option value="">-- Seleccionar tienda --</option>
-            </select>
-          </label>
+          <label class="label">Tienda</label>
+          <select name="tienda_id" id="select-tienda-usuario">
+            <option value="">-- Seleccionar tienda --</option>
+          </select>
           <p style="color: #dc3545; font-size: 0.9em; margin-top: 0.3em;">
             ⚠️ El usuario solo tendrá acceso a la tienda seleccionada
           </p>
@@ -343,7 +398,7 @@
         <p style="color: #666; font-size: 0.9em; margin-top: 0.5em;">
           El usuario se crea para el empleado seleccionado. El DNI y nombre se toman del empleado.
         </p>
-        <button type="submit">Crear Usuario</button>
+        <button class="btn" type="submit">Crear Usuario</button>
         <div class="endpoint">POST /usuarios</div>
       </form>
       <div id="result-nuevo-usuario" class="result"></div>
@@ -352,7 +407,7 @@
     <!-- Listar Usuarios -->
     <div>
       <h3>Usuarios Registrados</h3>
-      <button onclick="listarUsuarios()">Ver Usuarios</button>
+      <button class="btn-outline" onclick="listarUsuarios()">Ver Usuarios</button>
       <div class="endpoint">GET /usuarios</div>
       <div id="result-usuarios" class="result"></div>
     </div>
@@ -363,27 +418,29 @@
     <h3>Editar Usuario</h3>
     <form id="form-editar-usuario" style="display: none;">
       <input type="hidden" name="id">
-      <div class="form-row">
-        <label>Empleado 
-          <select name="empleado_id" id="select-empleado-editar" required>
+      <div class="grid gap-3">
+        <label class="label">Empleado </label>
+          <select class="select" name="empleado_id" id="select-empleado-editar" required>
             <option value="">-- Seleccionar empleado --</option>
           </select>
-        </label>
-        <label>Nuevo Password (opcional) <input type="password" name="password" placeholder="Dejar vacío para mantener el actual"></label>
+        <div class="grid gap-3">
+        <label class="label">Nuevo Password (opcional)</label>
+        <input class="input" type="password" name="password" placeholder="Dejar vacío para mantener el actual">
+        </div>
       </div>
-      <div class="form-row">
-        <label>Rol 
-          <select name="rol_id" id="select-rol-editar" required onchange="mostrarCampoTiendaEditar()">
+      <div class="grid gap-3">
+        <label class="label">Rol </label>
+          <select class="select" name="rol_id" id="select-rol-editar" required onchange="mostrarCampoTiendaEditar()">
             <option value="">-- Seleccionar rol --</option>
           </select>
-        </label>
-        <label>Estado 
-          <select name="activo" required>
+        </div>
+        <div class="grid gap-3">
+          <label class="label">Estado </label>
+          <select class="select" name="activo" required>
             <option value="1">Activo</option>
             <option value="0">Inactivo</option>
           </select>
-        </label>
-      </div>
+        </div>
       <div id="campo-tienda-usuario-editar" style="display: none; margin-top: 0.5em;">
         <label>Tienda 
           <select name="tienda_id" id="select-tienda-editar">
@@ -395,8 +452,8 @@
         </p>
       </div>
       <div class="form-row">
-        <button type="button" onclick="cancelarEdicionUsuario()" style="background: #6c757d;">Cancelar</button>
-        <button type="submit">Actualizar Usuario</button>
+        <button class="btn-secondary" type="button" onclick="cancelarEdicionUsuario()">Cancelar</button>
+        <button class="btn" type="submit">Actualizar Usuario</button>
       </div>
       <div class="endpoint">PUT /usuarios/{id}</div>
     </form>
