@@ -669,6 +669,7 @@ const verMaestros = async (tipo) => {
                   <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">ID</th>
                   <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Nombre de la Tienda</th>
                   <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Fecha Registro</th>
+                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -682,6 +683,12 @@ const verMaestros = async (tipo) => {
                         month: 'long',
                         day: 'numeric'
                       })}
+                    </td>
+                    <td style="padding: 0.75em; border: 1px solid #dee2e6;">
+                      <button onclick="gestionarUsuariosTienda(${t.id}, '${t.nombre}')" 
+                              style="background: #17a2b8; color: white; border: none; padding: 0.5em; border-radius: 4px; cursor: pointer;">
+                        👥 Gestionar Usuarios
+                      </button>
                     </td>
                   </tr>
                 `).join('')}
@@ -704,3 +711,164 @@ const verMaestros = async (tipo) => {
     `;
   }
 };
+
+// Función para gestionar los usuarios vinculados a una tienda
+async function gestionarUsuariosTienda(tiendaId, tiendaNombre) {
+  try {
+    // Función para inspeccionar objetos en consola
+    const debugObject = (label, obj) => {
+      console.log(`DEBUG ${label}:`, JSON.stringify(obj, null, 2));
+    };
+    
+    // 1. Crear el modal de gestión de usuarios
+    const modalId = 'modal-usuarios-tienda';
+    let modalElement = document.getElementById(modalId);
+    
+    // Si el modal no existe, lo creamos
+    if (!modalElement) {
+      modalElement = document.createElement('div');
+      modalElement.id = modalId;
+      modalElement.className = 'modal-usuarios-tienda';
+      modalElement.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      `;
+      
+      document.body.appendChild(modalElement);
+    }
+    
+    // 2. Cargar los usuarios disponibles y los ya vinculados a la tienda
+    const usuarios = await api('/usuarios', 'GET', null, 'admin');
+    debugObject('Todos los usuarios', usuarios.slice(0, 3)); // Solo debuggear 3 primeros para no saturar
+    
+    const tiendaInfo = await api(`/tiendas/${tiendaId}/usuarios`, 'GET', null, 'admin');
+    debugObject('Tienda Info', tiendaInfo);
+    
+    const usuariosVinculados = tiendaInfo.usuarios || [];
+    
+    // 3. Generar el contenido del modal
+    modalElement.innerHTML = `
+      <div style="background: white; border-radius: 8px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <div style="padding: 1.5em; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="margin: 0;">👥 Usuarios de la Tienda: ${tiendaNombre}</h3>
+          <button onclick="document.getElementById('${modalId}').remove()" style="background: none; border: none; font-size: 1.5em; cursor: pointer;">×</button>
+        </div>
+        
+        <div style="padding: 1.5em;">
+          <p style="margin-bottom: 1.5em; color: #6c757d;">
+            Seleccione los usuarios que tendrán acceso a esta tienda. Los usuarios con rol "tienda" solo podrán gestionar información de la tienda asignada.
+          </p>
+          
+          <form id="form-vincular-usuarios-tienda">
+            <input type="hidden" name="tienda_id" value="${tiendaId}">
+            
+            <div style="max-height: 50vh; overflow-y: auto; padding: 1em; border: 1px solid #dee2e6; border-radius: 5px; margin-bottom: 1.5em;">
+              <h4 style="margin-top: 0;">Seleccionar Usuarios:</h4>
+              
+              ${usuarios.length > 0 ? 
+                usuarios.map(usuario => {
+                  // Accedemos correctamente al nombre del rol a través del objeto rol
+                  const rolNombre = usuario.rol && typeof usuario.rol === 'object' ? usuario.rol.nombre : usuario.rol;
+                  const isRolTienda = rolNombre === 'tienda';
+                  
+                  // Verificamos si el usuario está vinculado a esta tienda
+                  const isVinculado = usuariosVinculados.some(u => u.id === usuario.id);
+                  
+                  // Si está vinculado, obtenemos el nombre de la tienda
+                  const tiendaActual = isVinculado ? 
+                    (usuariosVinculados.find(u => u.id === usuario.id) || {}).tienda_nombre : null;
+                  
+                  // Obtenemos el nombre del usuario - puede estar directamente o en objeto empleado
+                  const nombreUsuario = usuario.nombre || 
+                    (usuario.empleado && usuario.empleado.nombre ? usuario.empleado.nombre : 'Usuario sin nombre');
+                  
+                  // Obtenemos el DNI - puede estar directamente o en objeto empleado
+                  const dniUsuario = usuario.dni || 
+                    (usuario.empleado && usuario.empleado.dni ? usuario.empleado.dni : 'No especificado');
+                    
+                  return `
+                    <div style="padding: 0.75em; border: 1px solid ${isVinculado ? '#28a745' : '#dee2e6'}; border-radius: 5px; margin-bottom: 0.5em; background: ${isVinculado ? '#f0fff0' : 'white'};">
+                      <div style="display: flex; align-items: center;">
+                        <input 
+                          type="checkbox" 
+                          name="usuario_ids" 
+                          value="${usuario.id}" 
+                          id="usuario-${usuario.id}" 
+                          ${isVinculado ? 'checked' : ''} 
+                          ${isRolTienda ? '' : 'disabled'} 
+                          style="margin-right: 1em;"
+                        >
+                        <div>
+                          <label for="usuario-${usuario.id}" style="font-weight: bold; margin-bottom: 0.25em; display: block;">
+                            ${nombreUsuario} 
+                            <span style="background: ${isRolTienda ? '#17a2b8' : '#6c757d'}; color: white; padding: 0.2em 0.5em; border-radius: 3px; font-size: 0.8em; margin-left: 0.5em;">
+                              ${rolNombre || 'Sin rol'}
+                            </span>
+                          </label>
+                          <div style="font-size: 0.9em; color: #6c757d;">DNI: ${dniUsuario}</div>
+                          ${isRolTienda ? 
+                            (isVinculado ? 
+                              `<div style="font-size: 0.9em; color: #28a745; margin-top: 0.25em;">✓ Vinculado a: ${tiendaActual || tiendaNombre}</div>` : 
+                              '') : 
+                            `<div style="font-size: 0.9em; color: #dc3545; margin-top: 0.25em;">⚠️ No es usuario de tienda</div>`
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('') : 
+                '<p style="color: #6c757d; font-style: italic;">No hay usuarios registrados</p>'
+              }
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 1em;">
+              <button type="button" onclick="document.getElementById('${modalId}').remove()" style="background: #6c757d; color: white; border: none; padding: 0.75em 1.5em; border-radius: 5px; cursor: pointer;">
+                Cancelar
+              </button>
+              <button type="submit" style="background: #28a745; color: white; border: none; padding: 0.75em 1.5em; border-radius: 5px; cursor: pointer;">
+                Guardar Cambios
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+    
+    // 4. Manejar el submit del formulario
+    document.getElementById('form-vincular-usuarios-tienda').onsubmit = async (e) => {
+      e.preventDefault();
+      
+      // Recopilar los IDs de usuarios seleccionados
+      const form = e.target;
+      const formData = new FormData(form);
+      const usuarioIds = formData.getAll('usuario_ids').map(Number);
+      
+      try {
+        // Enviar al servidor los usuarios seleccionados
+        const response = await api(`/tiendas/${tiendaId}/usuarios`, 'POST', { usuario_ids: usuarioIds }, 'admin');
+        
+        // Mostrar mensaje de éxito
+        alert(`Usuarios actualizados para la tienda ${tiendaNombre}`);
+        
+        // Cerrar el modal
+        document.getElementById(modalId).remove();
+        
+      } catch (error) {
+        console.error('Error al vincular usuarios:', error);
+        alert(`Error al vincular usuarios: ${error.message}`);
+      }
+    };
+    
+  } catch (error) {
+    console.error('Error gestionando usuarios de tienda:', error);
+    alert(`Error: ${error.message}`);
+  }
+}

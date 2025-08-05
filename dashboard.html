@@ -113,21 +113,23 @@
   <form id="form-recepcion">
     <div class="form-row">
       <label>Fecha <input type="text" name="fecha" readonly class="fecha-auto"></label>
-      <label>Lote 
-        <select name="lote_id" id="select-lote-recepcion" required onchange="actualizarTiendasLote()">
-          <option value="">-- Seleccionar lote --</option>
-        </select>
-      </label>
+    </div>
+    
+    <div class="form-row">
+      <label>Lote</label>
+      <div id="lotes-recepcion-container" class="card-container">
+        <!-- Aquí se mostrarán los lotes disponibles para recepción -->
+        <div class="spinner-container">
+          <div class="spinner"></div>
+          <p>Cargando lotes...</p>
+        </div>
+      </div>
+      <input type="hidden" name="lote_id" id="lote-recepcion-selected">
     </div>
     
     <div id="tiendas-lote-container" style="display: none;">
-      <div class="form-row">
-        <label>Tienda 
-          <select name="tienda" id="select-tienda-recepcion" required onchange="actualizarDespachosLoteTienda()">
-            <option value="">-- Seleccionar tienda --</option>
-          </select>
-        </label>
-      </div>
+      <input type="hidden" name="tienda" id="tienda-usuario-actual">
+      <!-- La tienda se detectará automáticamente según el usuario -->
     </div>
     
     <div id="despachos-tienda-container" style="display: none;">
@@ -324,10 +326,20 @@
         </label>
         <label>Password <input type="password" name="password" required></label>
         <label>Rol 
-          <select name="rol_id" id="select-rol-usuario" required>
+          <select name="rol_id" id="select-rol-usuario" required onchange="mostrarCampoTienda()">
             <option value="">-- Seleccionar rol --</option>
           </select>
         </label>
+        <div id="campo-tienda-usuario" style="display: none;">
+          <label>Tienda 
+            <select name="tienda_id" id="select-tienda-usuario">
+              <option value="">-- Seleccionar tienda --</option>
+            </select>
+          </label>
+          <p style="color: #dc3545; font-size: 0.9em; margin-top: 0.3em;">
+            ⚠️ El usuario solo tendrá acceso a la tienda seleccionada
+          </p>
+        </div>
         <p style="color: #666; font-size: 0.9em; margin-top: 0.5em;">
           El usuario se crea para el empleado seleccionado. El DNI y nombre se toman del empleado.
         </p>
@@ -361,7 +373,7 @@
       </div>
       <div class="form-row">
         <label>Rol 
-          <select name="rol_id" id="select-rol-editar" required>
+          <select name="rol_id" id="select-rol-editar" required onchange="mostrarCampoTiendaEditar()">
             <option value="">-- Seleccionar rol --</option>
           </select>
         </label>
@@ -371,6 +383,16 @@
             <option value="0">Inactivo</option>
           </select>
         </label>
+      </div>
+      <div id="campo-tienda-usuario-editar" style="display: none; margin-top: 0.5em;">
+        <label>Tienda 
+          <select name="tienda_id" id="select-tienda-editar">
+            <option value="">-- Seleccionar tienda --</option>
+          </select>
+        </label>
+        <p style="color: #dc3545; font-size: 0.9em; margin-top: 0.3em;">
+          ⚠️ El usuario solo tendrá acceso a la tienda seleccionada
+        </p>
       </div>
       <div class="form-row">
         <button type="button" onclick="cancelarEdicionUsuario()" style="background: #6c757d;">Cancelar</button>

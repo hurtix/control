@@ -4,6 +4,7 @@ require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/models.php';
 
 use Slim\Factory\AppFactory;
+use Illuminate\Database\Capsule\Manager as DB;
 
 $app = AppFactory::create();
 $app->addBodyParsingMiddleware();
@@ -12,6 +13,15 @@ $app->add(function ($request, $handler) {
     $metodo = $request->getMethod();
     $ruta = $request->getUri()->getPath();
     error_log("Petición: $metodo $ruta");
+    
+    // Logging más detallado para depuración
+    $headers = $request->getHeaders();
+    if (isset($headers['X-Role'])) {
+        error_log("X-Role: " . json_encode($headers['X-Role']));
+    } else {
+        error_log("No se recibió X-Role");
+    }
+    
     return $handler->handle($request);
 });
 
@@ -790,6 +800,27 @@ $app->get('/traza/lote/{lote_id}', function ($request, $response, $args) {
 // Ruta para obtener todos los lotes
 $app->get('/lotes/todos', function ($request, $response) {
     try {
+        error_log("Acceso a /lotes/todos");
+        
+        // Comprobar si estamos en una sesión autenticada
+        session_start();
+        if (!isset($_SESSION['user_id'])) {
+            error_log("Acceso no autenticado a /lotes/todos");
+            
+            // Para propósitos de depuración, permitimos el acceso sin autenticación temporalmente
+            error_log("Permitiendo acceso sin autenticación temporalmente");
+            // En producción, descomentar la siguiente línea:
+            // throw new Exception("No autenticado");
+        }
+        
+        // Obtener encabezados para depuración
+        $headers = $request->getHeaders();
+        error_log("Headers: " . json_encode($headers));
+        
+        // Permitir acceso a usuarios con rol de tienda también (anteriormente solo admin)
+        $rol = isset($headers['X-Role'][0]) ? $headers['X-Role'][0] : (isset($_SESSION['user_rol']) ? $_SESSION['user_rol'] : 'visitante');
+        error_log("Rol detectado: " . $rol);
+        
         $lotes = Lote::with('pedido')
             ->orderBy('created_at', 'desc')
             ->get()
@@ -803,10 +834,12 @@ $app->get('/lotes/todos', function ($request, $response) {
                 ];
             });
         
+        error_log("Lotes obtenidos: " . count($lotes));
         $response->getBody()->write(json_encode($lotes));
         return $response->withHeader('Content-Type', 'application/json');
         
     } catch (Exception $e) {
+        error_log("Error en /lotes/todos: " . $e->getMessage());
         $response->getBody()->write(json_encode(['error' => 'Error al obtener lotes: ' . $e->getMessage()]));
         return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
     }
@@ -1465,18 +1498,152 @@ $app->get('/session', function ($request, $response) {
         return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
     }
     
+    $userData = [
+        'id' => $_SESSION['user_id'],
+        'dni' => $_SESSION['user_dni'],
+        'nombre' => $_SESSION['user_nombre'],
+        'rol' => $_SESSION['user_rol'],
+        'rol_id' => $_SESSION['rol_id'],
+        'empleado_id' => $_SESSION['empleado_id']
+    ];
+    
+    // Si el usuario tiene rol de tienda, obtener las tiendas asociadas
+    if ($_SESSION['user_rol'] === 'tienda') {
+        try {
+            // Obtener tiendas vinculadas a este usuario
+            $usuarioId = $_SESSION['user_id'];
+            $tiendasVinculadas = DB::table('usuarios_tiendas')
+                ->where('usuario_id', $usuarioId)
+                ->get();
+                
+            $tiendas = [];
+            foreach ($tiendasVinculadas as $vinculo) {
+                $tienda = Maestro::where('id', $vinculo->tienda_id)
+                    ->where('tipo', 'tienda')
+                    ->first();
+                
+                if ($tienda) {
+                    $tiendas[] = [
+                        'id' => $tienda->id,
+                        'nombre' => $tienda->nombre
+                    ];
+                }
+            }
+            
+            // Añadir las tiendas al array de usuario
+            $userData['tiendas'] = $tiendas;
+        } catch (Exception $e) {
+            error_log('Error obteniendo tiendas del usuario: ' . $e->getMessage());
+        }
+    }
+    
     $response->getBody()->write(json_encode([
         'authenticated' => true,
-        'usuario' => [
-            'id' => $_SESSION['user_id'],
-            'dni' => $_SESSION['user_dni'],
-            'nombre' => $_SESSION['user_nombre'],
-            'rol' => $_SESSION['user_rol'],
-            'rol_id' => $_SESSION['rol_id'],
-            'empleado_id' => $_SESSION['empleado_id']
-        ]
+        'usuario' => $userData
     ]));
     return $response->withHeader('Content-Type', 'application/json');
+});
+
+// Rutas para la gestión de usuarios en tiendas
+$app->get('/tiendas/{id}/usuarios', function ($request, $response, $args) {
+    $tiendaId = (int)$args['id'];
+    
+    try {
+        // Verificar si la tienda existe
+        $tienda = Maestro::where('id', $tiendaId)
+            ->where('tipo', 'tienda')
+            ->first();
+            
+        if (!$tienda) {
+            throw new Exception("Tienda no encontrada");
+        }
+        
+        // Obtener usuarios vinculados a esta tienda
+        $usuariosTienda = DB::table('usuarios_tiendas')
+            ->where('tienda_id', $tiendaId)
+            ->get();
+            
+        // Obtener información completa de los usuarios
+        $usuariosInfo = [];
+        foreach ($usuariosTienda as $ut) {
+            $usuario = Usuario::with('empleado', 'rol')->find($ut->usuario_id);
+            if ($usuario) {
+                $usuariosInfo[] = [
+                    'id' => $usuario->id,
+                    'dni' => $usuario->empleado ? $usuario->empleado->dni : null,
+                    'nombre' => $usuario->empleado ? $usuario->empleado->nombre : 'Sin nombre',
+                    'rol' => $usuario->rol ? $usuario->rol->nombre : 'Sin rol',
+                    'tienda_id' => $tiendaId,
+                    'tienda_nombre' => $tienda->nombre
+                ];
+            }
+        }
+        
+        $response->getBody()->write(json_encode([
+            'tienda' => $tienda,
+            'usuarios' => $usuariosInfo
+        ]));
+        return $response->withHeader('Content-Type', 'application/json');
+    } catch (Exception $e) {
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
+
+$app->post('/tiendas/{id}/usuarios', function ($request, $response, $args) {
+    $tiendaId = (int)$args['id'];
+    $data = $request->getParsedBody();
+    $usuarioIds = isset($data['usuario_ids']) ? (array)$data['usuario_ids'] : [];
+    
+    try {
+        // Verificar si la tienda existe
+        $tienda = Maestro::where('id', $tiendaId)
+            ->where('tipo', 'tienda')
+            ->first();
+            
+        if (!$tienda) {
+            throw new Exception("Tienda no encontrada");
+        }
+        
+        // Iniciar transacción
+        DB::beginTransaction();
+        
+        // Eliminar todas las vinculaciones actuales para esta tienda
+        DB::table('usuarios_tiendas')->where('tienda_id', $tiendaId)->delete();
+        
+        // Crear las nuevas vinculaciones
+        $vinculaciones = [];
+        foreach ($usuarioIds as $usuarioId) {
+            // Verificar que el usuario exista y tenga rol de tienda
+            $usuario = Usuario::with('rol')->find($usuarioId);
+            if ($usuario && $usuario->rol && $usuario->rol->nombre === 'tienda') {
+                DB::table('usuarios_tiendas')->insert([
+                    'usuario_id' => $usuarioId,
+                    'tienda_id' => $tiendaId,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
+                $vinculaciones[] = $usuarioId;
+            }
+        }
+        
+        // Confirmar transacción
+        DB::commit();
+        
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'mensaje' => 'Usuarios vinculados correctamente',
+            'tienda_id' => $tiendaId,
+            'usuarios_vinculados' => $vinculaciones
+        ]));
+        return $response->withHeader('Content-Type', 'application/json');
+    } catch (Exception $e) {
+        // Revertir en caso de error
+        DB::rollBack();
+        
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
 });
 
 $app->run();

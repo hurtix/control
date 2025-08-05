@@ -198,12 +198,15 @@ formRecepcion.onsubmit = async e => {
     data.empleado = currentUser.nombre;
   }
   
-  // Obtener tienda seleccionada
-  const tiendaSeleccionada = document.getElementById('select-tienda-recepcion').value;
-  if (!tiendaSeleccionada) {
-    alert('Debe seleccionar una tienda');
+  // Obtener la tienda del usuario actual
+  const tiendaUsuarioActual = document.getElementById('tienda-usuario-actual').value;
+  if (!tiendaUsuarioActual) {
+    alert('Error: No se ha detectado una tienda vinculada a tu usuario. Contacta al administrador.');
     return;
   }
+  
+  // Usar la tienda vinculada al usuario
+  data.tienda = tiendaUsuarioActual;
   
   // Recopilar items de recepción para esta tienda específica
   const cantidadInputs = document.querySelectorAll('.cantidad-recibida-input');
@@ -217,8 +220,8 @@ formRecepcion.onsubmit = async e => {
     const confirmadoSelect = confirmadoInputs[index];
     const confirmado = confirmadoSelect ? confirmadoSelect.value === '1' : false;
     
-    // Solo procesar items de la tienda seleccionada
-    if (producto && tienda === tiendaSeleccionada && !isNaN(cantidadRecibida) && cantidadRecibida >= 0) {
+    // Solo procesar items de la tienda del usuario actual
+    if (producto && tienda === tiendaUsuarioActual && !isNaN(cantidadRecibida) && cantidadRecibida >= 0) {
       items.push({
         producto: producto,
         tienda: tienda,
@@ -229,7 +232,7 @@ formRecepcion.onsubmit = async e => {
   });
   
   if (items.length === 0) {
-    alert('Debe especificar cantidades recibidas para al menos un producto de la tienda seleccionada');
+    alert('Debe especificar cantidades recibidas para al menos un producto de tu tienda');
     return;
   }
   

@@ -24,6 +24,36 @@ const resultMaestrosList = document.getElementById('result-maestros-list');
 let contadorProductosPedido = 0;
 let tiendas = []; // Variable global para almacenar las tiendas
 
+// Función para formatear fechas
+function formatearFecha(fechaString) {
+  if (!fechaString) return 'N/A';
+  
+  const fecha = new Date(fechaString);
+  if (isNaN(fecha.getTime())) return fechaString; // Si no es una fecha válida, devolver el string original
+  
+  const dia = fecha.getDate().toString().padStart(2, '0');
+  const mes = (fecha.getMonth() + 1).toString().padStart(2, '0'); // +1 porque los meses van de 0 a 11
+  const anio = fecha.getFullYear();
+  
+  return `${dia}/${mes}/${anio}`;
+}
+
+// Función para formatear fecha y hora
+function formatearFechaHora(fechaString) {
+  if (!fechaString) return 'N/A';
+  
+  const fecha = new Date(fechaString);
+  if (isNaN(fecha.getTime())) return fechaString;
+  
+  const dia = fecha.getDate().toString().padStart(2, '0');
+  const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+  const anio = fecha.getFullYear();
+  const hora = fecha.getHours().toString().padStart(2, '0');
+  const minutos = fecha.getMinutes().toString().padStart(2, '0');
+  
+  return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
+}
+
 // Función API
 const api = (endpoint, method = 'GET', data = null, role = 'admin') => {
   const opts = {
@@ -130,6 +160,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Cargar lotes pendientes
   await cargarLotesPendientes();
   
+  // Cargar lotes para recepción
+  await cargarLotesParaRecepcion();
+  
   // Establecer fechas automáticas
   establecerFechasAutomaticas();
   
@@ -179,5 +212,118 @@ async function cargarLotesParaTrazabilidad() {
     }
   } catch (error) {
     console.error('Error cargando lotes para trazabilidad:', error);
+  }
+}
+
+// Nueva función para cargar lotes para recepción como tarjetas
+async function cargarLotesParaRecepcion() {
+  try {
+    console.log('Iniciando carga de lotes para recepción...');
+    
+    // Solo necesitamos lotes despachados
+    const despachos = await api('/despacho');
+    console.log('Despachos obtenidos:', despachos);
+    
+    // Obtener las tiendas del usuario actual
+    console.log('Current user:', currentUser);
+    const tiendasUsuario = currentUser && currentUser.tiendas ? currentUser.tiendas : [];
+    console.log('Tiendas del usuario:', tiendasUsuario);
+    const tiendaNombre = tiendasUsuario.length > 0 ? tiendasUsuario[0].nombre : null;
+    console.log('Tienda seleccionada:', tiendaNombre);
+    
+    if (!tiendaNombre) {
+      console.error('El usuario no tiene tienda asignada');
+      alert('Error: No tienes una tienda asignada. Contacta al administrador.');
+      return;
+    }
+    
+    // Guardar la tienda del usuario en el campo oculto
+    document.getElementById('tienda-usuario-actual').value = tiendaNombre;
+    
+    // Filtrar despachos solo para la tienda del usuario actual
+    const despachosTienda = despachos.filter(d => d.tienda === tiendaNombre);
+    
+    // Obtener IDs de lotes únicos de los despachos de esta tienda
+    const lotesIds = [...new Set(despachosTienda.map(d => d.lote_id))];
+    
+    // Obtener recepciones ya registradas para esta tienda
+    console.log('Obteniendo recepciones...');
+    const recepciones = await api('/recepcion');
+    console.log('Recepciones obtenidas:', recepciones);
+    
+    // Verificar si recepciones es válido
+    if (!recepciones || recepciones.error) {
+      console.error('Error obteniendo recepciones:', recepciones);
+      throw new Error('Error al obtener recepciones: ' + (recepciones.error || 'Respuesta inválida'));
+    }
+    
+    const recepcionesTienda = recepciones.filter(r => r.tienda === tiendaNombre);
+    console.log('Recepciones para esta tienda:', recepcionesTienda);
+    
+    const lotesRecibidos = [...new Set(recepcionesTienda.map(r => r.lote_id))];
+    console.log('Lotes ya recibidos:', lotesRecibidos);
+    
+    // Filtrar lotes que han sido despachados pero NO han sido recibidos por esta tienda
+    const lotesPendientesRecepcion = lotesIds.filter(id => !lotesRecibidos.includes(id));
+    console.log('Lotes pendientes de recepción:', lotesPendientesRecepcion);
+    
+    // Obtener información completa de los lotes pendientes
+    console.log('Obteniendo información completa de lotes...');
+    const lotesCompletos = await api('/lotes/todos');
+    console.log('Lotes completos:', lotesCompletos);
+    
+    // Verificar si lotesCompletos es válido
+    if (!lotesCompletos || lotesCompletos.error) {
+      console.error('Error obteniendo lotes completos:', lotesCompletos);
+      throw new Error('Error al obtener lotes: ' + (lotesCompletos.error || 'Respuesta inválida'));
+    }
+    
+    const lotesFiltrados = lotesCompletos.filter(lote => lotesPendientesRecepcion.includes(lote.id));
+    console.log('Lotes filtrados para recepción:', lotesFiltrados);
+    
+    const container = document.getElementById('lotes-recepcion-container');
+    container.innerHTML = '';
+    
+    if (lotesFiltrados.length === 0) {
+      container.innerHTML = '<div class="empty-message">No hay lotes pendientes de recepción para tu tienda</div>';
+      return;
+    }
+    
+    lotesFiltrados.forEach(lote => {
+      const card = document.createElement('div');
+      card.className = 'card-item';
+      card.dataset.id = lote.id;
+      
+      card.innerHTML = `
+        <div class="card-header">Lote ${lote.id}</div>
+        <div class="card-body">
+          <div class="card-info">Estado: <strong>${lote.estado}</strong></div>
+          <div class="card-info">Fecha: <strong>${formatearFecha(lote.fecha_pedido)}</strong></div>
+          <div class="card-info">Productos: <strong>${lote.cantidad_productos || 'N/A'}</strong></div>
+        </div>
+      `;
+      
+      card.addEventListener('click', async () => {
+        // Remover selección previa
+        document.querySelectorAll('#lotes-recepcion-container .card-item.selected').forEach(c => {
+          c.classList.remove('selected');
+        });
+        
+        // Marcar como seleccionado
+        card.classList.add('selected');
+        
+        // Guardar ID en campo oculto
+        document.getElementById('lote-recepcion-selected').value = lote.id;
+        
+        // Cargar despachos para este lote y tienda
+        await cargarDespachosLoteTiendaRecepcion(lote.id, tiendaNombre);
+      });
+      
+      container.appendChild(card);
+    });
+  } catch (error) {
+    console.error('Error cargando lotes para recepción:', error);
+    const container = document.getElementById('lotes-recepcion-container');
+    container.innerHTML = '<div class="error-message">Error al cargar lotes. Intente nuevamente.</div>';
   }
 }

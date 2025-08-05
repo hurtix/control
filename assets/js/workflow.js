@@ -453,3 +453,85 @@ const mostrarAlertaCantidad = (input, mensaje, tipo) => {
     }
   }, 3000);
 };
+
+/**
+ * Carga los despachos para un lote y una tienda específica (para el formulario de recepción)
+ * Versión adaptada para la nueva interfaz con tarjetas y usuario vinculado a tienda
+ */
+async function cargarDespachosLoteTiendaRecepcion(loteId, tiendaNombre) {
+  const container = document.getElementById('despachos-tienda-container');
+  const lista = document.getElementById('despachos-tienda-lista');
+  
+  if (loteId && tiendaNombre) {
+    try {
+      // Mostrar el contenedor
+      container.style.display = 'block';
+      
+      // Obtener despachos del lote filtrados por tienda
+      const despachos = await api(`/despacho?lote_id=${loteId}`);
+      const despachosTienda = despachos.filter(d => d.tienda === tiendaNombre);
+      
+      // Limpiar la lista
+      lista.innerHTML = '';
+      
+      if (despachosTienda && despachosTienda.length > 0) {
+        // Crear formulario con los despachos de esta tienda
+        const tabla = document.createElement('div');
+        tabla.style.cssText = 'background: #f0f8ff; padding: 1em; border-radius: 5px; border: 1px solid #b0d4f1;';
+        
+        let html = '<table style="width: 100%; border-collapse: collapse; margin-bottom: 1em;">';
+        html += '<thead><tr style="background: #007cba; color: white;">';
+        html += '<th style="border: 1px solid #ccc; padding: 8px;">Producto</th>';
+        html += '<th style="border: 1px solid #ccc; padding: 8px;">Cantidad Despachada</th>';
+        html += '<th style="border: 1px solid #ccc; padding: 8px;">Cantidad Recibida</th>';
+        html += '<th style="border: 1px solid #ccc; padding: 8px;">Confirmado</th>';
+        html += '</tr></thead><tbody>';
+        
+        despachosTienda.forEach((despacho, index) => {
+          html += '<tr>';
+          html += `<td style="border: 1px solid #ccc; padding: 8px;"><strong>${despacho.producto}</strong></td>`;
+          html += `<td style="border: 1px solid #ccc; padding: 8px;">${despacho.cantidad_despachada}</td>`;
+          html += `<td style="border: 1px solid #ccc; padding: 8px;">
+                    <input type="number" 
+                           class="cantidad-recibida-input" 
+                           data-producto="${despacho.producto}"
+                           data-tienda="${despacho.tienda}"
+                           data-despachado="${despacho.cantidad_despachada}"
+                           min="0" 
+                           max="${despacho.cantidad_despachada}" 
+                           value="${despacho.cantidad_despachada}" 
+                           style="width: 100px;"
+                           required>
+                   </td>`;
+          html += `<td style="border: 1px solid #ccc; padding: 8px;">
+                    <select class="confirmado-input" 
+                            data-producto="${despacho.producto}"
+                            data-tienda="${despacho.tienda}">
+                      <option value="1">Sí</option>
+                      <option value="0">No</option>
+                    </select>
+                   </td>`;
+          html += '</tr>';
+        });
+        
+        html += '</tbody></table>';
+        
+        // Agregar resumen
+        html += `<div style="background: #e8f5e8; padding: 0.8em; border-radius: 3px; margin-top: 1em;">
+                  <strong>Resumen:</strong> ${despachosTienda.length} producto(s) para recibir en <strong>${tiendaNombre}</strong>
+                </div>`;
+        
+        tabla.innerHTML = html;
+        lista.appendChild(tabla);
+      } else {
+        lista.innerHTML = '<div class="empty-message">No hay productos para recibir en esta tienda para este lote</div>';
+      }
+    } catch (error) {
+      console.error('Error cargando despachos para recepción:', error);
+      lista.innerHTML = '<div class="error-message">Error al cargar despachos. Intente nuevamente.</div>';
+      container.style.display = 'block';
+    }
+  } else {
+    container.style.display = 'none';
+  }
+}

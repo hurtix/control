@@ -194,3 +194,13 @@ button:hover {
 .lote-card input[type="radio"] {
   display: none;
 }
+
+/* Estilos para el modal de gestión de usuarios de tienda */
+.modal-usuarios-tienda {
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
