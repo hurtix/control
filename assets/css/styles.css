@@ -2,7 +2,10 @@
 
 }
 body {
-  margin: 0 2em;
+  margin: 2em;
+  border: 1px solid #e5e7eb; /* Tailwind gray-200 */
+  border-radius: 1em;
+  padding: 2em;
 }
 /* body { 
   font-family: Arial, sans-serif; 
@@ -159,6 +162,19 @@ button:hover {
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
   gap: 1em; 
   margin-top: 0.5em; 
+}
+
+/* Estilos para totales por tienda en el footer */
+#tiendas-totales-grid {
+  display: flex;
+  justify-content: space-around;
+  gap: 1em;
+}
+
+/* Estilo simple para los valores de totales */
+.tienda-total-valor {
+  display: inline-block;
+  margin: 0 0.5em;
 }
 
 /* .tienda-cantidad { 

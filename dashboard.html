@@ -13,7 +13,7 @@
 
 <body>
   <!-- Header de autenticación -->
-  <div id="auth-header" class="bg-black text-white p-4 mb-8 flex justify-between items-center gap-2">
+  <div id="auth-header" class="bg-black text-white p-4 mb-8 flex justify-between items-center gap-2 rounded-full">
     <div class="w-full">
       <h1>Cafe Cauca</h1>
       <!-- Aquí se insertará la notificación si es necesaria -->
@@ -63,6 +63,7 @@
           <tr class="[&_th]:font-bold">
             <th>Producto</th>
             <th>Tiendas</th>
+            <th>Total</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -75,6 +76,9 @@
             </td>
             <td class="tiendas-cantidades" style="visibility: hidden;">
               <div class="tiendas-grid" id="tiendas-grid-0"></div>
+            </td>
+            <td class="producto-total" style="visibility: hidden;">
+              <span class="font-bold text-lg">0</span>
             </td>
             <td>
               <button type="button" class="btn-sm-icon-destructive" onclick="removerProductoPedido(this)"><svg
@@ -91,6 +95,16 @@
             </td>
           </tr>
         </tbody>
+        <tfoot>
+          <tr class="font-bold bg-gray-100">
+            <td class="text-right pr-4">TOTALES POR TIENDA</td>
+            <td>
+              <div id="tiendas-totales-grid"></div>
+            </td>
+            <td id="gran-total">0</td>
+            <td></td>
+          </tr>
+        </tfoot>
       </table>
     </div>
     <div class="flex justify-between mt-4">
