@@ -1,25 +1,39 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <title>Control de Panadería</title>
   <link rel="stylesheet" href="assets/css/styles.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/basecoat.cdn.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/js/all.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/js/all.min.js" defer></script>
 
 </head>
 
 <body>
   <!-- Header de autenticación -->
-  <div id="auth-header" class="bg-black text-white p-4 mb-8 flex flex-wrap justify-between items-center gap-2">
-    <div class="flex items-center flex-wrap gap-2">
-      <span class="flex items-center">👤 <span id="user-info" class="ml-1">Cargando...</span></span>
+  <div id="auth-header" class="bg-black text-white p-4 mb-8 flex justify-between items-center gap-2">
+    <div class="w-full">
+      <h1>Cafe Cauca</h1>
       <!-- Aquí se insertará la notificación si es necesaria -->
     </div>
-    <div>
-      <button class="btn-destructive" onclick="logout()">
-        Cerrar Sesión
+    <div class="w-full flex justify-end items-center gap-x-2">
+      <div>
+        <span class="flex items-center"><img class="w-8 h-8 rounded-full"
+            src="https://basecoatui.com/assets/images/avatar-2.png" alt=""><span id="user-info"
+            class="ml-1">Cargando...</span></span>
+        <!-- Aquí se insertará la notificación si es necesaria -->
+      </div>
+      <span>Salir</span>
+      <button class="btn-sm-icon-destructive" onclick="logout()">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g fill="currentColor">
+            <path d="M12 3.25a.75.75 0 0 1 0 1.5 7.25 7.25 0 0 0 0 14.5.75.75 0 0 1 0 1.5 8.75 8.75 0 1 1 0-17.5" />
+            <path
+              d="M16.47 9.53a.75.75 0 0 1 1.06-1.06l3 3c.3.3.3.77 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H10a.75.75 0 0 1 0-1.5h8.19z" />
+          </g>
+        </svg>
       </button>
     </div>
   </div>
@@ -29,39 +43,61 @@
   <h2>Registrar Pedido</h2>
   <form id="form-pedido">
     <div class="flex justify-start gap-x-8">
-    <div class="grid gap-3">
-      <label class="label">Fecha Pedido</label>
-      <input class="input" type="text" name="fecha_pedido" readonly class="fecha-auto"></label>
+      <div class="grid gap-3">
+        <label class="label">Fecha Pedido</label>
+        <input class="input" type="text" name="fecha_pedido" readonly class="fecha-auto"></label>
       </div>
-    <div class="grid gap-3">
-      <label class="label">Fecha Requerida</label>
-      <input class="input" type="date" name="fecha_requerida" required></label>
+      <div class="grid gap-3">
+        <label class="label">Fecha Requerida</label>
+        <input class="input" type="date" name="fecha_requerida" required></label>
+      </div>
     </div>
-    </div>
-    
+
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado-pedido">
 
     <h3>Productos y Tiendas</h3>
-    <div id="productos-tiendas-container">
-      <div class="producto-tienda-item">
-        <div class="form-row">
-          <label>Producto 
-            <select class="producto-select select" onchange="actualizarTiendasProducto(this)">
-              <option value="">-- Seleccionar producto --</option>
-            </select>
-          </label>
-        </div>
-        <div class="tiendas-cantidades" style="display: none;">
-          <h4>Cantidades por tienda:</h4>
-          <div class="tiendas-grid" id="tiendas-grid-0"></div>
-          <button type="button" class="btn-destructive" onclick="removerProductoPedido(this)">Remover Producto</button>
-        </div>
-      </div>
+    <div class="table-container border border-gray-200 p-4 rounded-lg">
+      <table class="pedidos-table table">
+        <thead>
+          <tr class="[&_th]:font-bold">
+            <th>Producto</th>
+            <th>Tiendas</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="productos-tiendas-container">
+          <tr class="producto-tienda-item">
+            <td>
+              <select class="producto-select select" onchange="actualizarTiendasProducto(this)">
+                <option value="">-- Seleccionar producto --</option>
+              </select>
+            </td>
+            <td class="tiendas-cantidades" style="visibility: hidden;">
+              <div class="tiendas-grid" id="tiendas-grid-0"></div>
+            </td>
+            <td>
+              <button type="button" class="btn-sm-icon-destructive" onclick="removerProductoPedido(this)"><svg
+                  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g fill="currentColor">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                      d="M10.3 2.25h3.4q.3 0 .57.03c.7.11 1.32.55 1.64 1.18q.13.24.22.54l.1.34.04.09a1.25 1.25 0 0 0 1.23.82h3a.75.75 0 0 1 0 1.5h-17a.75.75 0 0 1 0-1.5h3.09a1.25 1.25 0 0 0 1.17-.91L7.87 4q.1-.3.22-.54c.32-.63.93-1.07 1.64-1.18q.25-.04.58-.03m-1.3 3 .18-.43.1-.3.14-.37a.8.8 0 0 1 .54-.4h4.08q.36.09.54.4c.03.04.05.1.14.37l.1.3.04.12q.05.15.13.31z" />
+                    <path
+                      d="M5.92 8.45a.75.75 0 1 0-1.5.1l.46 6.95c.09 1.28.16 2.32.32 3.13.17.85.45 1.55 1.04 2.1.6.56 1.32.8 2.17.91.83.11 1.87.11 3.15.11h.88c1.29 0 2.32 0 3.15-.1a3.7 3.7 0 0 0 2.17-.91c.59-.55.87-1.26 1.04-2.1.16-.82.23-1.86.32-3.14l.46-6.95a.75.75 0 0 0-1.5-.1l-.45 6.9a26 26 0 0 1-.3 3c-.14.67-.33 1.04-.6 1.3-.27.25-.65.41-1.34.5-.71.1-1.65.1-3 .1h-.78c-1.35 0-2.29 0-3-.1-.7-.09-1.07-.25-1.34-.5-.27-.26-.46-.62-.6-1.3-.14-.72-.2-1.65-.3-3z" />
+                    <path
+                      d="M9.43 10.25c.4-.04.78.26.82.68l.5 5a.75.75 0 0 1-1.5.14l-.5-5a.75.75 0 0 1 .68-.82m5.14 0c.42.04.72.41.68.82l-.5 5a.75.75 0 0 1-1.5-.14l.5-5a.75.75 0 0 1 .82-.68" />
+                  </g>
+                </svg></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flex justify-between mt-4">
+      <button type="button" class="btn-outline" onclick="agregarProductoPedido()">+ Agregar Producto</button>
+      <button type="submit" class="btn">Registrar Pedido</button>
     </div>
 
-    <button type="button" class="btn-outline" onclick="agregarProductoPedido()">+ Agregar Producto</button>
-    <button type="submit" class="btn">Registrar Pedido</button>
     <div class="endpoint">POST /pedidos</div>
   </form>
   <div id="result-pedido" class="result"></div>
@@ -73,21 +109,22 @@
       <input class="input" type="text" name="fecha" readonly class="fecha-auto">
       <input type="hidden" name="lote_id" id="input-lote-id" required>
     </div>
-    
+
     <div>
       <h3>Seleccionar Lote</h3>
       <div id="lotes-cards-container" class="lotes-cards-container"></div>
     </div>
-    
+
     <div id="productos-lote-container" style="display: none;">
       <h3>Productos del Lote</h3>
       <div id="productos-lote-lista"></div>
     </div>
-    
+
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado">
-    
-    <label>Observaciones <textarea class="textarea" name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
+
+    <label>Observaciones <textarea class="textarea" name="observaciones"
+        placeholder="Observaciones adicionales (opcional)"></textarea></label>
     <button type="submit" class="btn">Registrar Producción</button>
     <div class="endpoint">POST /produccion</div>
   </form>
@@ -100,12 +137,12 @@
       <input class="input" type="text" name="fecha" readonly class="fecha-auto">
       <input type="hidden" name="lote_id" id="input-lote-id-despacho" required>
     </div>
-    
+
     <div>
       <h3>Seleccionar Lote</h3>
       <div id="lotes-despacho-cards-container" class="lotes-cards-container"></div>
     </div>
-    
+
     <div id="distribucion-despacho-container" style="display: none;">
       <h3>Distribución Automática</h3>
       <p style="color: #666; font-size: 0.9em; margin-bottom: 1em;">
@@ -113,11 +150,12 @@
       </p>
       <div id="distribucion-despacho-lista"></div>
     </div>
-    
+
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado-despacho">
-    
-    <label>Observaciones <textarea class="textarea" name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
+
+    <label>Observaciones <textarea class="textarea" name="observaciones"
+        placeholder="Observaciones adicionales (opcional)"></textarea></label>
     <button class="btn" type="submit">Despachar Automáticamente</button>
     <div class="endpoint">POST /despacho (distribución automática)</div>
   </form>
@@ -129,7 +167,7 @@
       <label class="label">Fecha</label>
       <input class="input" type="text" name="fecha" readonly class="fecha-auto">
     </div>
-    
+
     <div class="form-row">
       <label>Lote</label>
       <div id="lotes-recepcion-container" class="card-container">
@@ -141,12 +179,12 @@
       </div>
       <input type="hidden" name="lote_id" id="lote-recepcion-selected">
     </div>
-    
+
     <div id="tiendas-lote-container" style="display: none;">
       <input type="hidden" name="tienda" id="tienda-usuario-actual">
       <!-- La tienda se detectará automáticamente según el usuario -->
     </div>
-    
+
     <div id="despachos-tienda-container" style="display: none;">
       <h3>Items a Recibir por la Tienda</h3>
       <p style="color: #666; font-size: 0.9em; margin-bottom: 1em;">
@@ -154,11 +192,12 @@
       </p>
       <div id="despachos-tienda-lista"></div>
     </div>
-    
+
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado-recepcion">
-    
-    <label>Observaciones <textarea class="textarea" name="observaciones" placeholder="Observaciones adicionales (opcional)"></textarea></label>
+
+    <label>Observaciones <textarea class="textarea" name="observaciones"
+        placeholder="Observaciones adicionales (opcional)"></textarea></label>
     <button class="btn" type="submit">Registrar Recepción de Tienda</button>
     <div class="endpoint">POST /recepcion (por tienda individual)</div>
   </form>
@@ -175,7 +214,7 @@
 
   <h2>Trazabilidad</h2>
   <form id="form-traza">
-    <label>Lote 
+    <label>Lote
       <select class="select w-[180px]" name="lote" id="select-lote-traza">
         <option value="">-- Seleccionar lote --</option>
       </select>
@@ -187,13 +226,13 @@
 
   <h2>Gestión de Datos Maestros</h2>
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2em; margin-top: 1em;">
-    
+
     <div>
       <h3>Productos</h3>
       <form id="form-producto">
         <div class="grid gap-3">
-            <label class="label">Nombre del Producto</label>
-            <input class="input" type="text" name="nombre" required placeholder="Ej: Pan Integral">
+          <label class="label">Nombre del Producto</label>
+          <input class="input" type="text" name="nombre" required placeholder="Ej: Pan Integral">
         </div>
         <button class="btn" type="submit">Agregar Producto</button>
         <div class="endpoint">POST /maestros/producto</div>
@@ -205,8 +244,9 @@
       <h3>Empleados</h3>
       <form id="form-empleado-maestro">
         <div class="grid gap-3">
-            <label class="label">DNI</label>
-            <input class="input" type="text" name="dni" pattern="[0-9]{7,8}" title="Solo números, 7-8 dígitos" required placeholder="12345678">
+          <label class="label">DNI</label>
+          <input class="input" type="text" name="dni" pattern="[0-9]{7,8}" title="Solo números, 7-8 dígitos" required
+            placeholder="12345678">
         </div>
         <div class="grid gap-3">
           <label class="label">Nombre del Empleado</label>
@@ -245,11 +285,11 @@
 
   <h2>Administración de Roles</h2>
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-top: 1em;">
-    
+
     <!-- Gestión de Roles -->
     <div>
       <h3>Gestión de Roles</h3>
-      
+
       <!-- Crear nuevo rol -->
       <form id="form-nuevo-rol">
         <div class="grid gap-3">
@@ -264,7 +304,7 @@
         <div class="endpoint">POST /roles</div>
       </form>
       <div id="result-nuevo-rol" class="result"></div>
-      
+
       <!-- Listar roles -->
       <div style="margin-top: 2em;">
         <button class="btn-outline" onclick="listarRoles()">Ver Roles</button>
@@ -272,11 +312,11 @@
       </div>
       <div id="result-roles" class="result"></div>
     </div>
-    
+
     <!-- Gestión de Permisos -->
     <div>
       <h3>Gestión de Permisos</h3>
-      
+
       <!-- Crear nuevo permiso -->
       <form id="form-nuevo-permiso">
         <div class="grid gap-3">
@@ -292,16 +332,16 @@
             <option value="PUT">PUT</option>
             <option value="DELETE">DELETE</option>
           </select>
-        </label>
-        <div class="grid gap-3">
-          <label class="label">Descripción</label>
-          <input class="input" type="text" name="descripcion" required>
-        </div>
-        <button class="btn" type="submit">Crear Permiso</button>
-        <div class="endpoint">POST /permisos</div>
+          </label>
+          <div class="grid gap-3">
+            <label class="label">Descripción</label>
+            <input class="input" type="text" name="descripcion" required>
+          </div>
+          <button class="btn" type="submit">Crear Permiso</button>
+          <div class="endpoint">POST /permisos</div>
       </form>
       <div id="result-nuevo-permiso" class="result"></div>
-      
+
       <!-- Listar permisos -->
       <div style="margin-top: 2em;">
         <button class="btn-outline" onclick="listarPermisos()">Ver Permisos</button>
@@ -310,7 +350,7 @@
       <div id="result-permisos" class="result"></div>
     </div>
   </div>
-  
+
   <!-- Asignación de Permisos a Roles -->
   <div style="margin-top: 2em;">
     <h3>Asignar Permisos a Roles</h3>
@@ -322,17 +362,18 @@
         </div>
         <button class="btn-outline" type="button" onclick="cargarPermisosDelRol()">Ver Permisos Actuales</button>
       </div>
-      
-      <div id="permisos-disponibles" style="margin-top: 1em; max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 1em; background: #f9f9f9;">
+
+      <div id="permisos-disponibles"
+        style="margin-top: 1em; max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 1em; background: #f9f9f9;">
         <p>Selecciona un rol para ver los permisos disponibles</p>
       </div>
-      
+
       <button class="btn" type="submit">Asignar Permisos Seleccionados</button>
       <div class="endpoint">POST /roles/{id}/permisos</div>
     </form>
     <div id="result-asignar-permisos" class="result"></div>
   </div>
-  
+
   <!-- Verificador de Permisos -->
   <div style="margin-top: 2em;">
     <h3>Verificar Permisos</h3>
@@ -354,17 +395,17 @@
             <option value="PUT">PUT</option>
             <option value="DELETE">DELETE</option>
           </select>
-        </label>
-        <button class="btn" type="submit">Verificar</button>
-      </div>
-      <!-- <div class="endpoint">GET /roles/{nombre}/permiso</div> -->
+          </label>
+          <button class="btn" type="submit">Verificar</button>
+        </div>
+        <!-- <div class="endpoint">GET /roles/{nombre}/permiso</div> -->
     </form>
     <div id="result-verificar-permiso" class="result"></div>
   </div>
 
   <h2>Gestión de Usuarios</h2>
   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-top: 1em;">
-    
+
     <!-- Crear Usuario -->
     <div>
       <h3>Crear Usuario</h3>
@@ -384,7 +425,7 @@
           <select class="select" name="rol_id" id="select-rol-usuario" required onchange="mostrarCampoTienda()">
             <option value="">-- Seleccionar rol --</option>
           </select>
-        </div> 
+        </div>
 
         <div id="campo-tienda-usuario" style="display: none;">
           <label class="label">Tienda</label>
@@ -403,7 +444,7 @@
       </form>
       <div id="result-nuevo-usuario" class="result"></div>
     </div>
-    
+
     <!-- Listar Usuarios -->
     <div>
       <h3>Usuarios Registrados</h3>
@@ -412,7 +453,7 @@
       <div id="result-usuarios" class="result"></div>
     </div>
   </div>
-  
+
   <!-- Editar Usuario -->
   <div style="margin-top: 2em;">
     <h3>Editar Usuario</h3>
@@ -420,29 +461,29 @@
       <input type="hidden" name="id">
       <div class="grid gap-3">
         <label class="label">Empleado </label>
-          <select class="select" name="empleado_id" id="select-empleado-editar" required>
-            <option value="">-- Seleccionar empleado --</option>
-          </select>
+        <select class="select" name="empleado_id" id="select-empleado-editar" required>
+          <option value="">-- Seleccionar empleado --</option>
+        </select>
         <div class="grid gap-3">
-        <label class="label">Nuevo Password (opcional)</label>
-        <input class="input" type="password" name="password" placeholder="Dejar vacío para mantener el actual">
+          <label class="label">Nuevo Password (opcional)</label>
+          <input class="input" type="password" name="password" placeholder="Dejar vacío para mantener el actual">
         </div>
       </div>
       <div class="grid gap-3">
         <label class="label">Rol </label>
-          <select class="select" name="rol_id" id="select-rol-editar" required onchange="mostrarCampoTiendaEditar()">
-            <option value="">-- Seleccionar rol --</option>
-          </select>
-        </div>
-        <div class="grid gap-3">
-          <label class="label">Estado </label>
-          <select class="select" name="activo" required>
-            <option value="1">Activo</option>
-            <option value="0">Inactivo</option>
-          </select>
-        </div>
+        <select class="select" name="rol_id" id="select-rol-editar" required onchange="mostrarCampoTiendaEditar()">
+          <option value="">-- Seleccionar rol --</option>
+        </select>
+      </div>
+      <div class="grid gap-3">
+        <label class="label">Estado </label>
+        <select class="select" name="activo" required>
+          <option value="1">Activo</option>
+          <option value="0">Inactivo</option>
+        </select>
+      </div>
       <div id="campo-tienda-usuario-editar" style="display: none; margin-top: 0.5em;">
-        <label>Tienda 
+        <label>Tienda
           <select name="tienda_id" id="select-tienda-editar">
             <option value="">-- Seleccionar tienda --</option>
           </select>
@@ -470,11 +511,11 @@
   <script src="assets/js/maestros.js"></script>
   <script src="assets/js/roles.js"></script>
   <script src="assets/js/usuarios.js"></script>
-  
+
   <!-- Sistema de autenticación -->
   <script>
     let currentUser = null;
-    
+
     // Verificar autenticación al cargar la página
     async function checkAuth() {
       try {
@@ -483,29 +524,29 @@
           window.location.href = '/login.html';
           return;
         }
-        
+
         const result = await response.json();
         if (!result.authenticated) {
           window.location.href = '/login.html';
           return;
         }
-        
+
         // Usuario autenticado
         currentUser = result.usuario;
         updateUserInfo();
-        
+
       } catch (error) {
         console.error('Error verificando autenticación:', error);
         window.location.href = '/login.html';
       }
     }
-    
+
     // Actualizar información del usuario en el header
     function updateUserInfo() {
       const userInfo = document.getElementById('user-info');
       if (currentUser) {
         userInfo.textContent = `${currentUser.nombre} (${currentUser.rol})`;
-        
+
         // Establecer automáticamente el nombre del empleado en todos los formularios
         if (currentUser.nombre) {
           // Establecer el valor en los campos ocultos de empleado
@@ -513,7 +554,7 @@
             console.log(`Actualizando campo empleado: ${select.id} con valor ${currentUser.nombre}`);
             select.value = currentUser.nombre;
           });
-          
+
           // Establecer explícitamente el valor del campo oculto de producción
           if (document.getElementById('select-empleado')) {
             document.getElementById('select-empleado').value = currentUser.nombre;
@@ -522,7 +563,7 @@
         }
       }
     }
-    
+
     // Función de logout
     async function logout() {
       try {
@@ -533,9 +574,10 @@
         window.location.href = '/login.html';
       }
     }
-    
+
     // Verificar autenticación al cargar
     checkAuth();
   </script>
 </body>
+
 </html>

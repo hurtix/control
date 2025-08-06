@@ -5,49 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Control de Panadería</title>
   <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/basecoat.cdn.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/js/all.min.js" defer></script>
   <style>
-    .login-container {
-      max-width: 400px;
-      margin: 5em auto;
-      padding: 2em;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: #f9f9f9;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    .login-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1em;
-    }
-    
-    .login-form input {
-      padding: 0.8em;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1em;
-    }
-    
-    .login-btn {
-      background: #007bff;
-      color: white;
-      padding: 0.8em;
-      border: none;
-      border-radius: 4px;
-      font-size: 1em;
-      cursor: pointer;
-    }
-    
-    .login-btn:hover {
-      background: #0056b3;
-    }
-    
-    .login-btn:disabled {
-      background: #6c757d;
-      cursor: not-allowed;
-    }
-    
     .error-message {
       color: #dc3545;
       text-align: center;
@@ -60,27 +21,26 @@
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <h1 style="text-align: center; margin-bottom: 1.5em; color: #333;">
-      🥖 Control de Panadería
-    </h1>
-    
-    <form id="form-login" class="login-form">
-      <h2 style="text-align: center; margin-bottom: 1em;">Iniciar Sesión</h2>
+  <div class="max-w-[400px] mx-auto flex flex-col justify-center items-center h-screen">
+    <div class="border border-gray-200 p-8 rounded-lg shadow-lg flex flex-col gap-y-4">
+    <h1 class="text-center">Imperium</h1>
+
+    <form id="form-login" class="flex flex-col gap-y-4">
       
-      <label>
+      <label class="label">
         Usuario
-        <select name="usuario_id" id="select-usuario" required>
+        </label>
+        <select class="select w-full" name="usuario_id" id="select-usuario" required>
           <option value="">-- Seleccionar usuario --</option>
         </select>
-      </label>
       
-      <label>
-        Contraseña
-        <input type="password" name="password" required placeholder="Ingresa tu contraseña">
-      </label>
       
-      <button type="submit" class="login-btn" id="btn-login">
+      <label class="label">
+        Contraseña</label>
+        <input class="input" type="password" name="password" required placeholder="Ingresa tu contraseña">
+      
+      
+      <button type="submit" class="btn" id="btn-login">
         <span id="btn-text">Ingresar</span>
         <span id="btn-loading" style="display: none;">Verificando...</span>
       </button>
@@ -95,7 +55,7 @@
       <p>3. Crear usuario en "Gestión de Usuarios"</p>
     </div>
   </div>
-
+</div>
   <script>
     // Cargar lista de usuarios al cargar la página
     async function cargarUsuarios() {

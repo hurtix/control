@@ -1,6 +1,9 @@
 :root {
 
 }
+body {
+  margin: 0 2em;
+}
 /* body { 
   font-family: Arial, sans-serif; 
   margin: 2em; 
@@ -135,21 +138,21 @@ button:hover {
   margin-top: 0.5em; 
 }
 
-.producto-tienda-item { 
+/* .producto-tienda-item { 
   background: #f9f9f9; 
   padding: 1em; 
   margin: 0.5em 0; 
   border-radius: 5px; 
   border: 1px solid #ddd; 
-}
+} */
 
-.tiendas-cantidades { 
+/* .tiendas-cantidades { 
   background: #f0f8ff; 
   padding: 1em; 
   margin-top: 1em; 
   border-radius: 3px; 
   border: 1px solid #b0d4f1; 
-}
+} */
 
 .tiendas-grid { 
   display: grid; 
@@ -158,7 +161,7 @@ button:hover {
   margin-top: 0.5em; 
 }
 
-.tienda-cantidad { 
+/* .tienda-cantidad { 
   display: flex; 
   align-items: center; 
   gap: 0.5em; 
@@ -172,7 +175,7 @@ button:hover {
 
 .tienda-cantidad input { 
   flex: 1; 
-}
+} */
 
 /* Estilos para tarjetas de lotes */
 .lotes-cards-container {
@@ -221,6 +224,47 @@ button:hover {
 .lote-card input[type="radio"] {
   display: none;
 }
+
+/* Estilos para la tabla de pedidos */
+/* .table-container {
+  margin: 1rem 0;
+  overflow-x: auto;
+}
+
+.pedidos-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.pedidos-table thead th {
+  background-color: #f2f2f2;
+  padding: 0.75rem;
+  border-bottom: 2px solid #ddd;
+  text-align: left;
+}
+
+.pedidos-table tbody tr {
+  border-bottom: 1px solid #ddd;
+}
+
+.pedidos-table td {
+  padding: 0.75rem;
+  vertical-align: middle;
+}
+
+.pedidos-table td:first-child {
+  width: 30%;
+}
+
+.pedidos-table td:nth-child(2) {
+  width: 60%;
+}
+
+.pedidos-table td:last-child {
+  width: 10%;
+  text-align: center;
+} */
 
 /* Estilos para el modal de gestión de usuarios de tienda */
 .modal-usuarios-tienda {
