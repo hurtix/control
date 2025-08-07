@@ -160,6 +160,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Cargar lotes pendientes
   await cargarLotesPendientes();
   
+  // Cargar lotes producidos para despacho
+  await cargarLotesProducidos();
+  
   // Cargar lotes para recepción
   await cargarLotesParaRecepcion();
   

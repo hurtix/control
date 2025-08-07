@@ -43,6 +43,23 @@ input[type="number"] {
   color: green;
 }
 
+/* Estado de producción */
+.estado-produccion {
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+}
+
+.deficit {
+  color: red;
+  font-weight: bold;
+}
+
+.superavit {
+  color: green;
+  font-weight: bold;
+}
+
 form, .result { 
   margin-bottom: 2em; 
 }

@@ -27,22 +27,27 @@ const actualizarProductoLote = (loteId, productosData) => {
         const cantidad = productos[producto];
         const div = document.createElement('div');
         div.className = 'gap-2 flex flex-row items-center justify-between rounded-lg border p-4 shadow-xs mb-3';
+        div.dataset.producto = producto;
+        div.dataset.nombreProducto = producto;
         div.innerHTML = `
           <div class="flex flex-col gap-1 text-nowrap">
             <label class="leading-normal font-bold text-xl">${producto}</label>
             <div class="flex gap-x-8">
             <div class="flex flex-col">
-            <span class="label">Qty solicitada</span>
-            <span class="font-bold text-lg pt-1">${cantidad}</span>
+            <span class="label mt-1">Qty solicitada <span class="font-bold text-lg">${cantidad}</span></span>
+            
             </div>
-            <div><label class="label mb-1">Qty producida</label>
+            <div class="flex items-center gap-x-4"><label class="label">Qty producida</label>
               <input type="number" 
                     class="cantidad-producida-input input w-[100px] text-lg" 
                     data-producto="${producto}"
+                    data-cantidad-solicitada="${cantidad}"
                     min="0" 
                     max="${cantidad * 1.2}"
                     placeholder=""
+                    oninput="actualizarEstadoProduccion(this)"
                     required>
+                    <div class="estado-produccion mt-1"></div>
                     </div>
             </div>
           </div>
@@ -71,9 +76,15 @@ const actualizarProductoLote = (loteId, productosData) => {
             checkbox.checked = false;
           }
           
+          // Actualizar el estado de producción (déficit/superávit)
+          actualizarEstadoProduccion(this);
+          
           // Verificar todos los productos
           verificarProductosValidados();
         });
+        
+        // Inicializar el estado de producción para cada input
+        actualizarEstadoProduccion(input);
       });
       
     } catch (error) {
@@ -83,6 +94,29 @@ const actualizarProductoLote = (loteId, productosData) => {
   } else {
     container.style.display = 'none';
     lista.innerHTML = '';
+  }
+};
+
+// Función para actualizar el estado de producción (déficit o superávit)
+const actualizarEstadoProduccion = (input) => {
+  const cantidadSolicitada = parseInt(input.dataset.cantidadSolicitada);
+  const cantidadProducida = parseInt(input.value);
+  const estadoElement = input.nextElementSibling;
+  
+  // Limpiar el estado anterior
+  estadoElement.innerHTML = '';
+  estadoElement.classList.remove('deficit', 'superavit');
+  
+  if (!isNaN(cantidadProducida)) {
+    if (cantidadProducida < cantidadSolicitada) {
+      const faltante = cantidadSolicitada - cantidadProducida;
+      estadoElement.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block w-4 h-4 mr-1"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.47 6.47c.3-.3.77-.3 1.06 0l3.92 3.9c.51.51.84.84 1.12 1.05.26.2.38.22.46.22s.2-.02.47-.22.6-.54 1.12-1.05l.28-.27q.7-.72 1.24-1.15c.39-.3.83-.52 1.37-.52.53 0 .97.22 1.36.52q.55.43 1.24 1.15l6.14 6.1v-3.75a.75.75 0 0 1 1.5 0V18c0 .41-.34.75-.75.75h-5.58a.75.75 0 1 1 0-1.5h3.76L14.1 11.2c-.51-.51-.85-.84-1.12-1.05-.26-.2-.38-.22-.46-.22s-.2.02-.47.22-.6.54-1.12 1.05l-.28.27q-.69.72-1.24 1.15c-.39.3-.83.52-1.37.52-.53 0-.97-.22-1.37-.52q-.54-.43-1.24-1.15l-.03-.04-3.92-3.9a.75.75 0 0 1 0-1.06" fill="currentColor"/></svg>Déficit ${faltante} unidades`;
+      estadoElement.classList.add('deficit');
+    } else if (cantidadProducida > cantidadSolicitada) {
+      const sobrante = cantidadProducida - cantidadSolicitada;
+      estadoElement.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block w-4 h-4 mr-1"><path fill-rule="evenodd" clip-rule="evenodd" d="M15.67 7c0-.41.33-.75.75-.75H22c.41 0 .75.34.75.75v5.55a.75.75 0 0 1-1.5 0V8.8l-6.14 6.1q-.69.72-1.24 1.15c-.39.3-.83.52-1.36.52s-.98-.22-1.37-.52q-.54-.43-1.24-1.15l-.28-.27c-.51-.51-.85-.84-1.12-1.05-.26-.2-.38-.22-.47-.22s-.2.02-.46.22c-.28.2-.6.54-1.12 1.05l-3.92 3.9a.75.75 0 0 1-1.06-1.06l3.95-3.94q.7-.72 1.24-1.15c.4-.3.84-.52 1.37-.52s.98.22 1.37.52q.55.43 1.24 1.15l.28.27c.51.51.85.84 1.12 1.05.26.2.38.22.47.22s.2-.02.46-.22c.27-.2.6-.54 1.12-1.05l6.1-6.05h-3.77a.75.75 0 0 1-.75-.75" fill="currentColor"/></svg>Superávit ${sobrante} unidades`;
+      estadoElement.classList.add('superavit');
+    }
   }
 };
 

@@ -100,7 +100,9 @@ const cargarLotesPendientes = async () => {
 
 const cargarLotesProducidos = async () => {
   try {
+    console.log('Iniciando carga de lotes producidos...');
     const lotes = await api('/lotes/producidos');
+    console.log('Lotes producidos obtenidos:', lotes);
     const lotesContainer = document.getElementById('lotes-despacho-cards-container');
     
     if (lotesContainer) {
