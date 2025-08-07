@@ -171,7 +171,8 @@ const actualizarDistribucionDespacho = async (loteId) => {
         
         // === TABLA 1: RESUMEN GENERAL DE PRODUCTOS ===
         const tablaGeneral = document.createElement('div');
-        tablaGeneral.style.cssText = 'background: #f8f9fa; padding: 1em; border-radius: 5px; border: 1px solid #dee2e6; margin-bottom: 1.5em;';
+        // tablaGeneral.style.cssText = 'background: #f8f9fa; padding: 1em; border-radius: 5px; border: 1px solid #dee2e6; margin-bottom: 1.5em;';
+        tablaGeneral.className = 'bg-white p-4 rounded-lg shadow-sm mb-4';
         
         // Agrupar por producto para la tabla general
         const productosSummary = {};
@@ -186,43 +187,43 @@ const actualizarDistribucionDespacho = async (loteId) => {
           productosSummary[item.producto].cantidad_solicitada += item.cantidad_solicitada;
         });
         
-        let htmlGeneral = '<h4 style="color: #495057; margin: 0 0 1em 0;">📊 Resumen General por Producto</h4>';
-        htmlGeneral += '<table style="width: 100%; border-collapse: collapse;">';
-        htmlGeneral += '<thead><tr style="background: #007cba; color: white;">';
-        htmlGeneral += '<th style="border: 1px solid #ccc; padding: 8px;">Producto</th>';
-        htmlGeneral += '<th style="border: 1px solid #ccc; padding: 8px;">Total Solicitado</th>';
-        htmlGeneral += '<th style="border: 1px solid #ccc; padding: 8px;">Total Producido</th>';
-        htmlGeneral += '<th style="border: 1px solid #ccc; padding: 8px;">Cantidad a Despachar</th>';
-        htmlGeneral += '<th style="border: 1px solid #ccc; padding: 8px;">Estado</th>';
+        let htmlGeneral = '<h4>Resumen General por Producto</h4>';
+        htmlGeneral += '<table class="table bg-white">';
+        htmlGeneral += '<thead class="bg-black [&_th]:text-white"><tr>';
+        htmlGeneral += '<th>Producto</th>';
+        htmlGeneral += '<th>Total Solicitado</th>';
+        htmlGeneral += '<th>Total Producido</th>';
+        htmlGeneral += '<th>Cantidad a Despachar</th>';
+        htmlGeneral += '<th>Estado</th>';
         htmlGeneral += '</tr></thead><tbody>';
         
         Object.values(productosSummary).forEach(item => {
           const producidoMenor = item.cantidad_producida < item.cantidad_solicitada;
           const statusColor = producidoMenor ? '#dc3545' : '#28a745';
-          const statusText = producidoMenor ? '⚠️ Déficit' : '✅ Completo';
+          const statusText = producidoMenor ? 'Déficit' : 'Completo';
           
           htmlGeneral += '<tr>';
-          htmlGeneral += `<td style="border: 1px solid #ccc; padding: 8px;"><strong>${item.producto}</strong></td>`;
-          htmlGeneral += `<td style="border: 1px solid #ccc; padding: 8px;">${item.cantidad_solicitada}</td>`;
-          htmlGeneral += `<td style="border: 1px solid #ccc; padding: 8px;">${item.cantidad_producida}</td>`;
-          htmlGeneral += `<td style="border: 1px solid #ccc; padding: 8px;">`;
-          htmlGeneral += `<input type="number" class="cantidad-despacho-input" data-producto="${item.producto}" `;
+          htmlGeneral += `<td><strong>${item.producto}</strong></td>`;
+          htmlGeneral += `<td>${item.cantidad_solicitada}</td>`;
+          htmlGeneral += `<td>${item.cantidad_producida}</td>`;
+          htmlGeneral += `<td>`;
+          htmlGeneral += `<input type="number" class="cantidad-despacho-input input" data-producto="${item.producto}" `;
           htmlGeneral += `value="${item.cantidad_producida}" min="0" max="${item.cantidad_producida}" `;
-          htmlGeneral += `style="width: 80px; padding: 4px; border: 1px solid #ccc; border-radius: 3px;" `;
+          // htmlGeneral += `style="width: 80px; padding: 4px; border: 1px solid #ccc; border-radius: 3px;" `;
           htmlGeneral += `onchange="validarCantidadDespacho(this, ${item.cantidad_producida})">`;
           htmlGeneral += `</td>`;
-          htmlGeneral += `<td style="border: 1px solid #ccc; padding: 8px; color: ${statusColor}; font-weight: bold;">${statusText}</td>`;
+          htmlGeneral += `<td style="color: ${statusColor};">${statusText}</td>`;
           htmlGeneral += '</tr>';
         });
         
         htmlGeneral += '</tbody></table>';
-        htmlGeneral += '<p style="color: #6c757d; font-size: 0.9em; margin: 0.5em 0 0 0;">💡 Ajuste las cantidades a despachar según disponibilidad. No puede exceder lo producido.</p>';
+        htmlGeneral += '<div class="alert mt-4">  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg><h6>Ajuste las cantidades a despachar según disponibilidad. No puede exceder lo producido.</h6></div>';
         tablaGeneral.innerHTML = htmlGeneral;
         lista.appendChild(tablaGeneral);
         
         // === TABLA 2: MATRIZ DE DISTRIBUCIÓN POR TIENDAS ===
         const tablaDistribucion = document.createElement('div');
-        tablaDistribucion.style.cssText = 'background: #f0f8ff; padding: 1em; border-radius: 5px; border: 1px solid #b0d4f1;';
+        tablaDistribucion.className = 'bg-white p-4 rounded-lg shadow-sm mb-4';
         
         // Obtener lista única de productos y tiendas
         const productos = [...new Set(distribucion.distribucion_calculada.map(item => item.producto))];
@@ -241,14 +242,14 @@ const actualizarDistribucionDespacho = async (loteId) => {
           };
         });
         
-        let htmlDistribucion = '<h4 style="color: #0056b3; margin: 0 0 1em 0;">🚚 Distribución por Tiendas</h4>';
-        htmlDistribucion += '<table style="width: 100%; border-collapse: collapse;">';
-        htmlDistribucion += '<thead><tr style="background: #0056b3; color: white;">';
-        htmlDistribucion += '<th style="border: 1px solid #ccc; padding: 8px;">Producto</th>';
+        let htmlDistribucion = '<h4>Distribución por Tiendas</h4>';
+        htmlDistribucion += '<table class="table bg-white">';
+        htmlDistribucion += '<thead class="bg-black [&_th]:text-white"><tr>';
+        htmlDistribucion += '<th>Producto</th>';
         
         // Columnas de tiendas
         tiendas.forEach(tienda => {
-          htmlDistribucion += `<th style="border: 1px solid #ccc; padding: 8px; text-align: center;">${tienda}</th>`;
+          htmlDistribucion += `<th>${tienda}</th>`;
         });
         
         htmlDistribucion += '</tr></thead><tbody>';
@@ -256,20 +257,20 @@ const actualizarDistribucionDespacho = async (loteId) => {
         // Filas de productos
         productos.forEach(producto => {
           htmlDistribucion += '<tr>';
-          htmlDistribucion += `<td style="border: 1px solid #ccc; padding: 8px; font-weight: bold; background: #e9ecef;">${producto}</td>`;
+          htmlDistribucion += `<td>${producto}</td>`;
           
           tiendas.forEach(tienda => {
             const datos = matriz[producto] && matriz[producto][tienda];
             if (datos) {
-              htmlDistribucion += `<td style="border: 1px solid #ccc; padding: 8px; text-align: center;">`;
-              htmlDistribucion += `<div style="font-size: 0.9em;">`;
+              htmlDistribucion += `<td>`;
+              htmlDistribucion += `<div>`;
               htmlDistribucion += `<div><strong>${datos.cantidad_a_despachar}</strong> unidades</div>`;
-              htmlDistribucion += `<div style="color: #6c757d; font-size: 0.8em;">(${datos.proporcion}% del total)</div>`;
-              htmlDistribucion += `<div style="color: #6c757d; font-size: 0.8em;">Solicitado: ${datos.cantidad_solicitada}</div>`;
+              htmlDistribucion += `<div>(${datos.proporcion}% del total)</div>`;
+              htmlDistribucion += `<div>Solicitado: ${datos.cantidad_solicitada}</div>`;
               htmlDistribucion += `</div>`;
               htmlDistribucion += `</td>`;
             } else {
-              htmlDistribucion += `<td style="border: 1px solid #ccc; padding: 8px; text-align: center; color: #6c757d;">-</td>`;
+              htmlDistribucion += `<td>-</td>`;
             }
           });
           
@@ -277,7 +278,7 @@ const actualizarDistribucionDespacho = async (loteId) => {
         });
         
         htmlDistribucion += '</tbody></table>';
-        htmlDistribucion += '<p style="color: #6c757d; font-size: 0.9em; margin: 0.5em 0 0 0;">📋 Esta distribución se basa en las proporciones del pedido original.</p>';
+        htmlDistribucion += '<div class="alert mt-4">  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg><h6>Esta distribución se basa en las proporciones del pedido original.</h6></div>';
         tablaDistribucion.innerHTML = htmlDistribucion;
         lista.appendChild(tablaDistribucion);
         
@@ -576,23 +577,24 @@ async function cargarDespachosLoteTiendaRecepcion(loteId, tiendaNombre) {
       if (despachosTienda && despachosTienda.length > 0) {
         // Crear formulario con los despachos de esta tienda
         const tabla = document.createElement('div');
-        tabla.style.cssText = 'background: #f0f8ff; padding: 1em; border-radius: 5px; border: 1px solid #b0d4f1;';
+        // tabla.style.cssText = 'background: #f0f8ff; padding: 1em; border-radius: 5px; border: 1px solid #b0d4f1;';
+        tabla.className = 'bg-white p-4 rounded-lg shadow-sm mb-4';
         
-        let html = '<table style="width: 100%; border-collapse: collapse; margin-bottom: 1em;">';
-        html += '<thead><tr style="background: #007cba; color: white;">';
-        html += '<th style="border: 1px solid #ccc; padding: 8px;">Producto</th>';
-        html += '<th style="border: 1px solid #ccc; padding: 8px;">Cantidad Despachada</th>';
-        html += '<th style="border: 1px solid #ccc; padding: 8px;">Cantidad Recibida</th>';
-        html += '<th style="border: 1px solid #ccc; padding: 8px;">Confirmado</th>';
+        let html = '<table class="table bg-white">';
+        html += '<thead class="bg-black [&_th]:text-white"><tr>';
+        html += '<th>Producto</th>';
+        html += '<th>Cantidad Despachada</th>';
+        html += '<th>Cantidad Recibida</th>';
+        html += '<th>Confirmado</th>';
         html += '</tr></thead><tbody>';
         
         despachosTienda.forEach((despacho, index) => {
           html += '<tr>';
-          html += `<td style="border: 1px solid #ccc; padding: 8px;"><strong>${despacho.producto}</strong></td>`;
-          html += `<td style="border: 1px solid #ccc; padding: 8px;">${despacho.cantidad_despachada}</td>`;
-          html += `<td style="border: 1px solid #ccc; padding: 8px;">
+          html += `<td><strong>${despacho.producto}</strong></td>`;
+          html += `<td>${despacho.cantidad_despachada}</td>`;
+          html += `<td>
                     <input type="number" 
-                           class="cantidad-recibida-input" 
+                           class="cantidad-recibida-input input" 
                            data-producto="${despacho.producto}"
                            data-tienda="${despacho.tienda}"
                            data-despachado="${despacho.cantidad_despachada}"
@@ -602,8 +604,8 @@ async function cargarDespachosLoteTiendaRecepcion(loteId, tiendaNombre) {
                            style="width: 100px;"
                            required>
                    </td>`;
-          html += `<td style="border: 1px solid #ccc; padding: 8px;">
-                    <select class="confirmado-input" 
+          html += `<td>
+                    <select class="confirmado-input select" 
                             data-producto="${despacho.producto}"
                             data-tienda="${despacho.tienda}">
                       <option value="1">Sí</option>
@@ -616,8 +618,9 @@ async function cargarDespachosLoteTiendaRecepcion(loteId, tiendaNombre) {
         html += '</tbody></table>';
         
         // Agregar resumen
-        html += `<div style="background: #e8f5e8; padding: 0.8em; border-radius: 3px; margin-top: 1em;">
-                  <strong>Resumen:</strong> ${despachosTienda.length} producto(s) para recibir en <strong>${tiendaNombre}</strong>
+        html += `<div class="alert mt-4 w-full">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
+                  <h6>Resumen: ${despachosTienda.length} producto(s) para recibir en ${tiendaNombre}</h6>
                 </div>`;
         
         tabla.innerHTML = html;

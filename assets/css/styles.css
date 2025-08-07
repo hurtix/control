@@ -228,7 +228,7 @@ button:hover {
   overflow: scroll;
 }
 
-.lote-card {
+/* .lote-card {
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 1rem;
@@ -236,27 +236,27 @@ button:hover {
   cursor: pointer;
   transition: all 0.2s ease;
   background-color: #f9f9f9;
-}
+} */
 
 .lote-card:hover {
   box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
 
-.lote-card.selected {
+/* .lote-card.selected {
   border: 2px solid #007bff;
   background-color: #e6f2ff;
-}
+} */
 
-.lote-card h4 {
+/* .lote-card h4 {
   margin-top: 0;
   margin-bottom: 0.5rem;
   color: #007bff;
-}
+} */
 
-.lote-card p {
+/* .lote-card p {
   margin: 0.3rem 0;
   font-size: 0.9rem;
-}
+} */
 
 .lote-productos {
   margin-top: 0.5rem;

@@ -17,7 +17,7 @@ const cargarLotesPendientes = async () => {
       lotes.forEach(lote => {
         // Crear tarjeta para el lote
         const card = document.createElement('div');
-        card.className = 'lote-card';
+        card.className = 'lote-card card w-full p-4 border-2 border-transparent [.selected]:bg-green-100 [.selected]:border-green-500';
         card.dataset.loteId = lote.id;
         
         if (lote.pedido && lote.pedido.items && lote.pedido.items.length > 0) {
@@ -37,22 +37,30 @@ const cargarLotesPendientes = async () => {
           let contenidoHTML = `
             <input type="radio" name="lote_radio" id="lote-${lote.id}" value="${lote.id}">
             <h4>${lote.codigo_lote}</h4>
-            <p><strong>Total productos:</strong> ${cantidadTotal} unidades</p>
-            <p><strong>Fecha pedido:</strong> ${new Date(lote.pedido.fecha_pedido).toLocaleDateString()}</p>
-            <p><strong>Fecha requerida:</strong> ${new Date(lote.pedido.fecha_requerida).toLocaleDateString()}</p>
-            <div class="lote-productos">
+            <div class="flex justify-between items-center">
+            <div class="grid gap-0">
+            <span class="label">Fecha pedido</span> ${new Date(lote.pedido.fecha_pedido).toLocaleDateString()}</div>
+            <div class="grid gap-0">
+            <span class="label">Fecha requerida</span> ${new Date(lote.pedido.fecha_requerida).toLocaleDateString()}</div>
+            <div class="grid gap-0">
+            <span class="label">Total productos</span> 
+            <span class="text-3xl font-bold">${cantidadTotal}</span>
+            <span>unidades</span>
+            </div>
+            <!--<div class="lote-productos">
               <p><strong>Productos:</strong></p>
-              <ul>
+              <ul>-->
           `;
           
           // Agregar cada producto a la lista
-          Object.keys(productos).forEach(prod => {
-            contenidoHTML += `<li>${prod}: ${productos[prod]} unidades</li>`;
-          });
+          // Object.keys(productos).forEach(prod => {
+          //   contenidoHTML += `<li>${prod}: ${productos[prod]} unidades</li>`;
+          // });
           
-          contenidoHTML += `
-              </ul>
-            </div>
+          // contenidoHTML += 
+          `
+              <!--</ul>
+            </div>-->
           `;
           
           card.innerHTML = contenidoHTML;
@@ -116,7 +124,7 @@ const cargarLotesProducidos = async () => {
       lotes.forEach(lote => {
         // Crear tarjeta para el lote
         const card = document.createElement('div');
-        card.className = 'lote-card';
+        card.className = 'lote-card card w-full p-4 [.selected]:bg-green-100 [.selected]:border-green-500';
         card.dataset.loteId = lote.id;
         
         if (lote.pedido && lote.pedido.items && lote.pedido.items.length > 0) {
@@ -136,22 +144,30 @@ const cargarLotesProducidos = async () => {
           let contenidoHTML = `
             <input type="radio" name="lote_radio_despacho" id="lote-despacho-${lote.id}" value="${lote.id}">
             <h4>${lote.codigo_lote}</h4>
-            <p><strong>Total productos:</strong> ${cantidadTotal} unidades</p>
-            <p><strong>Fecha pedido:</strong> ${new Date(lote.pedido.fecha_pedido).toLocaleDateString()}</p>
-            <p><strong>Fecha requerida:</strong> ${new Date(lote.pedido.fecha_requerida).toLocaleDateString()}</p>
-            <div class="lote-productos">
+            <div class="flex justify-between items-center"> 
+            <div class="grid gap-0">
+            <span class="label">Fecha pedido</span> ${new Date(lote.pedido.fecha_pedido).toLocaleDateString()}</div>
+            <div class="grid gap-0">
+            <span class="label">Fecha requerida</span> ${new Date(lote.pedido.fecha_requerida).toLocaleDateString()}</div>
+            <div class="grid gap-0">
+            <span class="label">Total productos</span> 
+            <span class="text-3xl font-bold">${cantidadTotal}</span> 
+            <span>unidades</span>
+            </div>
+            <!--<div class="lote-productos">
               <p><strong>Productos:</strong></p>
-              <ul>
+              <ul>-->
           `;
           
           // Agregar cada producto a la lista
-          Object.keys(productos).forEach(prod => {
-            contenidoHTML += `<li>${prod}: ${productos[prod]} unidades</li>`;
-          });
+          // Object.keys(productos).forEach(prod => {
+          //   contenidoHTML += `<li>${prod}: ${productos[prod]} unidades</li>`;
+          // });
           
-          contenidoHTML += `
-              </ul>
-            </div>
+          // contenidoHTML +=
+          `
+              <!--</ul>
+            </div>-->
           `;
           
           card.innerHTML = contenidoHTML;

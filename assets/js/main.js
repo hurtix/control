@@ -294,7 +294,7 @@ async function cargarLotesParaRecepcion() {
     
     lotesFiltrados.forEach(lote => {
       const card = document.createElement('div');
-      card.className = 'card-item';
+      card.className = 'card card w-full p-4';
       card.dataset.id = lote.id;
       
       card.innerHTML = `

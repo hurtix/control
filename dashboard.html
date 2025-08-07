@@ -120,77 +120,82 @@
   <form id="form-produccion">
     <div class="flex justify-end">
       <div>
-      <label class="label mb-1">Fecha y hora a registrar</label>
-      <input class="input" type="text" name="fecha" readonly class="fecha-auto">
-      <input type="hidden" name="lote_id" id="input-lote-id" required>
+        <label class="label mb-1">Fecha y hora a registrar</label>
+        <input class="input" type="text" name="fecha" readonly class="fecha-auto">
+        <input type="hidden" name="lote_id" id="input-lote-id" required>
       </div>
     </div>
-<div class="flex gap-x-4">
-    <div class="w-1/3">
-      <h3>Seleccionar Lote</h3>
-      <div id="lotes-cards-container" class="lotes-cards-container border p-4 rounded-lg"></div>
-    </div>
+    <div class="flex gap-x-4">
+      <div class="w-1/3">
+        <h3>Seleccionar Lote</h3>
+        <div id="lotes-cards-container" class="lotes-cards-container border p-4 rounded-lg bg-gray-100"></div>
+      </div>
 
-    <div id="productos-lote-container" class="w-2/3" style="display: none;">
-      <h3 class="mb-4">Productos del Lote</h3>
-      <div id="productos-lote-lista"></div>
-<div class="grid gap-3">
-<label>Observaciones</label> <textarea class="textarea" name="observaciones"
-        placeholder="Observaciones adicionales (opcional)"></textarea>
+      <div id="productos-lote-container" class="w-2/3" style="display: none;">
+        <h3 class="mb-4">Productos del Lote</h3>
+        <div id="productos-lote-lista"></div>
+        <div class="grid gap-3">
+          <label>Observaciones</label> <textarea class="textarea" name="observaciones"
+            placeholder="Observaciones adicionales (opcional)"></textarea>
         </div>
-    <button type="submit" id="btn-registrar-produccion" class="btn mt-3" disabled>Registrar Producción</button>
+        <button type="submit" id="btn-registrar-produccion" class="btn mt-3" disabled>Registrar Producción</button>
 
+      </div>
     </div>
-</div>
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado">
 
-    
+
     <div class="endpoint">POST /produccion</div>
   </form>
   <div id="result-produccion" class="result"></div>
 
   <h2>Registrar Despacho</h2>
   <form id="form-despacho">
-    <div class="grid gap-3">
-      <label class="label">Fecha</label>
-      <input class="input" type="text" name="fecha" readonly class="fecha-auto">
-      <input type="hidden" name="lote_id" id="input-lote-id-despacho" required>
+    <div class="flex justify-end">
+      <div class="grid gap-3">
+        <label class="label">Fecha y hora a registrar</label>
+        <input class="input" type="text" name="fecha" readonly class="fecha-auto">
+        <input type="hidden" name="lote_id" id="input-lote-id-despacho" required>
+      </div>
     </div>
+    <div class="flex gap-x-4">
+      <div class="w-1/3">
+        <h3>Seleccionar Lote</h3>
+        <div id="lotes-despacho-cards-container" class="lotes-cards-container border p-4 rounded-lg bg-gray-100"></div>
+      </div>
 
-    <div>
-      <h3>Seleccionar Lote</h3>
-      <div id="lotes-despacho-cards-container" class="lotes-cards-container"></div>
+      <div id="distribucion-despacho-container" class="w-2/3" style="display: none;">
+        <h3>Distribución Automática</h3>
+        <p style="color: #666; font-size: 0.9em; margin-bottom: 1em;">
+          Las cantidades se distribuirán automáticamente entre las tiendas según las proporciones del pedido original.
+        </p>
+        <div id="distribucion-despacho-lista"></div>
+        <label>Observaciones <textarea class="textarea" name="observaciones"
+            placeholder="Observaciones adicionales (opcional)"></textarea></label>
+        <button class="btn mt-4" type="submit">Despachar Automáticamente</button>
+      </div>
     </div>
-
-    <div id="distribucion-despacho-container" style="display: none;">
-      <h3>Distribución Automática</h3>
-      <p style="color: #666; font-size: 0.9em; margin-bottom: 1em;">
-        Las cantidades se distribuirán automáticamente entre las tiendas según las proporciones del pedido original.
-      </p>
-      <div id="distribucion-despacho-lista"></div>
-    </div>
-
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado-despacho">
 
-    <label>Observaciones <textarea class="textarea" name="observaciones"
-        placeholder="Observaciones adicionales (opcional)"></textarea></label>
-    <button class="btn" type="submit">Despachar Automáticamente</button>
+
     <div class="endpoint">POST /despacho (distribución automática)</div>
   </form>
   <div id="result-despacho" class="result"></div>
 
   <h2>Registrar Recepción</h2>
   <form id="form-recepcion">
-    <div class="grid gap-3">
-      <label class="label">Fecha</label>
-      <input class="input" type="text" name="fecha" readonly class="fecha-auto">
+    <div class="flex justify-end">
+      <div class="grid gap-3">
+        <label class="label">Fecha</label>
+        <input class="input" type="text" name="fecha" readonly class="fecha-auto">
+      </div>
     </div>
-
-    <div class="form-row">
+    <div class="flex gap-x-4">
+    <div class="w-1/3">
       <label>Lote</label>
-      <div id="lotes-recepcion-container" class="card-container">
+      <div id="lotes-recepcion-container" class="card-container max-h-[400px] overflow-scroll p-4 bg-gray-100 rounded-lg flex flex-col gap-3">
         <!-- Aquí se mostrarán los lotes disponibles para recepción -->
         <div class="spinner-container">
           <div class="spinner"></div>
@@ -199,26 +204,30 @@
       </div>
       <input type="hidden" name="lote_id" id="lote-recepcion-selected">
     </div>
-
+<div class="w-2/3">
     <div id="tiendas-lote-container" style="display: none;">
       <input type="hidden" name="tienda" id="tienda-usuario-actual">
       <!-- La tienda se detectará automáticamente según el usuario -->
     </div>
 
     <div id="despachos-tienda-container" style="display: none;">
-      <h3>Items a Recibir por la Tienda</h3>
-      <p style="color: #666; font-size: 0.9em; margin-bottom: 1em;">
+      <h3>Items a recibir por la tienda</h3>
+      <p class="text-sm text-gray-600 mb-4">
         Confirme las cantidades recibidas para esta tienda específica.
       </p>
       <div id="despachos-tienda-lista"></div>
+      <label>Observaciones <textarea class="textarea" name="observaciones"
+        placeholder="Observaciones adicionales (opcional)"></textarea></label>
+    <button class="btn mt-4" type="submit">Registrar Recepción de Tienda</button>
     </div>
-
+     
+  </div>
+  
+  </div>
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado-recepcion">
 
-    <label>Observaciones <textarea class="textarea" name="observaciones"
-        placeholder="Observaciones adicionales (opcional)"></textarea></label>
-    <button class="btn" type="submit">Registrar Recepción de Tienda</button>
+   
     <div class="endpoint">POST /recepcion (por tienda individual)</div>
   </form>
   <div id="result-recepcion" class="result"></div>
