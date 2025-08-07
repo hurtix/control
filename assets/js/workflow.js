@@ -2,6 +2,7 @@
 const actualizarProductoLote = (loteId, productosData) => {
   const container = document.getElementById('productos-lote-container');
   const lista = document.getElementById('productos-lote-lista');
+  const submitButton = document.getElementById('btn-registrar-produccion');
   
   if (loteId) {
     try {
@@ -16,27 +17,63 @@ const actualizarProductoLote = (loteId, productosData) => {
       // Limpiar la lista
       lista.innerHTML = '';
       
-      // Crear campos para cada producto
+      // Deshabilitar el botón de envío inicialmente
+      if (submitButton) {
+        submitButton.disabled = true;
+      }
+      
+      // Crear campos para cada producto con el nuevo diseño
       Object.keys(productos).forEach(producto => {
         const cantidad = productos[producto];
         const div = document.createElement('div');
-        div.className = 'producto-lote-item';
+        div.className = 'gap-2 flex flex-row items-center justify-between rounded-lg border p-4 shadow-xs mb-3';
         div.innerHTML = `
-          <div class="form-row">
-            <label>
-              <strong>${producto}</strong> (Solicitado: ${cantidad})
+          <div class="flex flex-col gap-1 text-nowrap">
+            <label class="leading-normal font-bold text-xl">${producto}</label>
+            <div class="flex gap-x-8">
+            <div class="flex flex-col">
+            <span class="label">Qty solicitada</span>
+            <span class="font-bold text-lg pt-1">${cantidad}</span>
+            </div>
+            <div><label class="label mb-1">Qty producida</label>
               <input type="number" 
-                     class="cantidad-producida-input" 
-                     data-producto="${producto}"
-                     min="0" 
-                     max="${cantidad * 1.2}" 
-                     value="${cantidad}" 
-                     placeholder="Cantidad producida"
-                     required>
-            </label>
+                    class="cantidad-producida-input input w-[100px] text-lg" 
+                    data-producto="${producto}"
+                    min="0" 
+                    max="${cantidad * 1.2}"
+                    placeholder=""
+                    required>
+                    </div>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <input type="checkbox" 
+                   class="producto-validado input"
+                   data-producto="${producto}"
+                   role="switch"
+                   onchange="verificarProductosValidados()">
           </div>
         `;
         lista.appendChild(div);
+      });
+      
+      // Agregar listener para cambios en los inputs
+      document.querySelectorAll('.cantidad-producida-input').forEach(input => {
+        input.addEventListener('input', function() {
+          const parentDiv = this.closest('.flex.flex-row');
+          const checkbox = parentDiv.querySelector('.producto-validado');
+          
+          // Deshabilitar checkbox si el input está vacío
+          checkbox.disabled = !this.value;
+          
+          // Desmarcar el checkbox si el input está vacío
+          if (!this.value) {
+            checkbox.checked = false;
+          }
+          
+          // Verificar todos los productos
+          verificarProductosValidados();
+        });
       });
       
     } catch (error) {
@@ -47,6 +84,34 @@ const actualizarProductoLote = (loteId, productosData) => {
     container.style.display = 'none';
     lista.innerHTML = '';
   }
+};
+
+// Función para verificar si todos los productos han sido validados
+const verificarProductosValidados = () => {
+  const submitButton = document.getElementById('btn-registrar-produccion');
+  if (!submitButton) return;
+  
+  const inputs = document.querySelectorAll('.cantidad-producida-input');
+  const checkboxes = document.querySelectorAll('.producto-validado');
+  
+  // Si no hay productos, deshabilitar el botón
+  if (inputs.length === 0) {
+    submitButton.disabled = true;
+    return;
+  }
+  
+  // Verificar que todos los inputs tengan un valor y todos los checkboxes estén marcados
+  let todosValidados = true;
+  
+  inputs.forEach((input, index) => {
+    const checkbox = checkboxes[index];
+    if (!input.value || !checkbox.checked) {
+      todosValidados = false;
+    }
+  });
+  
+  // Habilitar o deshabilitar el botón según el resultado
+  submitButton.disabled = !todosValidados;
 };
 
 const actualizarDistribucionDespacho = async (loteId) => {

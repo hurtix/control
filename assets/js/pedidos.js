@@ -20,7 +20,7 @@ const inicializarTotalesTienda = () => {
   // Crear elementos simplificados para el total de cada tienda (solo números)
   tiendas.forEach(tienda => {
     const span = document.createElement('span');
-    span.className = 'tienda-total-valor';
+    span.className = 'tienda-total-valor text-lg';
     span.setAttribute('data-tienda', tienda);
     span.textContent = '0';
     tiendasTotalesGrid.appendChild(span);
@@ -162,7 +162,7 @@ const agregarProductoPedido = () => {
       </select>
     </td>
     <td class="tiendas-cantidades" style="visibility: hidden;">
-      <div class="tiendas-grid" id="tiendas-grid-${contadorProductosPedido}"></div>
+      <div class="tiendas-grid grid grid-cols-3 gap-x-8" id="tiendas-grid-${contadorProductosPedido}"></div>
     </td>
     <td class="producto-total" style="visibility: hidden;">
       <span class="font-bold text-lg">0</span>

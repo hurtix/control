@@ -130,24 +130,32 @@ formProduccion.onsubmit = async e => {
   }
   
   // Recopilar productos y cantidades producidas
-  const productosInputs = document.querySelectorAll('.cantidad-producida-input');
+  const productosCards = document.querySelectorAll('#productos-lote-lista .flex.flex-row');
   const productos = [];
   
-  productosInputs.forEach(input => {
-    const producto = input.dataset.producto;
-    const cantidadProducida = parseInt(input.value);
+  productosCards.forEach(card => {
+    const productoId = card.dataset.producto;
+    const productoNombre = card.dataset.nombreProducto;
+    const cantidadInput = card.querySelector('.cantidad-producida-input');
+    const switchValidacion = card.querySelector('input[type="checkbox"][role="switch"]');
     
-    if (producto && cantidadProducida > 0) {
-      productos.push({
-        producto: producto,
-        cantidad_producida: cantidadProducida,
-        empleado: data.empleado // Asegurar que cada producto tenga el empleado
-      });
+    if (productoId && cantidadInput && switchValidacion) {
+      const cantidadProducida = parseInt(cantidadInput.value);
+      const validado = switchValidacion.checked;
+      
+      // Solo incluir productos validados
+      if (validado && cantidadProducida > 0) {
+        productos.push({
+          producto: productoId,
+          cantidad_producida: cantidadProducida,
+          empleado: data.empleado // Asegurar que cada producto tenga el empleado
+        });
+      }
     }
   });
   
   if (productos.length === 0) {
-    alert('Debe especificar cantidades producidas para al menos un producto');
+    alert('Debe especificar cantidades producidas y validar todos los productos');
     return;
   }
   

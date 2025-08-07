@@ -4,25 +4,25 @@
 <head>
   <meta charset="UTF-8">
   <title>Control de Panadería</title>
-  <link rel="stylesheet" href="assets/css/styles.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/basecoat.cdn.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/basecoat.cdn.min.css">
   <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/js/all.min.js" defer></script>
+  <link rel="stylesheet" href="assets/css/styles.css">
 
 </head>
 
 <body>
   <!-- Header de autenticación -->
-  <div id="auth-header" class="bg-black text-white p-4 mb-8 flex justify-between items-center gap-2 rounded-full">
+  <div id="auth-header" class="bg-black text-white px-8 py-2 mb-8 flex justify-between items-center gap-2 rounded-full">
     <div class="w-full">
       <h1>Cafe Cauca</h1>
       <!-- Aquí se insertará la notificación si es necesaria -->
     </div>
     <div class="w-full flex justify-end items-center gap-x-2">
       <div>
-        <span class="flex items-center"><img class="w-8 h-8 rounded-full"
+        <span class="flex items-center"><img class="w-10 h-10 rounded-full"
             src="https://basecoatui.com/assets/images/avatar-2.png" alt=""><span id="user-info"
-            class="ml-1">Cargando...</span></span>
+            class="ml-2 mr-4 flex flex-col">Cargando...</span></span>
         <!-- Aquí se insertará la notificación si es necesaria -->
       </div>
       <span>Salir</span>
@@ -38,7 +38,7 @@
     </div>
   </div>
 
-  <h1>Control de Panadería</h1>
+  <!-- <h1>Control de Panadería</h1> -->
 
   <h2>Registrar Pedido</h2>
   <form id="form-pedido">
@@ -75,7 +75,7 @@
               </select>
             </td>
             <td class="tiendas-cantidades" style="visibility: hidden;">
-              <div class="tiendas-grid" id="tiendas-grid-0"></div>
+              <div class="tiendas-grid grid grid-cols-3 gap-x-8" id="tiendas-grid-0"></div>
             </td>
             <td class="producto-total" style="visibility: hidden;">
               <span class="font-bold text-lg">0</span>
@@ -97,11 +97,11 @@
         </tbody>
         <tfoot>
           <tr class="font-bold bg-gray-100">
-            <td class="text-right pr-4">TOTALES POR TIENDA</td>
+            <td class="text-right pr-4">Totales c/tienda</td>
             <td>
               <div id="tiendas-totales-grid"></div>
             </td>
-            <td id="gran-total">0</td>
+            <td><span id="gran-total" class="text-lg">0</span> unidades</td>
             <td></td>
           </tr>
         </tfoot>
@@ -118,28 +118,34 @@
 
   <h2>Registrar Producción</h2>
   <form id="form-produccion">
-    <div class="grid gap-3">
-      <label class="label">Fecha</label>
+    <div class="flex justify-end">
+      <div>
+      <label class="label mb-1">Fecha y hora a registrar</label>
       <input class="input" type="text" name="fecha" readonly class="fecha-auto">
       <input type="hidden" name="lote_id" id="input-lote-id" required>
+      </div>
     </div>
-
-    <div>
+<div class="flex gap-x-4">
+    <div class="w-1/3">
       <h3>Seleccionar Lote</h3>
       <div id="lotes-cards-container" class="lotes-cards-container"></div>
     </div>
 
-    <div id="productos-lote-container" style="display: none;">
-      <h3>Productos del Lote</h3>
+    <div id="productos-lote-container" class="w-2/3" style="display: none;">
+      <h3 class="mb-4">Productos del Lote</h3>
       <div id="productos-lote-lista"></div>
-    </div>
+<div class="grid gap-3">
+<label>Observaciones</label> <textarea class="textarea" name="observaciones"
+        placeholder="Observaciones adicionales (opcional)"></textarea>
+        </div>
+    <button type="submit" id="btn-registrar-produccion" class="btn mt-3" disabled>Registrar Producción</button>
 
+    </div>
+</div>
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado">
 
-    <label>Observaciones <textarea class="textarea" name="observaciones"
-        placeholder="Observaciones adicionales (opcional)"></textarea></label>
-    <button type="submit" class="btn">Registrar Producción</button>
+    
     <div class="endpoint">POST /produccion</div>
   </form>
   <div id="result-produccion" class="result"></div>
@@ -559,7 +565,7 @@
     function updateUserInfo() {
       const userInfo = document.getElementById('user-info');
       if (currentUser) {
-        userInfo.textContent = `${currentUser.nombre} (${currentUser.rol})`;
+        userInfo.innerHTML = `${currentUser.nombre} <span class="badge-secondary">${currentUser.rol}</span>`;
 
         // Establecer automáticamente el nombre del empleado en todos los formularios
         if (currentUser.nombre) {

@@ -141,6 +141,14 @@ button:hover {
   margin-top: 0.5em; 
 }
 
+
+/* Estilos para la nueva vista de productos */
+#productos-lote-lista {
+  transition: all 0.2s ease;
+}
+
+
+
 /* .producto-tienda-item { 
   background: #f9f9f9; 
   padding: 1em; 
@@ -157,12 +165,12 @@ button:hover {
   border: 1px solid #b0d4f1; 
 } */
 
-.tiendas-grid { 
+/* .tiendas-grid { 
   display: grid; 
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
   gap: 1em; 
   margin-top: 0.5em; 
-}
+} */
 
 /* Estilos para totales por tienda en el footer */
 #tiendas-totales-grid {
@@ -199,13 +207,15 @@ button:hover {
   flex-wrap: wrap;
   gap: 1rem;
   margin: 1rem 0;
+  height: 400px;
+  overflow: scroll;
 }
 
 .lote-card {
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 1rem;
-  width: 260px;
+  width: 100%;
   cursor: pointer;
   transition: all 0.2s ease;
   background-color: #f9f9f9;
