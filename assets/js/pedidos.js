@@ -52,17 +52,17 @@ async function actualizarTiendasProducto(selectProducto) {
         for (const tienda of tiendas) {
             const tiendaDiv = document.createElement('div');
             tiendaDiv.className = 'tienda-input-container text-center';
-            tiendaDiv.innerHTML = `
-                <div class="text-sm font-medium text-gray-700 mb-1">${tienda}</div>
-                <input type="number" 
-                       class="cantidad-tienda-input input w-20 text-center mx-auto" 
-                       data-tienda="${tienda}" 
-                       data-producto="${productoSeleccionado}" 
-                       value="" 
-                       min="0" 
-                       onchange="actualizarTotales(this)">
-                <div class="inventario-info text-xs text-gray-500 mt-1" data-tienda="${tienda}">Cargando...</div>
-            `;
+      tiendaDiv.innerHTML = `
+        <div class="text-sm font-medium text-gray-700 mb-1">${tienda}</div>
+        <input type="number" 
+             class="cantidad-tienda-input input w-20 text-center mx-auto border-red-300 bg-red-50" 
+             data-tienda="${tienda}" 
+             data-producto="${productoSeleccionado}" 
+             value="" 
+             min="0" 
+             onchange="actualizarTotales(this)">
+        <div class="inventario-info text-xs text-gray-500 mt-1" data-tienda="${tienda}">Cargando...</div>
+      `;
             tiendasGrid.appendChild(tiendaDiv);
         }
         
@@ -225,26 +225,32 @@ const removerProductoPedido = (button) => {
 
 // Función para validar y actualizar totales al cambiar cantidades
 const actualizarTotales = (input) => {
-  // Validar que no sea negativo
-  if (input.value < 0) {
-    input.value = 0;
+  // Permitir vacío, pero si hay valor, validar que no sea negativo y convertir a entero
+  if (input.value === '' || input.value === null) {
+    // No modificar el valor, solo feedback visual
+  } else {
+    if (parseFloat(input.value) < 0) {
+      input.value = 0;
+    } else {
+      input.value = Math.floor(parseFloat(input.value));
+    }
   }
-  
-  // Validar que no esté vacío
-  if (input.value === '') {
-    input.value = 0;
+
+  // Feedback visual: rojo si vacío, verde si 0 o mayor
+  input.classList.remove('border-red-300', 'bg-red-50', 'border-green-300', 'bg-green-50');
+  if (input.value === '' || input.value === null) {
+    input.classList.add('border-red-300', 'bg-red-50');
+  } else {
+    input.classList.add('border-green-300', 'bg-green-50');
   }
-  
-  // Convertir a número entero
-  input.value = Math.floor(parseFloat(input.value));
-  
+
   // Calcular el total para este producto
   const fila = input.closest('.producto-tienda-item');
   calcularTotalProducto(fila);
-  
+
   // Actualizar el gran total
   actualizarGranTotal();
-  
+
   // Actualizar totales por tienda
   actualizarTotalesPorTienda();
 };
