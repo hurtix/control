@@ -912,6 +912,52 @@ $app->get('/opciones/tiendas', function ($request, $response) {
     return $response->withHeader('Content-Type', 'application/json');
 });
 
+// Obtener último inventario por producto y tienda
+$app->get('/inventario/ultimo/{producto_nombre}', function ($request, $response, $args) {
+    try {
+        $producto_nombre = urldecode($args['producto_nombre']);
+        
+        // Buscar el producto por nombre
+        $producto = Maestro::where('nombre', $producto_nombre)
+                          ->where('tipo', 'producto')
+                          ->first();
+        
+        if (!$producto) {
+            $response->getBody()->write(json_encode([]));
+            return $response->withHeader('Content-Type', 'application/json');
+        }
+        
+        // Obtener el último inventario de cada tienda para este producto
+        $inventarios = InventarioInicial::where('producto_id', $producto->id)
+            ->select('tienda_id', 'cantidad_inicial', 'fecha')
+            ->orderBy('fecha', 'desc')
+            ->get()
+            ->groupBy('tienda_id')
+            ->map(function($grupo) {
+                return $grupo->first(); // Tomar el más reciente de cada tienda
+            });
+        
+        // Convertir tienda_id a nombre de tienda
+        $resultado = [];
+        foreach ($inventarios as $tienda_id => $inventario) {
+            $tienda = Maestro::where('id', $tienda_id)->where('tipo', 'tienda')->first();
+            if ($tienda) {
+                $resultado[$tienda->nombre] = [
+                    'cantidad' => $inventario->cantidad_inicial,
+                    'fecha' => $inventario->fecha
+                ];
+            }
+        }
+        
+        $response->getBody()->write(json_encode($resultado));
+        return $response->withHeader('Content-Type', 'application/json');
+        
+    } catch (Exception $e) {
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+    }
+});
+
 $app->get('/opciones/empleados-para-usuarios', function ($request, $response) {
     try {
         $empleados = Maestro::where('tipo', 'empleado')

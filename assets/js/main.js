@@ -63,6 +63,12 @@ const api = (endpoint, method = 'GET', data = null, role = 'admin') => {
       'X-Role': role
     }
   };
+  
+  // Agregar header de sesión si hay usuario actual
+  if (window.currentUser) {
+    opts.headers['X-Session'] = JSON.stringify({ usuario: window.currentUser });
+  }
+  
   if (data) opts.body = JSON.stringify(data);
   
   return fetch(endpoint, opts).then(async response => {
@@ -154,7 +160,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Cargar lotes para trazabilidad (todos los lotes, no solo pendientes)
   await cargarLotesParaTrazabilidad();
   
-  // Cargar opciones en el nuevo formulario de pedidos
+  // Cargar tiendas disponibles para pedidos PRIMERO
+  await cargarTiendasDisponibles();
+  
+  // Luego cargar opciones en el nuevo formulario de pedidos
   await cargarOpcionesEnSelect('/opciones/productos', document.querySelector('.producto-select'));
   
   // Cargar lotes pendientes
@@ -426,8 +435,15 @@ async function verificarSesion() {
     if (response.authenticated) {
       currentUser = response.usuario;
       
+      // Hacer disponible globalmente
+      window.currentUser = currentUser;
+      
       // Cargar tiendas para inventario después de obtener el usuario
-      await cargarTiendasParaInventario();
+      if (typeof cargarTiendasInventario === 'function') {
+        await cargarTiendasInventario();
+      } else {
+        await cargarTiendasParaInventario();
+      }
       
       // Las secciones están visibles por defecto
       // Se pueden cargar datos iniciales según el rol

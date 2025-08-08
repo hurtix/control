@@ -1,9 +1,17 @@
 // Funciones para gestión de pedidos
 const cargarTiendasDisponibles = async () => {
+  console.log('=== cargarTiendasDisponibles iniciado ===');
   try {
-    tiendas = await api('/opciones/tiendas');
+    const tiendasResponse = await api('/opciones/tiendas');
+    console.log('Respuesta de /opciones/tiendas:', tiendasResponse);
+    
+    tiendas = tiendasResponse;
+    console.log('Tiendas cargadas:', tiendas);
+    
     // Inicializar el grid de totales por tienda
     inicializarTotalesTienda();
+    
+    console.log('cargarTiendasDisponibles completado exitosamente');
   } catch (error) {
     console.error('Error cargando tiendas:', error);
     tiendas = [];
@@ -27,60 +35,81 @@ const inicializarTotalesTienda = () => {
   });
 };
 
-const actualizarTiendasProducto = (select) => {
-  const productoItem = select.closest('.producto-tienda-item');
-  const tiendasContainer = productoItem.querySelector('.tiendas-cantidades');
-  const tiendasGrid = productoItem.querySelector('.tiendas-grid');
-  const totalProductoCell = productoItem.querySelector('.producto-total');
-  const totalProductoSpan = totalProductoCell ? totalProductoCell.querySelector('span') : null;
-  const producto = select.value;
-  
-  // Actualizar disponibilidad de productos en todos los selects
-  actualizarDisponibilidadProductos();
-  
-  if (producto) {
-    // Mostrar el contenedor de tiendas y la celda de total
-    tiendasContainer.style.visibility = 'visible';
-    if (totalProductoCell) totalProductoCell.style.visibility = 'visible';
+async function actualizarTiendasProducto(selectProducto) {
+    const productoSeleccionado = selectProducto.value;
     
-    // Limpiar el grid
-    tiendasGrid.innerHTML = '';
+    console.log('actualizarTiendasProducto - productoSeleccionado:', productoSeleccionado);
     
-    // Crear campos de cantidad para cada tienda
-    tiendas.forEach(tienda => {
-      const div = document.createElement('div');
-      div.className = 'tienda-cantidad flex';
-      div.innerHTML = `
-        <span class="px-2 text-sm py-1.5 items-center min-w-fit rounded-s-md border border-e-0 border-gray-200 bg-gray-50 font-bold">${tienda}</span>
-        <input type="number" 
-               class="cantidad-tienda-input input bg-white rounded-tl-none rounded-bl-none" 
-               data-producto="${producto}"
-               data-tienda="${tienda}"
-               min="0" 
-               required
-               value="0"
-               onkeyup="actualizarTotales(this)"
-               onchange="actualizarTotales(this)">
-      `;
-      tiendasGrid.appendChild(div);
-    });
+    const fila = selectProducto.closest('.producto-tienda-item');
+    const tiendasContainer = fila.querySelector('.tiendas-cantidades');
+    const tiendasGrid = fila.querySelector('.tiendas-grid');
+    const totalProducto = fila.querySelector('.producto-total');
     
-    // Actualizar los totales después de crear los campos
-    setTimeout(() => {
-      calcularTotalProducto(productoItem);
-      actualizarTotalesPorTienda();
-    }, 0);
+    if (productoSeleccionado) {
+        // Generar inputs para cada tienda
+        tiendasGrid.innerHTML = '';
+        
+        for (const tienda of tiendas) {
+            const tiendaDiv = document.createElement('div');
+            tiendaDiv.className = 'tienda-input-container text-center';
+            tiendaDiv.innerHTML = `
+                <div class="text-sm font-medium text-gray-700 mb-1">${tienda}</div>
+                <input type="number" 
+                       class="cantidad-tienda-input input w-20 text-center mx-auto" 
+                       data-tienda="${tienda}" 
+                       data-producto="${productoSeleccionado}" 
+                       value="" 
+                       min="0" 
+                       onchange="actualizarTotales(this)">
+                <div class="inventario-info text-xs text-gray-500 mt-1" data-tienda="${tienda}">Cargando...</div>
+            `;
+            tiendasGrid.appendChild(tiendaDiv);
+        }
+        
+        // Obtener inventario del producto seleccionado
+        try {
+            const encodedProducto = encodeURIComponent(productoSeleccionado);
+            const inventarioResponse = await api(`inventario/ultimo/${encodedProducto}`);
+            
+            // Actualizar info de inventario para cada tienda
+            tiendas.forEach(tienda => {
+                const infoDiv = tiendasGrid.querySelector(`.inventario-info[data-tienda="${tienda}"]`);
+                if (infoDiv) {
+                    if (inventarioResponse && inventarioResponse[tienda]) {
+                        const inv = inventarioResponse[tienda];
+                        infoDiv.innerHTML = `Stock: ${inv.cantidad}`;
+                        infoDiv.innerHTML += `<br>Ult. Act: ${inv.fecha}`;
+                    } else {
+                        infoDiv.textContent = 'Sin inventario';
+                    }
+                }
+            });
+            
+            console.log(`Inventario cargado para ${productoSeleccionado}`);
+        } catch (error) {
+            console.error('Error obteniendo inventario:', error);
+            // Mostrar error en todos los divs de inventario
+            tiendasGrid.querySelectorAll('.inventario-info').forEach(div => {
+                div.textContent = 'Error cargando inventario';
+            });
+        }
+        
+        // Mostrar las columnas de tiendas y total
+        tiendasContainer.style.visibility = 'visible';
+        totalProducto.style.visibility = 'visible';
+        
+        console.log('Grid de tiendas generado para:', productoSeleccionado);
+    } else {
+        // Ocultar las columnas si no hay producto seleccionado
+        tiendasContainer.style.visibility = 'hidden';
+        totalProducto.style.visibility = 'hidden';
+        tiendasGrid.innerHTML = '';
+        console.log('Grid de tiendas ocultado');
+    }
     
-  } else {
-    // Ocultar el contenedor y la celda de total si no hay producto seleccionado
-    tiendasContainer.style.visibility = 'hidden';
-    if (totalProductoCell) totalProductoCell.style.visibility = 'hidden';
-    tiendasGrid.innerHTML = '';
-    if (totalProductoSpan) totalProductoSpan.textContent = '0';
-    actualizarGranTotal();
-    actualizarTotalesPorTienda();
-  }
-};
+    // Actualizar disponibilidad de productos
+    actualizarDisponibilidadProductos();
+}
 
 // Función para actualizar la disponibilidad de productos en todos los selects
 const actualizarDisponibilidadProductos = () => {
@@ -157,7 +186,7 @@ const agregarProductoPedido = () => {
   nuevoProducto.className = 'producto-tienda-item';
   nuevoProducto.innerHTML = `
     <td>
-      <select class="producto-select select" onchange="actualizarTiendasProducto(this)">
+      <select class="producto-select select" onchange="actualizarTiendasProducto(this).catch(console.error)">>
         <option value="">-- Seleccionar producto --</option>
       </select>
     </td>

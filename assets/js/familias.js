@@ -12,17 +12,17 @@ async function cargarFamilias() {
             let html = '<div class="grid gap-3">';
             data.familias.forEach(familia => {
                 html += `
-                    <div class="flex justify-between items-center p-3 border border-gray-200 rounded">
+                    <div class="card flex-row justify-between items-center p-3 rounded bg-white">
                         <div>
                             <strong>${familia.nombre}</strong>
                             ${familia.descripcion ? `<p class="text-sm text-gray-600">${familia.descripcion}</p>` : ''}
                         </div>
                         <div class="flex gap-2">
-                            <button class="btn-outline btn-sm" onclick="editarFamilia(${familia.id}, '${familia.nombre}', '${familia.descripcion || ''}')">
-                                ✏️ Editar
+                            <button class="btn-outline" onclick="editarFamilia(${familia.id}, '${familia.nombre}', '${familia.descripcion || ''}')">
+                                Editar
                             </button>
-                            <button class="btn-outline btn-sm text-red-600" onclick="eliminarFamilia(${familia.id}, '${familia.nombre}')">
-                                🗑️ Eliminar
+                            <button class="btn-destructive" onclick="eliminarFamilia(${familia.id}, '${familia.nombre}')">
+                                Eliminar
                             </button>
                         </div>
                     </div>
