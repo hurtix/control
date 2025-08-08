@@ -40,6 +40,99 @@
 
   <!-- <h1>Control de Panadería</h1> -->
 
+  <!-- Sección de Gestión de Familias de Productos -->
+  <div id="seccion-familias" class="mt-8">
+    <h2>Gestión de Familias de Productos</h2>
+    <p class="text-sm text-gray-600 mb-4">
+      Administra las familias de productos para organizar el inventario. Solo administradores pueden acceder a esta función.
+    </p>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-top: 1em;">
+      <!-- Crear Familia -->
+      <div>
+        <h3>Crear Nueva Familia</h3>
+        <form id="form-nueva-familia">
+          <div class="grid gap-3">
+            <label class="label">Nombre de la Familia</label>
+            <input class="input" type="text" name="nombre" placeholder="ej. Panadería" required>
+          </div>
+          <div class="grid gap-3">
+            <label class="label">Descripción</label>
+            <textarea class="textarea" name="descripcion" placeholder="Descripción de la familia (opcional)"></textarea>
+          </div>
+          <button class="btn mt-4" type="submit">Crear Familia</button>
+        </form>
+        <div id="result-nueva-familia" class="result mt-4"></div>
+      </div>
+
+      <!-- Lista de Familias -->
+      <div>
+        <h3>Familias Existentes</h3>
+        <button class="btn-outline mb-4" onclick="cargarFamilias()">📋 Actualizar Lista</button>
+        <div id="lista-familias" class="result"></div>
+      </div>
+    </div>
+
+    <!-- Editar Familia -->
+    <div id="form-editar-familia-container" style="display: none; margin-top: 2em; padding: 1em; border: 1px solid #ddd; border-radius: 8px;">
+      <h3>Editar Familia</h3>
+      <form id="form-editar-familia">
+        <input type="hidden" name="id">
+        <div class="grid gap-3">
+          <label class="label">Nombre de la Familia</label>
+          <input class="input" type="text" name="nombre" required>
+        </div>
+        <div class="grid gap-3">
+          <label class="label">Descripción</label>
+          <textarea class="textarea" name="descripcion"></textarea>
+        </div>
+        <div class="flex gap-2 mt-4">
+          <button class="btn" type="submit">Guardar Cambios</button>
+          <button class="btn-outline" type="button" onclick="cancelarEdicionFamilia()">Cancelar</button>
+        </div>
+      </form>
+      <div id="result-editar-familia" class="result mt-4"></div>
+    </div>
+  </div>
+
+  <!-- Sección de Inventario Final -->
+  <div id="seccion-inventario" class="mt-8">
+    <h2>Inventario Final Diario</h2>
+    <p class="text-sm text-gray-600 mb-4">
+      Registra el conteo de productos al final del día. Solo usuarios de tienda pueden acceder a esta función.
+    </p>
+    
+    <div class="flex gap-4 mb-4">
+      <div>
+        <label class="label">Fecha y Hora</label>
+        <input class="input fecha-auto" type="datetime-local" id="fecha-inventario" readonly>
+      </div>
+      <div>
+        <label class="label">Tienda</label>
+        <select class="select" id="select-tienda-inventario">
+          <option value="">-- Seleccionar tienda --</option>
+        </select>
+      </div>
+      <button class="btn mt-6" onclick="cargarInventarioProductos()">Cargar Productos</button>
+    </div>
+
+    <div id="inventario-productos-container" style="display: none;">
+      <form id="form-inventario">
+        <div id="productos-por-familia"></div>
+        
+        <div class="mt-6">
+          <label class="label">Observaciones Generales</label>
+          <textarea class="textarea" id="observaciones-inventario" 
+                    placeholder="Observaciones sobre el inventario (opcional)"></textarea>
+        </div>
+        
+        <button class="btn mt-4" type="submit">Registrar Inventario Final</button>
+      </form>
+      
+      <div id="result-inventario" class="result mt-4"></div>
+    </div>
+  </div>
+
   <h2>Registrar Pedido</h2>
   <form id="form-pedido">
     <div class="flex justify-start gap-x-8">
@@ -262,6 +355,13 @@
         <div class="grid gap-3">
           <label class="label">Nombre del Producto</label>
           <input class="input" type="text" name="nombre" required placeholder="Ej: Pan Integral">
+        </div>
+        <div class="grid gap-3">
+          <label class="label">Familia de Producto</label>
+          <select class="select" name="familia_id" id="familia-select-producto">
+            <option value="">-- Sin familia asignada --</option>
+          </select>
+          <small style="color: #6c757d; font-size: 0.8em;">Opcional: Selecciona una familia para organizar mejor el inventario</small>
         </div>
         <button class="btn" type="submit">Agregar Producto</button>
         <div class="endpoint">POST /maestros/producto</div>
@@ -540,10 +640,12 @@
   <script src="assets/js/maestros.js"></script>
   <script src="assets/js/roles.js"></script>
   <script src="assets/js/usuarios.js"></script>
+  <script src="assets/js/inventario.js"></script>
+  <script src="assets/js/familias.js"></script>
 
   <!-- Sistema de autenticación -->
   <script>
-    let currentUser = null;
+    // currentUser ya está declarado en main.js como variable global
 
     // Verificar autenticación al cargar la página
     async function checkAuth() {

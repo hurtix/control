@@ -567,6 +567,15 @@ const verMaestros = async (tipo) => {
       resultMaestrosList.innerHTML = '<p style="color: #dc3545;">Error: No se pudieron cargar los datos maestros</p>';
       return;
     }
+
+    // Cargar familias para los selects
+    let familias = [];
+    try {
+      const familiasRes = await api('/familias');
+      familias = familiasRes.success ? familiasRes.familias : [];
+    } catch (error) {
+      console.error('Error cargando familias:', error);
+    }
     
     let html = '<div style="margin-top: 1em;">';
     
@@ -583,6 +592,7 @@ const verMaestros = async (tipo) => {
                 <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
                   <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">ID</th>
                   <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Nombre del Producto</th>
+                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Familia</th>
                   <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Fecha Registro</th>
                 </tr>
               </thead>
@@ -591,6 +601,14 @@ const verMaestros = async (tipo) => {
                   <tr style="border-bottom: 1px solid #dee2e6;">
                     <td style="padding: 0.75em; border: 1px solid #dee2e6; font-weight: bold; color: #0056b3;">${p.id}</td>
                     <td style="padding: 0.75em; border: 1px solid #dee2e6;">${p.nombre}</td>
+                    <td style="padding: 0.75em; border: 1px solid #dee2e6;">
+                      <select onchange="asignarFamiliaProducto(${p.id}, this.value)" style="padding: 0.25em; border: 1px solid #ced4da; border-radius: 3px; width: 100%;">
+                        <option value="">-- Sin familia --</option>
+                        ${familias.map(f => `
+                          <option value="${f.id}" ${p.familia_id == f.id ? 'selected' : ''}>${f.nombre}</option>
+                        `).join('')}
+                      </select>
+                    </td>
                     <td style="padding: 0.75em; border: 1px solid #dee2e6; color: #6c757d;">
                       ${new Date(p.created_at).toLocaleDateString('es-ES', {
                         year: 'numeric',
@@ -872,3 +890,50 @@ async function gestionarUsuariosTienda(tiendaId, tiendaNombre) {
     alert(`Error: ${error.message}`);
   }
 }
+
+// Función para asignar familia a un producto
+const asignarFamiliaProducto = async (productoId, familiaId) => {
+  try {
+    // Mostrar loading visual
+    const select = document.querySelector(`select[onchange*="${productoId}"]`);
+    const originalHTML = select.innerHTML;
+    select.innerHTML = '<option>Guardando...</option>';
+    select.disabled = true;
+    
+    const endpoint = `/productos/${productoId}/familia`;
+    const body = { 
+      familia_id: familiaId ? parseInt(familiaId) : null 
+    };
+    
+    const response = await api(endpoint, 'PUT', body, 'admin');
+    
+    // Verificar la respuesta del backend
+    if (response.mensaje || response.success !== false) {
+      // Mostrar mensaje de éxito temporal
+      select.style.backgroundColor = '#d4edda';
+      setTimeout(() => {
+        select.style.backgroundColor = '';
+      }, 1000);
+      
+      console.log(`Producto ${productoId} ${familiaId ? 'asignado a familia ' + familiaId : 'removido de familia'}`);
+    } else {
+      throw new Error(response.error || 'Error al asignar familia');
+    }
+    
+  } catch (error) {
+    console.error('Error asignando familia:', error);
+    alert(`Error al asignar familia: ${error.message}`);
+    
+    // Recargar la vista para restaurar el estado correcto
+    const tipo = document.querySelector('input[name="tipoMaestro"]:checked')?.value || 'all';
+    verMaestros(tipo);
+    
+  } finally {
+    // Restaurar el select
+    const select = document.querySelector(`select[onchange*="${productoId}"]`);
+    if (select) {
+      select.disabled = false;
+      // No restauramos el HTML porque queremos mantener la selección actual
+    }
+  }
+};

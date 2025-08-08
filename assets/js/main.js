@@ -154,9 +154,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Cargar lotes para trazabilidad (todos los lotes, no solo pendientes)
   await cargarLotesParaTrazabilidad();
   
-  // Cargar tiendas disponibles para el nuevo formulario de pedidos
-  await cargarTiendasDisponibles();
-  
   // Cargar opciones en el nuevo formulario de pedidos
   await cargarOpcionesEnSelect('/opciones/productos', document.querySelector('.producto-select'));
   
@@ -171,11 +168,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // Establecer fechas automáticas
   establecerFechasAutomaticas();
-  
-  // Actualizar visibilidad del botón después de cargar todos los datos
-  setTimeout(() => {
-    actualizarVisibilidadBotonAgregar();
-  }, 100);
 });
 
 // Función para establecer fechas automáticas
@@ -193,7 +185,13 @@ function establecerFechasAutomaticas() {
   // Establecer fecha y hora en todos los campos con clase fecha-auto
   const camposFechaAuto = document.querySelectorAll('.fecha-auto');
   camposFechaAuto.forEach(campo => {
-    campo.value = fechaHoraFormateada;
+    if (campo.type === 'datetime-local') {
+      // Para campos datetime-local, usar el formato ISO
+      campo.value = ahora.toISOString().slice(0, 16); // YYYY-MM-DDTHH:MM
+    } else {
+      // Para otros campos, usar el formato localizado
+      campo.value = fechaHoraFormateada;
+    }
   });
 }
 
@@ -333,3 +331,155 @@ async function cargarLotesParaRecepcion() {
     container.innerHTML = '<div class="error-message">Error al cargar lotes. Intente nuevamente.</div>';
   }
 }
+
+// Función para cargar tiendas en el select de inventario
+async function cargarTiendasParaInventario() {
+  try {
+    const select = document.getElementById('select-tienda-inventario');
+    
+    if (!select) return;
+    
+    // Depurar la estructura del usuario
+    console.log('currentUser completo:', currentUser);
+    if (currentUser && currentUser.tiendas) {
+      console.log('currentUser.tiendas:', currentUser.tiendas);
+    }
+    
+    // Si el usuario está logueado y tiene tienda asignada
+    if (currentUser && currentUser.tiendas && currentUser.tiendas.length > 0) {
+      // Usuario de tienda: preseleccionar automáticamente su tienda
+      const tiendaUsuario = currentUser.tiendas[0];
+      
+      // Verificar si tiendaUsuario es un objeto o una string
+      let tiendaNombre;
+      if (typeof tiendaUsuario === 'object' && tiendaUsuario.nombre) {
+        tiendaNombre = tiendaUsuario.nombre;
+      } else if (typeof tiendaUsuario === 'string') {
+        tiendaNombre = tiendaUsuario;
+      } else {
+        console.error('Formato de tienda no reconocido:', tiendaUsuario);
+        tiendaNombre = 'Tienda del usuario';
+      }
+      
+      // Limpiar y agregar solo la tienda del usuario
+      select.innerHTML = '';
+      const option = document.createElement('option');
+      option.value = tiendaNombre;
+      option.textContent = tiendaNombre;
+      option.selected = true;
+      select.appendChild(option);
+      
+      // Deshabilitar el select ya que no puede cambiar
+      select.disabled = true;
+      
+      console.log('Tienda del usuario preseleccionada:', tiendaNombre);
+      
+    } else if (currentUser && currentUser.rol && currentUser.rol.nombre === 'admin') {
+      // Admin: puede elegir cualquier tienda
+      const tiendas = await api('/opciones/tiendas');
+      
+      // Limpiar opciones existentes
+      select.innerHTML = '';
+      
+      // Crear opción por defecto
+      const defaultOpt = document.createElement('option');
+      defaultOpt.value = '';
+      defaultOpt.textContent = '-- Seleccionar tienda --';
+      select.appendChild(defaultOpt);
+      
+      // Agregar todas las tiendas
+      tiendas.forEach(tienda => {
+        const option = document.createElement('option');
+        option.value = tienda;
+        option.textContent = tienda;
+        select.appendChild(option);
+      });
+      
+      // Habilitar el select
+      select.disabled = false;
+      
+      console.log('Admin: todas las tiendas disponibles:', tiendas);
+      
+    } else {
+      // Usuario sin tienda asignada
+      select.innerHTML = '<option value="">Sin tienda asignada</option>';
+      select.disabled = true;
+      console.log('Usuario sin tienda asignada');
+    }
+    
+  } catch (error) {
+    console.error('Error cargando tiendas para inventario:', error);
+    const select = document.getElementById('select-tienda-inventario');
+    if (select) {
+      select.innerHTML = '<option value="">Error cargando tiendas</option>';
+    }
+  }
+}
+
+// Variable global para el usuario actual
+let currentUser = null;
+
+// Función para verificar sesión y cargar datos del usuario
+async function verificarSesion() {
+  try {
+    const response = await api('/session');
+    if (response.authenticated) {
+      currentUser = response.usuario;
+      
+      // Cargar tiendas para inventario después de obtener el usuario
+      await cargarTiendasParaInventario();
+      
+      // Las secciones están visibles por defecto
+      // Se pueden cargar datos iniciales según el rol
+      if (currentUser.rol && currentUser.rol.nombre === 'tienda') {
+        // Cargar datos de inventario si es necesario
+        console.log('Usuario de tienda detectado');
+      }
+      
+      if (currentUser.rol && currentUser.rol.nombre === 'admin') {
+        // Cargar familias automáticamente para admin
+        if (typeof cargarFamilias === 'function') {
+          cargarFamilias();
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error verificando sesión:', error);
+  }
+}
+
+// Actualizar la función obtenerUsuarioActual en inventario.js
+window.obtenerUsuarioActual = function() {
+  return currentUser;
+};
+
+// Función para cargar familias en el select del formulario de productos
+async function cargarFamiliasFormulario() {
+  try {
+    const response = await api('/familias');
+    if (response.success && response.familias) {
+      const select = document.getElementById('familia-select-producto');
+      if (select) {
+        // Limpiar opciones existentes (excepto la primera)
+        select.innerHTML = '<option value="">-- Sin familia asignada --</option>';
+        
+        // Agregar las familias
+        response.familias.forEach(familia => {
+          const option = document.createElement('option');
+          option.value = familia.id;
+          option.textContent = familia.nombre;
+          select.appendChild(option);
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Error cargando familias para formulario:', error);
+  }
+}
+
+// Ejecutar verificación de sesión al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+  verificarSesion();
+  // Cargar familias para el formulario (disponible para todos los usuarios)
+  cargarFamiliasFormulario();
+});

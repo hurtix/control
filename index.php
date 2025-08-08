@@ -881,10 +881,11 @@ $app->get('/lotes/todos', function ($request, $response) {
 
 // Endpoints para obtener opciones de selects
 $app->get('/opciones/productos', function ($request, $response) {
-    // Combinar productos de maestros y de producciones reales
-    $maestros = Maestro::where('tipo', 'producto')->where('activo', true)->pluck('nombre');
-    $usados = ProduccionItem::select('producto')->distinct()->pluck('producto');
-    $productos = $maestros->merge($usados)->unique()->sort()->values();
+    // Solo productos de maestros activos (coherencia con inventario)
+    $productos = Maestro::where('tipo', 'producto')
+        ->where('activo', true)
+        ->orderBy('nombre')
+        ->pluck('nombre');
     
     $response->getBody()->write(json_encode($productos));
     return $response->withHeader('Content-Type', 'application/json');
@@ -1013,6 +1014,7 @@ $app->post('/maestros/producto', function ($request, $response) {
     $maestro = Maestro::create([
         'tipo' => 'producto',
         'nombre' => $data['nombre'],
+        'familia_id' => !empty($data['familia_id']) ? (int)$data['familia_id'] : null,
         'activo' => true
     ]);
     
@@ -1675,6 +1677,344 @@ $app->post('/tiendas/{id}/usuarios', function ($request, $response, $args) {
         // Revertir en caso de error
         DB::rollBack();
         
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
+
+// ===== RUTAS DE INVENTARIO INICIAL =====
+
+// Obtener familias de productos
+$app->get('/familias', function ($request, $response) {
+    try {
+        $familias = FamiliaProducto::where('activo', true)->orderBy('nombre')->get();
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'familias' => $familias
+        ]));
+        return $response->withHeader('Content-Type', 'application/json');
+    } catch (Exception $e) {
+        $response->getBody()->write(json_encode([
+            'success' => false,
+            'message' => $e->getMessage(),
+            'familias' => []
+        ]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+    }
+});
+
+// Obtener productos agrupados por familia para una tienda
+$app->get('/inventario/productos/{tiendaId}', function ($request, $response, $args) {
+    $tiendaIdOrName = $args['tiendaId'];
+    
+    try {
+        // Verificar que la tienda existe (buscar por ID o por nombre)
+        $tienda = null;
+        if (is_numeric($tiendaIdOrName)) {
+            // Buscar por ID
+            $tienda = Maestro::where('id', $tiendaIdOrName)->where('tipo', 'tienda')->first();
+        } else {
+            // Buscar por nombre
+            $tienda = Maestro::where('nombre', $tiendaIdOrName)->where('tipo', 'tienda')->first();
+        }
+        
+        if (!$tienda) {
+            throw new Exception("Tienda '$tiendaIdOrName' no encontrada");
+        }
+        
+        // Verificar si hay familias creadas
+        $familiasCount = FamiliaProducto::where('activo', true)->count();
+        if ($familiasCount === 0) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'No hay familias de productos creadas. Crea familias primero en la sección de Gestión de Familias.',
+                'familias' => []
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+        
+        // Obtener productos con sus familias
+        $productos = Maestro::with('familia')
+            ->where('tipo', 'producto')
+            ->where('activo', true)
+            ->orderBy('familia_id')
+            ->orderBy('nombre')
+            ->get();
+            
+        if ($productos->isEmpty()) {
+            $response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'No hay productos registrados.',
+                'familias' => []
+            ]));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+            
+        // Agrupar por familia
+        $productosPorFamilia = [];
+        foreach ($productos as $producto) {
+            $familiaId = $producto->familia_id ?: 0;
+            $familiaNombre = $producto->familia ? $producto->familia->nombre : 'Sin Familia';
+            
+            if (!isset($productosPorFamilia[$familiaId])) {
+                $productosPorFamilia[$familiaId] = [
+                    'familia' => $familiaNombre,
+                    'productos' => []
+                ];
+            }
+            
+            $productosPorFamilia[$familiaId]['productos'][] = [
+                'id' => $producto->id,
+                'nombre' => $producto->nombre
+            ];
+        }
+        
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'familias' => array_values($productosPorFamilia)
+        ]));
+        return $response->withHeader('Content-Type', 'application/json');
+        
+    } catch (Exception $e) {
+        $response->getBody()->write(json_encode([
+            'success' => false,
+            'message' => $e->getMessage(),
+            'familias' => []
+        ]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
+
+// Obtener inventario inicial de una fecha específica para una tienda
+$app->get('/inventario/{tiendaId}/{fecha}', function ($request, $response, $args) {
+    $tiendaIdOrName = $args['tiendaId'];
+    $fecha = $args['fecha'];
+    
+    try {
+        // Buscar la tienda por ID o nombre para obtener el ID real
+        $tienda = null;
+        if (is_numeric($tiendaIdOrName)) {
+            $tienda = Maestro::where('id', $tiendaIdOrName)->where('tipo', 'tienda')->first();
+        } else {
+            $tienda = Maestro::where('nombre', $tiendaIdOrName)->where('tipo', 'tienda')->first();
+        }
+        
+        if (!$tienda) {
+            throw new Exception("Tienda '$tiendaIdOrName' no encontrada");
+        }
+        
+        $inventarios = InventarioInicial::with(['producto', 'usuario.empleado'])
+            ->where('tienda_id', $tienda->id)
+            ->where('fecha', $fecha)
+            ->get();
+            
+        $response->getBody()->write(json_encode($inventarios));
+        return $response->withHeader('Content-Type', 'application/json');
+        
+    } catch (Exception $e) {
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
+
+// Registrar inventario inicial
+$app->post('/inventario', function ($request, $response) {
+    try {
+        $data = $request->getParsedBody();
+        
+        // Validar datos requeridos
+        if (!isset($data['fecha'], $data['tienda_id'], $data['productos'])) {
+            throw new Exception("Datos incompletos");
+        }
+        
+        // Buscar la tienda por ID o nombre para obtener el ID real
+        $tienda = null;
+        if (is_numeric($data['tienda_id'])) {
+            $tienda = Maestro::where('id', $data['tienda_id'])->where('tipo', 'tienda')->first();
+        } else {
+            $tienda = Maestro::where('nombre', $data['tienda_id'])->where('tipo', 'tienda')->first();
+        }
+        
+        if (!$tienda) {
+            throw new Exception("Tienda '{$data['tienda_id']}' no encontrada");
+        }
+        
+        $tiendaId = $tienda->id;
+        
+        // Obtener el usuario actual desde headers
+        $headers = $request->getHeaders();
+        $sessionData = isset($headers['X-Session']) ? json_decode($headers['X-Session'][0], true) : null;
+        $usuarioId = $sessionData['usuario']['id'] ?? null;
+        
+        if (!$usuarioId) {
+            throw new Exception("Usuario no identificado");
+        }
+        
+        DB::beginTransaction();
+        
+        // Eliminar inventarios existentes para esta fecha y tienda
+        InventarioInicial::where('fecha', $data['fecha'])
+            ->where('tienda_id', $tiendaId)
+            ->delete();
+        
+        // Insertar nuevos inventarios
+        $inventarios = [];
+        foreach ($data['productos'] as $productoData) {
+            if (isset($productoData['producto_id'], $productoData['cantidad_inicial']) && 
+                $productoData['cantidad_inicial'] >= 0) {
+                
+                $inventarios[] = [
+                    'fecha' => $data['fecha'],
+                    'tienda_id' => $tiendaId,
+                    'producto_id' => $productoData['producto_id'],
+                    'cantidad_inicial' => $productoData['cantidad_inicial'],
+                    'usuario_id' => $usuarioId,
+                    'observaciones' => $productoData['observaciones'] ?? null,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ];
+            }
+        }
+        
+        if (empty($inventarios)) {
+            throw new Exception("No hay productos válidos para registrar");
+        }
+        
+        DB::table('inventario_inicial')->insert($inventarios);
+        
+        DB::commit();
+        
+        $response->getBody()->write(json_encode([
+            'mensaje' => 'Inventario inicial registrado exitosamente',
+            'productos_registrados' => count($inventarios)
+        ]));
+        return $response->withHeader('Content-Type', 'application/json');
+        
+    } catch (Exception $e) {
+        DB::rollBack();
+        $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
+
+// Gestión de familias (solo admin)
+$app->post('/familias', function ($request, $response) {
+    try {
+        $data = $request->getParsedBody();
+        
+        if (!isset($data['nombre'])) {
+            throw new Exception("Nombre de familia requerido");
+        }
+        
+        $familia = FamiliaProducto::create([
+            'nombre' => $data['nombre'],
+            'descripcion' => $data['descripcion'] ?? null,
+            'activo' => true
+        ]);
+        
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'familia' => $familia,
+            'message' => 'Familia creada exitosamente'
+        ]));
+        return $response->withHeader('Content-Type', 'application/json');
+        
+    } catch (Exception $e) {
+        $response->getBody()->write(json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
+
+// Actualizar familia
+$app->put('/familias/{id}', function ($request, $response, $args) {
+    try {
+        $familiaId = (int)$args['id'];
+        $data = $request->getParsedBody();
+        
+        $familia = FamiliaProducto::find($familiaId);
+        if (!$familia) {
+            throw new Exception("Familia no encontrada");
+        }
+        
+        if (isset($data['nombre'])) {
+            $familia->nombre = $data['nombre'];
+        }
+        if (isset($data['descripcion'])) {
+            $familia->descripcion = $data['descripcion'];
+        }
+        
+        $familia->save();
+        
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'familia' => $familia,
+            'message' => 'Familia actualizada exitosamente'
+        ]));
+        return $response->withHeader('Content-Type', 'application/json');
+        
+    } catch (Exception $e) {
+        $response->getBody()->write(json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
+
+// Eliminar familia
+$app->delete('/familias/{id}', function ($request, $response, $args) {
+    try {
+        $familiaId = (int)$args['id'];
+        
+        $familia = FamiliaProducto::find($familiaId);
+        if (!$familia) {
+            throw new Exception("Familia no encontrada");
+        }
+        
+        // Verificar si hay productos asignados a esta familia
+        $productosAsignados = Maestro::where('familia_id', $familiaId)->count();
+        if ($productosAsignados > 0) {
+            throw new Exception("No se puede eliminar la familia porque tiene productos asignados");
+        }
+        
+        $familia->delete();
+        
+        $response->getBody()->write(json_encode([
+            'success' => true,
+            'message' => 'Familia eliminada exitosamente'
+        ]));
+        return $response->withHeader('Content-Type', 'application/json');
+        
+    } catch (Exception $e) {
+        $response->getBody()->write(json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]));
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
+
+// Asignar familia a producto
+$app->put('/productos/{id}/familia', function ($request, $response, $args) {
+    try {
+        $productoId = (int)$args['id'];
+        $data = $request->getParsedBody();
+        
+        $producto = Maestro::where('id', $productoId)->where('tipo', 'producto')->first();
+        if (!$producto) {
+            throw new Exception("Producto no encontrado");
+        }
+        
+        $producto->familia_id = $data['familia_id'] ?? null;
+        $producto->save();
+        
+        $response->getBody()->write(json_encode(['mensaje' => 'Familia asignada exitosamente']));
+        return $response->withHeader('Content-Type', 'application/json');
+        
+    } catch (Exception $e) {
         $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }

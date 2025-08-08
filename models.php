@@ -155,7 +155,39 @@ class Recepcion extends Model {
 class Maestro extends Model {
     protected $table = 'maestros';
     public $timestamps = true;
-    protected $fillable = ['tipo', 'nombre', 'dni', 'activo'];
+    protected $fillable = ['tipo', 'nombre', 'dni', 'activo', 'familia_id'];
+    
+    public function familia() {
+        return $this->belongsTo(FamiliaProducto::class, 'familia_id');
+    }
+}
+
+class FamiliaProducto extends Model {
+    protected $table = 'familias_productos';
+    public $timestamps = true;
+    protected $fillable = ['nombre', 'descripcion', 'activo'];
+    
+    public function productos() {
+        return $this->hasMany(Maestro::class, 'familia_id')->where('tipo', 'producto');
+    }
+}
+
+class InventarioInicial extends Model {
+    protected $table = 'inventario_inicial';
+    public $timestamps = true;
+    protected $fillable = ['fecha', 'tienda_id', 'producto_id', 'cantidad_inicial', 'usuario_id', 'observaciones'];
+    
+    public function tienda() {
+        return $this->belongsTo(Maestro::class, 'tienda_id');
+    }
+    
+    public function producto() {
+        return $this->belongsTo(Maestro::class, 'producto_id');
+    }
+    
+    public function usuario() {
+        return $this->belongsTo(Usuario::class);
+    }
 }
 
 // Configuración de la base de datos
