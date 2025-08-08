@@ -1,3 +1,103 @@
+// Guardado manual y limpiar progreso para pedidos
+document.addEventListener('DOMContentLoaded', () => {
+  // Guardado manual
+  const btnGuardar = document.getElementById('btn-guardar-progreso-pedidos');
+  if (btnGuardar) {
+    btnGuardar.onclick = function() {
+      guardarProgresoPedidos();
+      const originalText = this.textContent;
+      this.textContent = '✓ Guardado';
+      this.classList.add('btn-success');
+      setTimeout(() => {
+        this.textContent = originalText;
+        this.classList.remove('btn-success');
+      }, 2000);
+    };
+  }
+  // Limpiar todo
+  const btnLimpiar = document.getElementById('btn-limpiar-progreso-pedidos');
+  if (btnLimpiar) {
+    btnLimpiar.onclick = function() {
+      if (confirm('¿Estás seguro de que quieres limpiar todos los datos?\n\nEsta acción no se puede deshacer.')) {
+        localStorage.removeItem(PEDIDOS_PROGRESO_KEY);
+        // Limpiar productos
+        const container = document.getElementById('productos-tiendas-container');
+        container.innerHTML = '';
+        // Limpiar totales en el footer
+        if (typeof inicializarTotalesTienda === 'function') {
+          inicializarTotalesTienda();
+        }
+        // Limpiar gran total
+        const granTotalElement = document.getElementById('gran-total');
+        if (granTotalElement) {
+          granTotalElement.textContent = '0';
+        }
+        // Opcional: agregar una fila vacía si así lo deseas
+      }
+    };
+  }
+  // Autoguardado en inputs
+  document.addEventListener('input', function(e) {
+    if (e.target && e.target.classList && e.target.classList.contains('cantidad-tienda-input')) {
+      guardarProgresoPedidos();
+    }
+    if (e.target && e.target.classList && e.target.classList.contains('producto-select')) {
+      guardarProgresoPedidos();
+    }
+  });
+});
+// --- GUARDADO Y RESTAURACIÓN DE PROGRESO DE PEDIDOS ---
+const PEDIDOS_PROGRESO_KEY = 'pedidos_progreso';
+
+function guardarProgresoPedidos() {
+  const productos = [];
+  document.querySelectorAll('.producto-tienda-item').forEach(fila => {
+    const select = fila.querySelector('.producto-select');
+    const producto = select ? select.value : '';
+    if (!producto) return;
+    const cantidades = {};
+    fila.querySelectorAll('.cantidad-tienda-input').forEach(input => {
+      cantidades[input.dataset.tienda] = input.value;
+    });
+    productos.push({ producto, cantidades });
+  });
+  const progreso = { productos, timestamp: new Date().toISOString() };
+  localStorage.setItem(PEDIDOS_PROGRESO_KEY, JSON.stringify(progreso));
+}
+
+async function cargarProgresoPedidos() {
+  const progreso = localStorage.getItem(PEDIDOS_PROGRESO_KEY);
+  if (!progreso) return;
+  try {
+    const data = JSON.parse(progreso);
+    // Limpiar productos actuales
+    const container = document.getElementById('productos-tiendas-container');
+    container.innerHTML = '';
+    for (let idx = 0; idx < data.productos.length; idx++) {
+      const item = data.productos[idx];
+      const fila = agregarProductoPedido();
+      const select = fila.querySelector('.producto-select');
+      // Esperar a que las opciones estén cargadas
+      setTimeout(() => {
+        select.value = item.producto;
+        actualizarTiendasProducto(select).then(() => {
+          Object.entries(item.cantidades).forEach(([tienda, valor]) => {
+            const input = fila.querySelector(`.cantidad-tienda-input[data-tienda="${tienda}"]`);
+            if (input) {
+              input.value = valor;
+              actualizarTotales(input);
+            }
+          });
+        });
+      }, 200);
+    }
+  } catch (e) { console.error('Error cargando progreso pedidos:', e); }
+}
+
+// Restaurar progreso automáticamente al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+  cargarProgresoPedidos();
+});
 // Funciones para gestión de pedidos
 const cargarTiendasDisponibles = async () => {
   console.log('=== cargarTiendasDisponibles iniciado ===');
@@ -201,14 +301,13 @@ const agregarProductoPedido = () => {
     </td>
   `;
   container.appendChild(nuevoProducto);
-  
   // Cargar opciones en el nuevo select
   cargarOpcionesEnSelect('/opciones/productos', nuevoProducto.querySelector('.producto-select'));
-  
   // Actualizar disponibilidad después de agregar el nuevo select
   setTimeout(() => {
     actualizarDisponibilidadProductos();
   }, 100);
+  return nuevoProducto;
 };
 
 const removerProductoPedido = (button) => {
