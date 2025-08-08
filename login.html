@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/basecoat.cdn.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/js/all.min.js" defer></script>
-  <style>
+  <!-- <style>
     .error-message {
       color: #dc3545;
       text-align: center;
@@ -18,7 +18,7 @@
       border: 1px solid #f5c6cb;
       border-radius: 4px;
     }
-  </style>
+  </style> -->
 </head>
 <body>
   <div class="max-w-[400px] mx-auto flex flex-col justify-center items-center h-screen">
@@ -34,18 +34,32 @@
           <option value="">-- Seleccionar usuario --</option>
         </select>
       
-      
-      <label class="label">
+      <div id="password-container">
+      <label class="label mb-3">
         Contraseña</label>
-        <input class="input" type="password" name="password" required placeholder="Ingresa tu contraseña">
-      
+        <div class="flex gap-x-3 [&_input]:text-center [&_input]:text-xl [&_input]:h-12" data-hs-pin-input="">
+          <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="input" data-hs-pin-input-item required autofocus>
+          <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="input" data-hs-pin-input-item required>
+          <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="input" data-hs-pin-input-item required>
+          <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="input" data-hs-pin-input-item required>
+          <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="input" data-hs-pin-input-item required>
+          <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="input" data-hs-pin-input-item required>
+        </div>
+        <input type="hidden" name="password" required>
+      </div>
       
       <button type="submit" class="btn" id="btn-login">
         <span id="btn-text">Ingresar</span>
         <span id="btn-loading" style="display: none;">Verificando...</span>
       </button>
       
-      <div id="error-message" class="error-message" style="display: none;"></div>
+      <div id="error-message" class="alert-destructive" style="display: none; align-items: flex-start; gap: 0.75em;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></svg>
+        <div>
+          <h2 id="error-title" style="margin:0; font-size:1.1em; font-weight:bold;">¡Algo salió mal!</h2>
+          <section id="error-detail" style="margin:0; font-size:0.97em;">Tu sesión ha expirado. Por favor inicia sesión de nuevo.</section>
+        </div>
+      </div>
     </form>
     
     <div style="margin-top: 2em; padding-top: 1em; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 0.9em;">
@@ -56,6 +70,37 @@
     </div>
   </div>
 </div>
+  <script src="assets/js/login-pin.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const selectUsuario = document.getElementById('select-usuario');
+      const pinInputs = document.querySelectorAll('[data-hs-pin-input-item]');
+      const btnLogin = document.getElementById('btn-login');
+
+      // Al inicio, deshabilitar pin y botón
+      pinInputs.forEach(input => { input.disabled = true; });
+      btnLogin.disabled = true;
+
+      // Habilitar pin cuando se selecciona usuario
+      selectUsuario.addEventListener('change', function() {
+        if (this.value) {
+          pinInputs.forEach(input => { input.disabled = false; });
+          pinInputs[0].focus();
+        } else {
+          pinInputs.forEach(input => { input.value = ''; input.disabled = true; });
+          btnLogin.disabled = true;
+        }
+      });
+
+      // Habilitar botón solo si todos los pin están llenos
+      pinInputs.forEach(input => {
+        input.addEventListener('input', function() {
+          const allFilled = Array.from(pinInputs).every(i => i.value.length === 1);
+          btnLogin.disabled = !allFilled;
+        });
+      });
+    });
+  </script>
   <script>
     // Cargar lista de usuarios al cargar la página
     async function cargarUsuarios() {
@@ -116,15 +161,17 @@
           // Login exitoso - redirigir al dashboard
           window.location.href = '/dashboard.html';
         } else {
-          // Mostrar error
-          errorDiv.textContent = result.error || 'Error de autenticación';
-          errorDiv.style.display = 'block';
+          // Mostrar error visual mejorado
+          document.getElementById('error-title').textContent = '¡Algo salió mal!';
+          document.getElementById('error-detail').textContent = result.error || 'Error de autenticación';
+          errorDiv.style.display = 'flex';
         }
         
       } catch (error) {
-        console.error('Error en login:', error);
-        errorDiv.textContent = 'Error de conexión. Intenta nuevamente.';
-        errorDiv.style.display = 'block';
+  console.error('Error en login:', error);
+  document.getElementById('error-title').textContent = '¡Algo salió mal!';
+  document.getElementById('error-detail').textContent = 'Error de conexión. Intenta nuevamente.';
+  errorDiv.style.display = 'flex';
       } finally {
         // Restaurar UI
         btnLogin.disabled = false;
