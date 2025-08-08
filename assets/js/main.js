@@ -139,6 +139,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     input.value = hoy;
   });
 
+  // Establecer fechas automáticas en campos con clase fecha-auto
+  establecerFechasAutomaticas();
+
   // Ocultar inputs personalizados inicialmente
   document.querySelectorAll('[id*="input-"]').forEach(input => {
     input.style.display = 'none';

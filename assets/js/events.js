@@ -276,22 +276,29 @@ formRecepcion.onsubmit = async e => {
   
   data.items = items;
   data.lote_id = Number(data.lote_id);
-  data.tienda = tiendaSeleccionada; // Agregar tienda al payload
-  
+
   const res = await api('/recepcion', 'POST', data, 'tienda');
   resultRecepcion.textContent = JSON.stringify(res, null, 2);
   
   // No limpiar completamente el formulario, mantener el lote seleccionado
   // y actualizar las tiendas disponibles
-  const fechaActual = document.querySelector('[name="fecha"]').value;
-  const loteActual = document.getElementById('select-lote-recepcion').value;
-  const empleadoActual = document.getElementById('select-empleado-recepcion').value;
-  const observacionesActuales = document.querySelector('[name="observaciones"]').value;
+  const fechaElement = document.querySelector('#form-recepcion [name="fecha"]');
+  const loteElement = document.getElementById('select-lote-recepcion');
+  const empleadoElement = document.getElementById('select-empleado-recepcion');
+  const observacionesElement = document.querySelector('#form-recepcion [name="observaciones"]');
+  
+  const fechaActual = fechaElement ? fechaElement.value : '';
+  const loteActual = loteElement ? loteElement.value : '';
+  const empleadoActual = empleadoElement ? empleadoElement.value : '';
+  const observacionesActuales = observacionesElement ? observacionesElement.value : '';
   
   // Solo limpiar los contenedores dinámicos
   document.getElementById('despachos-tienda-container').style.display = 'none';
   document.getElementById('despachos-tienda-lista').innerHTML = '';
-  document.getElementById('select-tienda-recepcion').innerHTML = '<option value="">-- Seleccionar tienda --</option>';
+  const selectTienda = document.getElementById('select-tienda-recepcion');
+  if (selectTienda) {
+    selectTienda.innerHTML = '<option value="">-- Seleccionar tienda --</option>';
+  }
   
   // Verificar si el lote se completó (todas las tiendas recibieron)
   let loteCompletado = false;
@@ -305,20 +312,30 @@ formRecepcion.onsubmit = async e => {
     document.getElementById('tiendas-lote-container').style.display = 'none';
     document.getElementById('despachos-tienda-container').style.display = 'none';
     document.getElementById('despachos-tienda-lista').innerHTML = '';
-    document.getElementById('select-tienda-recepcion').innerHTML = '<option value="">-- Seleccionar tienda --</option>';
+    const selectTienda = document.getElementById('select-tienda-recepcion');
+    if (selectTienda) {
+      selectTienda.innerHTML = '<option value="">-- Seleccionar tienda --</option>';
+    }
     
     // Establecer fecha actual
-    const hoy = new Date().toISOString().split('T')[0];
-    document.querySelector('[name="fecha"]').value = hoy;
+    establecerFechasAutomaticas();
     
-    // Recargar lotes despachados para que desaparezca el completado
-    await cargarLotesDespachados();
+    // Recargar lotes para recepción para que desaparezca el completado
+    await cargarLotesParaRecepcion();
   } else {
     // Mantener valores del formulario principal si el lote aún tiene tiendas pendientes
-    document.querySelector('[name="fecha"]').value = fechaActual;
-    document.getElementById('select-lote-recepcion').value = loteActual;
-    document.getElementById('select-empleado-recepcion').value = empleadoActual;
-    document.querySelector('[name="observaciones"]').value = observacionesActuales;
+    const fechaElement = document.querySelector('#form-recepcion [name="fecha"]');
+    const loteElement = document.getElementById('select-lote-recepcion');
+    const empleadoElement = document.getElementById('select-empleado-recepcion');
+    const observacionesElement = document.querySelector('#form-recepcion [name="observaciones"]');
+    
+    if (fechaElement) fechaElement.value = fechaActual;
+    if (loteElement) loteElement.value = loteActual;
+    if (empleadoElement) empleadoElement.value = empleadoActual;
+    if (observacionesElement) observacionesElement.value = observacionesActuales;
+    
+    // Recargar lotes para mostrar estado actualizado
+    await cargarLotesParaRecepcion();
     
     // Actualizar las tiendas disponibles para el mismo lote
     if (loteActual) {

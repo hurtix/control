@@ -9,6 +9,40 @@ use Illuminate\Database\Capsule\Manager as DB;
 $app = AppFactory::create();
 $app->addBodyParsingMiddleware();
 
+// Middleware para servir archivos estáticos
+$app->add(function ($request, $handler) {
+    $uri = $request->getUri();
+    $path = $uri->getPath();
+    
+    // Verificar si es una solicitud de archivo estático
+    if (preg_match('/^\/assets\/.*\.(css|js|png|jpg|jpeg|gif|ico|svg)$/', $path)) {
+        $filePath = __DIR__ . $path;
+        
+        if (file_exists($filePath)) {
+            // Determinar el tipo de contenido
+            $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+            $contentTypes = [
+                'css' => 'text/css',
+                'js' => 'application/javascript',
+                'png' => 'image/png',
+                'jpg' => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'gif' => 'image/gif',
+                'ico' => 'image/x-icon',
+                'svg' => 'image/svg+xml'
+            ];
+            
+            $contentType = $contentTypes[$extension] ?? 'application/octet-stream';
+            
+            $response = new \Slim\Psr7\Response();
+            $response->getBody()->write(file_get_contents($filePath));
+            return $response->withHeader('Content-Type', $contentType);
+        }
+    }
+    
+    return $handler->handle($request);
+});
+
 $app->add(function ($request, $handler) {
     $metodo = $request->getMethod();
     $ruta = $request->getUri()->getPath();
