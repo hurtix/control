@@ -110,13 +110,13 @@ button:hover {
   background: #005a87; 
 } */
 
-.result { 
+/* .result { 
   background: #f9f9f9; 
   padding: 1em; 
   border-radius: 5px; 
   overflow-y: auto; 
   font-size: 0.9em; 
-}
+} */
 
 .endpoint { 
   color: #888; 
