@@ -177,6 +177,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // Establecer fechas automáticas
   establecerFechasAutomaticas();
+  
+  // Registrar evento submit para limpiar al registrar pedido
+  if (formPedido) {
+    formPedido.addEventListener('submit', function(e) {
+      setTimeout(() => {
+        // Lógica idéntica al botón Limpiar Todo (sin confirmación)
+        localStorage.removeItem('pedidos_progreso');
+        // Limpiar productos
+        const container = document.getElementById('productos-tiendas-container');
+        if (container) container.innerHTML = '';
+        // Limpiar totales en el footer
+        if (typeof inicializarTotalesTienda === 'function') {
+          inicializarTotalesTienda();
+        }
+        // Limpiar gran total
+        const granTotalElement = document.getElementById('gran-total');
+        if (granTotalElement) {
+          granTotalElement.textContent = '0';
+        }
+        // Opcional: agregar una fila vacía si así lo deseas
+      }, 500);
+    });
+  }
 });
 
 // Función para establecer fechas automáticas
