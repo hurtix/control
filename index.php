@@ -353,20 +353,37 @@ $app->post('/produccion', function ($request, $response) {
         $solicitadasPorProducto[$producto] += $cantidad;
     }
 
-    // Preparar resumen por producto
+    // Preparar resumen por producto y crear alertas por déficit/superávit
     $resumen = [];
     foreach ($produccionItems as $item) {
         $producto = $item->producto;
         $cantidad_producida = (int)$item->cantidad_producida;
         $cantidad_solicitada = isset($solicitadasPorProducto[$producto]) ? (int)$solicitadasPorProducto[$producto] : 0;
         $diferencia = $cantidad_producida - $cantidad_solicitada;
+        $estado = $diferencia < 0 ? 'déficit' : ($diferencia > 0 ? 'superávit' : 'justo');
         $resumen[] = [
             'producto' => $producto,
             'cantidad_producida' => $cantidad_producida,
             'cantidad_solicitada' => $cantidad_solicitada,
             'diferencia' => $diferencia,
-            'estado' => $diferencia < 0 ? 'déficit' : ($diferencia > 0 ? 'superávit' : 'justo')
+            'estado' => $estado
         ];
+        // Crear alerta si hay déficit o superávit
+        if ($estado === 'déficit') {
+            Alerta::create([
+                'fecha' => date('Y-m-d H:i:s'),
+                'fase' => 'produccion',
+                'tipo' => 'warning',
+                'mensaje' => "Déficit en producción: Se produjeron $cantidad_producida de $producto, pero se solicitaron $cantidad_solicitada (lote {$lote->codigo_lote})."
+            ]);
+        } elseif ($estado === 'superávit') {
+            Alerta::create([
+                'fecha' => date('Y-m-d H:i:s'),
+                'fase' => 'produccion',
+                'tipo' => 'warning',
+                'mensaje' => "Superávit en producción: Se produjeron $cantidad_producida de $producto, pero se solicitaron $cantidad_solicitada (lote {$lote->codigo_lote})."
+            ]);
+        }
     }
 
     // Ocultar cantidad_producida en los items del pedido en la respuesta

@@ -74,15 +74,28 @@ async function cargarAlertas() {
   badge.style.display = unread > 0 ? 'inline-block' : 'none';
 }
 
+
 async function marcarAlertaLeida(id, btn) {
   btn.disabled = true;
   await api(`/alertas/${id}/read`, 'POST');
   // Ocultar la notificación visualmente
-  btn.closest('li').remove();
-  // Si ya no hay notificaciones, mostrar mensaje vacío
+  const li = btn.closest('li');
+  if (li) li.remove();
+  // Actualizar el contador de notificaciones inmediatamente
   const ul = document.getElementById('notifications-list');
-  if (ul && ul.children.length === 0) {
-    ul.innerHTML = '<li class="text-gray-500">No hay notificaciones nuevas</li>';
+  let unread = 0;
+  if (ul) {
+    // Contar los elementos restantes con botón "Marcar como leída"
+    unread = ul.querySelectorAll('button[onclick^="marcarAlertaLeida"]').length;
+    if (unread === 0) {
+      ul.innerHTML = '<li class="text-gray-500">No hay notificaciones nuevas</li>';
+    }
+  }
+  // Actualizar badge
+  const badge = document.getElementById('notifications-badge');
+  if (badge) {
+    badge.textContent = unread > 0 ? unread : '';
+    badge.style.display = unread > 0 ? 'inline-block' : 'none';
   }
 }
 

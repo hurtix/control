@@ -38,15 +38,14 @@ const actualizarProductoLote = (loteId, productosData) => {
             
             </div>
             <div class="flex items-center gap-x-4"><label class="label">Qty producida</label>
-              <input type="number" 
-                    class="cantidad-producida-input input w-[100px] text-lg" 
-                    data-producto="${producto}"
-                    data-cantidad-solicitada="${cantidad}"
-                    min="0" 
-                    max="${cantidad * 1.2}"
-                    placeholder=""
-                    oninput="actualizarEstadoProduccion(this)"
-                    required>
+      <input type="number" 
+        class="cantidad-producida-input input w-[100px] text-lg" 
+        data-producto="${producto}"
+        data-cantidad-solicitada="${cantidad}"
+        min="0" 
+        placeholder=""
+        oninput="actualizarEstadoProduccion(this)"
+        required>
                     <div class="estado-produccion mt-1"></div>
                     </div>
             </div>
