@@ -73,9 +73,9 @@ function mostrarPedidosFormateados(datos) {
     <thead>
       <tr>
         <th>Lote</th>
-        <th>Responsable</th>
         <th>Fecha Pedido</th>
         <th>Fecha Requerida</th>
+        <th>Responsable</th>
         <th>Productos</th>
       </tr>
     </thead>
@@ -93,10 +93,10 @@ function mostrarPedidosFormateados(datos) {
         productosBtn = '<span>Sin productos</span>';
       }
       html += `<tr>
-        <td><svg viewBox="0 0 24 24" class="w-4 inline" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C11.3953 1.25 10.8384 1.40029 10.2288 1.65242C9.64008 1.89588 8.95633 2.25471 8.1049 2.70153L6.03739 3.78651C4.99242 4.33487 4.15616 4.77371 3.51047 5.20491C2.84154 5.65164 2.32632 6.12201 1.95112 6.75918C1.57718 7.39421 1.40896 8.08184 1.32829 8.90072C1.24999 9.69558 1.24999 10.6731 1.25 11.9026V12.0974C1.24999 13.3268 1.24999 14.3044 1.32829 15.0993C1.40896 15.9182 1.57718 16.6058 1.95112 17.2408C2.32632 17.878 2.84154 18.3484 3.51047 18.7951C4.15616 19.2263 4.99241 19.6651 6.03737 20.2135L8.10481 21.2984C8.95628 21.7453 9.64006 22.1041 10.2288 22.3476C10.8384 22.5997 11.3953 22.75 12 22.75C12.6047 22.75 13.1616 22.5997 13.7712 22.3476C14.3599 22.1041 15.0437 21.7453 15.8951 21.2985L17.9626 20.2135C19.0076 19.6651 19.8438 19.2263 20.4895 18.7951C21.1585 18.3484 21.6737 17.878 22.0489 17.2408C22.4228 16.6058 22.591 15.9182 22.6717 15.0993C22.75 14.3044 22.75 13.3269 22.75 12.0975V11.9025C22.75 10.6731 22.75 9.69557 22.6717 8.90072C22.591 8.08184 22.4228 7.39421 22.0489 6.75918C21.6737 6.12201 21.1585 5.65164 20.4895 5.20491C19.8438 4.77371 19.0076 4.33487 17.9626 3.7865L15.8951 2.70154C15.0437 2.25472 14.3599 1.89589 13.7712 1.65242C13.1616 1.40029 12.6047 1.25 12 1.25ZM8.7708 4.04608C9.66052 3.57917 10.284 3.2528 10.802 3.03856C11.3062 2.83004 11.6605 2.75 12 2.75C12.3395 2.75 12.6938 2.83004 13.198 3.03856C13.716 3.2528 14.3395 3.57917 15.2292 4.04608L17.2292 5.09563C18.3189 5.66748 19.0845 6.07032 19.6565 6.45232C19.9387 6.64078 20.1604 6.81578 20.3395 6.99174L17.0088 8.65708L8.50895 4.18349L8.7708 4.04608ZM6.94466 5.00439L6.7708 5.09563C5.68111 5.66747 4.91553 6.07032 4.34352 6.45232C4.06131 6.64078 3.83956 6.81578 3.66054 6.99174L12 11.1615L15.3572 9.48289L7.15069 5.16369C7.07096 5.12173 7.00191 5.06743 6.94466 5.00439ZM2.93768 8.30737C2.88718 8.52125 2.84901 8.76413 2.82106 9.04778C2.75084 9.7606 2.75 10.6644 2.75 11.9415V12.0585C2.75 13.3356 2.75084 14.2394 2.82106 14.9522C2.88974 15.6494 3.02022 16.1002 3.24367 16.4797C3.46587 16.857 3.78727 17.1762 4.34352 17.5477C4.91553 17.9297 5.68111 18.3325 6.7708 18.9044L8.7708 19.9539C9.66052 20.4208 10.284 20.7472 10.802 20.9614C10.9656 21.0291 11.1134 21.0832 11.25 21.1255V12.4635L2.93768 8.30737ZM12.75 21.1255C12.8866 21.0832 13.0344 21.0291 13.198 20.9614C13.716 20.7472 14.3395 20.4208 15.2292 19.9539L17.2292 18.9044C18.3189 18.3325 19.0845 17.9297 19.6565 17.5477C20.2127 17.1762 20.5341 16.857 20.7563 16.4797C20.9798 16.1002 21.1103 15.6494 21.1789 14.9522C21.2492 14.2394 21.25 13.3356 21.25 12.0585V11.9415C21.25 10.6644 21.2492 9.7606 21.1789 9.04778C21.151 8.76412 21.1128 8.52125 21.0623 8.30736L17.75 9.96352V13C17.75 13.4142 17.4142 13.75 17 13.75C16.5858 13.75 16.25 13.4142 16.25 13V10.7135L12.75 12.4635V21.1255Z" fill="currentColor"></path> </g></svg> ${loteId}</td>
-        <td>${pedido.empleado || 'No especificado'}</td>
+        <td><svg viewBox="0 0 24 24" class="w-4 inline-flex items-center" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C11.3953 1.25 10.8384 1.40029 10.2288 1.65242C9.64008 1.89588 8.95633 2.25471 8.1049 2.70153L6.03739 3.78651C4.99242 4.33487 4.15616 4.77371 3.51047 5.20491C2.84154 5.65164 2.32632 6.12201 1.95112 6.75918C1.57718 7.39421 1.40896 8.08184 1.32829 8.90072C1.24999 9.69558 1.24999 10.6731 1.25 11.9026V12.0974C1.24999 13.3268 1.24999 14.3044 1.32829 15.0993C1.40896 15.9182 1.57718 16.6058 1.95112 17.2408C2.32632 17.878 2.84154 18.3484 3.51047 18.7951C4.15616 19.2263 4.99241 19.6651 6.03737 20.2135L8.10481 21.2984C8.95628 21.7453 9.64006 22.1041 10.2288 22.3476C10.8384 22.5997 11.3953 22.75 12 22.75C12.6047 22.75 13.1616 22.5997 13.7712 22.3476C14.3599 22.1041 15.0437 21.7453 15.8951 21.2985L17.9626 20.2135C19.0076 19.6651 19.8438 19.2263 20.4895 18.7951C21.1585 18.3484 21.6737 17.878 22.0489 17.2408C22.4228 16.6058 22.591 15.9182 22.6717 15.0993C22.75 14.3044 22.75 13.3269 22.75 12.0975V11.9025C22.75 10.6731 22.75 9.69557 22.6717 8.90072C22.591 8.08184 22.4228 7.39421 22.0489 6.75918C21.6737 6.12201 21.1585 5.65164 20.4895 5.20491C19.8438 4.77371 19.0076 4.33487 17.9626 3.7865L15.8951 2.70154C15.0437 2.25472 14.3599 1.89589 13.7712 1.65242C13.1616 1.40029 12.6047 1.25 12 1.25ZM8.7708 4.04608C9.66052 3.57917 10.284 3.2528 10.802 3.03856C11.3062 2.83004 11.6605 2.75 12 2.75C12.3395 2.75 12.6938 2.83004 13.198 3.03856C13.716 3.2528 14.3395 3.57917 15.2292 4.04608L17.2292 5.09563C18.3189 5.66748 19.0845 6.07032 19.6565 6.45232C19.9387 6.64078 20.1604 6.81578 20.3395 6.99174L17.0088 8.65708L8.50895 4.18349L8.7708 4.04608ZM6.94466 5.00439L6.7708 5.09563C5.68111 5.66747 4.91553 6.07032 4.34352 6.45232C4.06131 6.64078 3.83956 6.81578 3.66054 6.99174L12 11.1615L15.3572 9.48289L7.15069 5.16369C7.07096 5.12173 7.00191 5.06743 6.94466 5.00439ZM2.93768 8.30737C2.88718 8.52125 2.84901 8.76413 2.82106 9.04778C2.75084 9.7606 2.75 10.6644 2.75 11.9415V12.0585C2.75 13.3356 2.75084 14.2394 2.82106 14.9522C2.88974 15.6494 3.02022 16.1002 3.24367 16.4797C3.46587 16.857 3.78727 17.1762 4.34352 17.5477C4.91553 17.9297 5.68111 18.3325 6.7708 18.9044L8.7708 19.9539C9.66052 20.4208 10.284 20.7472 10.802 20.9614C10.9656 21.0291 11.1134 21.0832 11.25 21.1255V12.4635L2.93768 8.30737ZM12.75 21.1255C12.8866 21.0832 13.0344 21.0291 13.198 20.9614C13.716 20.7472 14.3395 20.4208 15.2292 19.9539L17.2292 18.9044C18.3189 18.3325 19.0845 17.9297 19.6565 17.5477C20.2127 17.1762 20.5341 16.857 20.7563 16.4797C20.9798 16.1002 21.1103 15.6494 21.1789 14.9522C21.2492 14.2394 21.25 13.3356 21.25 12.0585V11.9415C21.25 10.6644 21.2492 9.7606 21.1789 9.04778C21.151 8.76412 21.1128 8.52125 21.0623 8.30736L17.75 9.96352V13C17.75 13.4142 17.4142 13.75 17 13.75C16.5858 13.75 16.25 13.4142 16.25 13V10.7135L12.75 12.4635V21.1255Z" fill="currentColor"></path> </g></svg> ${loteId}</td>
         <td>${fechaPedido}</td>
         <td>${fechaRequerida}</td>
+        <td>${pedido.empleado || 'No especificado'}</td>
         <td>${productosBtn}
           <dialog id="dialog-${loteId}" class="dialog w-full sm:max-w-[425px] max-h-[612px]" aria-labelledby="dialog-${loteId}-title" aria-describedby="dialog-${loteId}-description" onclick="if (event.target === this) this.close()">
           <article>
@@ -165,72 +165,94 @@ function mostrarPedidosFormateados(datos) {
 
 // Función para mostrar producción formateada
 function mostrarProduccionFormateada(datos) {
-  let html = `<h3 style="color: #f39c12; margin-bottom: 1.5em;">🏭 Consulta de Producción</h3>`;
-  
-  // Intentar diferentes estructuras de datos
+  let html = `<h3>Consulta de Producción</h3>`;
   let produccion = datos.produccion || datos || [];
-  if (!Array.isArray(produccion)) {
-    produccion = [];
-  }
-  
-  if (produccion.length === 0) {
-    return html + `<p style="color: #6c757d; text-align: center; padding: 2em;">No hay registros de producción</p>`;
-  }
-  
-  produccion.forEach(prod => {
+  if (!Array.isArray(produccion)) produccion = [];
+  if (produccion.length === 0) return html + `<p>No hay registros de producción</p>`;
+  html += `<div class="border p-4 rounded-lg"><table class="table">
+    <thead>
+      <tr>
+        <th>Lote</th>
+        <th>Fecha Producción</th>
+        <th>Responsable</th>
+        <th>Observaciones</th>
+        <th>Productos</th>
+      </tr>
+    </thead>
+    <tbody>`;
+  produccion.forEach((prod, idx) => {
     const fecha = new Date(prod.fecha).toLocaleString('es-ES');
-    
-    html += `<div style="margin-bottom: 2em; padding: 1.5em; border-left: 4px solid #f39c12; background: #fef9e7; border-radius: 0 5px 5px 0;">`;
-    html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">`;
-    html += `<h4 style="color: #f39c12; margin: 0;">📦 Lote #${prod.lote_id}</h4>`;
-    html += `<span style="background: #f39c12; color: white; padding: 0.25em 0.75em; border-radius: 15px; font-size: 0.9em;">PRODUCIDO</span>`;
-    html += `</div>`;
-    
-    html += `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1em; margin-bottom: 1em;">`;
-    html += `<div><strong>📅 Fecha Producción:</strong><br>${fecha}</div>`;
-    html += `<div><strong>👤 Empleado:</strong><br>${prod.empleado || 'No especificado'}</div>`;
-    html += `</div>`;
-    
-    if (prod.observaciones) {
-      html += `<div style="background: white; padding: 0.75em; border-radius: 5px; margin-bottom: 1em;">`;
-      html += `<strong>📝 Observaciones:</strong> ${prod.observaciones}`;
-      html += `</div>`;
-    }
-    
+    const productosId = `prod-dialog-${idx}`;
+    let productosBtn = '';
     if (prod.items && prod.items.length > 0) {
-      html += `<h5 style="color: #f39c12; margin: 1em 0 0.5em 0;">📦 Productos Producidos:</h5>`;
-      html += `<div style="display: grid; gap: 0.5em;">`;
-      prod.items.forEach(item => {
-        html += `<div style="background: white; padding: 0.75em; border-radius: 5px; border: 1px solid #f39c12;">`;
-        html += `<strong>${item.producto}</strong>: `;
-        html += `<span style="color: #f39c12; font-weight: bold;">${item.cantidad_producida} unidades</span>`;
-        if (item.empleado) {
-          html += ` <small style="color: #666;">(Empleado: ${item.empleado})</small>`;
-        }
-        html += `</div>`;
-      });
-      html += `</div>`;
+      productosBtn = `<button type="button" onclick="document.getElementById('${productosId}').showModal()" class="btn-outline" data-productos-id="${productosId}">Ver productos</button>`;
+    } else {
+      productosBtn = '<span>Sin productos</span>';
     }
-    html += `</div>`;
+    html += `<tr>
+      <td><svg viewBox="0 0 24 24" class="w-4 inline-flex items-center" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C11.3953 1.25 10.8384 1.40029 10.2288 1.65242C9.64008 1.89588 8.95633 2.25471 8.1049 2.70153L6.03739 3.78651C4.99242 4.33487 4.15616 4.77371 3.51047 5.20491C2.84154 5.65164 2.32632 6.12201 1.95112 6.75918C1.57718 7.39421 1.40896 8.08184 1.32829 8.90072C1.24999 9.69558 1.24999 10.6731 1.25 11.9026V12.0974C1.24999 13.3268 1.24999 14.3044 1.32829 15.0993C1.40896 15.9182 1.57718 16.6058 1.95112 17.2408C2.32632 17.878 2.84154 18.3484 3.51047 18.7951C4.15616 19.2263 4.99241 19.6651 6.03737 20.2135L8.10481 21.2984C8.95628 21.7453 9.64006 22.1041 10.2288 22.3476C10.8384 22.5997 11.3953 22.75 12 22.75C12.6047 22.75 13.1616 22.5997 13.7712 22.3476C14.3599 22.1041 15.0437 21.7453 15.8951 21.2985L17.9626 20.2135C19.0076 19.6651 19.8438 19.2263 20.4895 18.7951C21.1585 18.3484 21.6737 17.878 22.0489 17.2408C22.4228 16.6058 22.591 15.9182 22.6717 15.0993C22.75 14.3044 22.75 13.3269 22.75 12.0975V11.9025C22.75 10.6731 22.75 9.69557 22.6717 8.90072C22.591 8.08184 22.4228 7.39421 22.0489 6.75918C21.6737 6.12201 21.1585 5.65164 20.4895 5.20491C19.8438 4.77371 19.0076 4.33487 17.9626 3.7865L15.8951 2.70154C15.0437 2.25472 14.3599 1.89589 13.7712 1.65242C13.1616 1.40029 12.6047 1.25 12 1.25ZM8.7708 4.04608C9.66052 3.57917 10.284 3.2528 10.802 3.03856C11.3062 2.83004 11.6605 2.75 12 2.75C12.3395 2.75 12.6938 2.83004 13.198 3.03856C13.716 3.2528 14.3395 3.57917 15.2292 4.04608L17.2292 5.09563C18.3189 5.66748 19.0845 6.07032 19.6565 6.45232C19.9387 6.64078 20.1604 6.81578 20.3395 6.99174L17.0088 8.65708L8.50895 4.18349L8.7708 4.04608ZM6.94466 5.00439L6.7708 5.09563C5.68111 5.66747 4.91553 6.07032 4.34352 6.45232C4.06131 6.64078 3.83956 6.81578 3.66054 6.99174L12 11.1615L15.3572 9.48289L7.15069 5.16369C7.07096 5.12173 7.00191 5.06743 6.94466 5.00439ZM2.93768 8.30737C2.88718 8.52125 2.84901 8.76413 2.82106 9.04778C2.75084 9.7606 2.75 10.6644 2.75 11.9415V12.0585C2.75 13.3356 2.75084 14.2394 2.82106 14.9522C2.88974 15.6494 3.02022 16.1002 3.24367 16.4797C3.46587 16.857 3.78727 17.1762 4.34352 17.5477C4.91553 17.9297 5.68111 18.3325 6.7708 18.9044L8.7708 19.9539C9.66052 20.4208 10.284 20.7472 10.802 20.9614C10.9656 21.0291 11.1134 21.0832 11.25 21.1255V12.4635L2.93768 8.30737ZM12.75 21.1255C12.8866 21.0832 13.0344 21.0291 13.198 20.9614C13.716 20.7472 14.3395 20.4208 15.2292 19.9539L17.2292 18.9044C18.3189 18.3325 19.0845 17.9297 19.6565 17.5477C20.2127 17.1762 20.5341 16.857 20.7563 16.4797C20.9798 16.1002 21.1103 15.6494 21.1789 14.9522C21.2492 14.2394 21.25 13.3356 21.25 12.0585V11.9415C21.25 10.6644 21.2492 9.7606 21.1789 9.04778C21.151 8.76412 21.1128 8.52125 21.0623 8.30736L17.75 9.96352V13C17.75 13.4142 17.4142 13.75 17 13.75C16.5858 13.75 16.25 13.4142 16.25 13V10.7135L12.75 12.4635V21.1255Z" fill="currentColor"></path> </g></svg> ${prod.lote_id}</td>
+      <td>${fecha}</td>
+      <td>${prod.empleado || 'No especificado'}</td>
+      <td>${prod.observaciones || ''}</td>
+      <td>${productosBtn}
+        <dialog id="${productosId}" class="dialog w-full sm:max-w-[425px] max-h-[612px]" aria-labelledby="${productosId}-title" aria-describedby="${productosId}-description" onclick="if (event.target === this) this.close()">
+        <article>
+        <header><h4>Productos producidos</h4></header>
+        <section>
+        <div class="table-responsive"><table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              ${(function() {
+                const empleados = Array.from(new Set((prod.items||[]).map(i => i.empleado||'')));
+                return empleados.map(e => `<th>${e||'Empleado'}</th>`).join('') + '<th>Total</th>';
+              })()}
+            </tr>
+          </thead>
+          <tbody>
+            ${(function() {
+              const items = prod.items||[];
+              const empleados = Array.from(new Set(items.map(i => i.empleado||'')));
+              const productos = Array.from(new Set(items.map(i => i.producto)));
+              return productos.map(p => {
+                let total = 0;
+                const tds = empleados.map(e => {
+                  const found = items.find(i => i.producto === p && (i.empleado||'') === e);
+                  if (found) { total += Number(found.cantidad_producida)||0; return `<td>${found.cantidad_producida}</td>`; }
+                  return '<td>0</td>';
+                }).join('');
+                return `<tr><td>${p}</td>${tds}<td><strong>${total}</strong></td></tr>`;
+              }).join('');
+            })()}
+          </tbody>
+        </table></div>
+        </section>
+        <footer><button class="btn-outline" onclick="this.closest('dialog').close()">Cerrar</button></footer>
+        </article></dialog>
+      </td>
+    </tr>`;
   });
-  
+  html += `</tbody></table></div>`;
   return html;
 }
 
 // Función para mostrar despachos formateados
 function mostrarDespachosFormateados(datos) {
-  let html = `<h3 style="color: #9b59b6; margin-bottom: 1.5em;">🚚 Consulta de Despachos</h3>`;
-  
-  // Intentar diferentes estructuras de datos
+  let html = `<h3>Consulta de Despachos</h3>`;
   let despachos = datos.despachos || datos || [];
-  if (!Array.isArray(despachos)) {
-    despachos = [];
-  }
-  
-  if (despachos.length === 0) {
-    return html + `<p style="color: #6c757d; text-align: center; padding: 2em;">No hay registros de despachos</p>`;
-  }
-  
+  if (!Array.isArray(despachos)) despachos = [];
+  if (despachos.length === 0) return html + `<p>No hay registros de despachos</p>`;
+  html += `<div class="border p-4 rounded-lg"><table class="table">
+    <thead>
+      <tr>
+        <th>Lote</th>
+        <th>Fecha Despacho</th>
+        <th>Responsable</th>
+        <th>Observaciones</th>
+        <th>Productos</th>
+      </tr>
+    </thead>
+    <tbody>`;
   // Agrupar por lote
   const despachosPorLote = {};
   despachos.forEach(despacho => {
@@ -239,57 +261,81 @@ function mostrarDespachosFormateados(datos) {
     }
     despachosPorLote[despacho.lote_id].push(despacho);
   });
-  
-  Object.keys(despachosPorLote).forEach(loteId => {
+  Object.keys(despachosPorLote).forEach((loteId, idx) => {
     const despachosLote = despachosPorLote[loteId];
     const fecha = new Date(despachosLote[0].fecha).toLocaleString('es-ES');
-    
-    html += `<div style="margin-bottom: 2em; padding: 1.5em; border-left: 4px solid #9b59b6; background: #f8f4fd; border-radius: 0 5px 5px 0;">`;
-    html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">`;
-    html += `<h4 style="color: #9b59b6; margin: 0;">📦 Lote #${loteId}</h4>`;
-    html += `<span style="background: #9b59b6; color: white; padding: 0.25em 0.75em; border-radius: 15px; font-size: 0.9em;">DESPACHADO</span>`;
-    html += `</div>`;
-    
-    html += `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1em; margin-bottom: 1em;">`;
-    html += `<div><strong>📅 Fecha Despacho:</strong><br>${fecha}</div>`;
-    html += `<div><strong>👤 Empleado:</strong><br>${despachosLote[0].empleado || 'No especificado'}</div>`;
-    html += `</div>`;
-    
-    if (despachosLote[0].observaciones) {
-      html += `<div style="background: white; padding: 0.75em; border-radius: 5px; margin-bottom: 1em;">`;
-      html += `<strong>📝 Observaciones:</strong> ${despachosLote[0].observaciones}`;
-      html += `</div>`;
+    const productosId = `desp-dialog-${idx}`;
+    let productosBtn = '';
+    if (despachosLote.length > 0) {
+      productosBtn = `<button type="button" onclick="document.getElementById('${productosId}').showModal()" class="btn-outline" data-productos-id="${productosId}">Ver productos</button>`;
+    } else {
+      productosBtn = '<span>Sin productos</span>';
     }
-    
-    html += `<h5 style="color: #9b59b6; margin: 1em 0 0.5em 0;">📦 Productos Despachados:</h5>`;
-    html += `<div style="display: grid; gap: 0.5em;">`;
-    despachosLote.forEach(despacho => {
-      html += `<div style="background: white; padding: 0.75em; border-radius: 5px; border: 1px solid #9b59b6;">`;
-      html += `<strong>${despacho.producto}</strong> → <em>${despacho.tienda}</em>: `;
-      html += `<span style="color: #9b59b6; font-weight: bold;">${despacho.cantidad_despachada} unidades</span>`;
-      html += `</div>`;
-    });
-    html += `</div>`;
-    html += `</div>`;
+    html += `<tr>
+      <td><svg viewBox="0 0 24 24" class="w-4 inline-flex items-center" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C11.3953 1.25 10.8384 1.40029 10.2288 1.65242C9.64008 1.89588 8.95633 2.25471 8.1049 2.70153L6.03739 3.78651C4.99242 4.33487 4.15616 4.77371 3.51047 5.20491C2.84154 5.65164 2.32632 6.12201 1.95112 6.75918C1.57718 7.39421 1.40896 8.08184 1.32829 8.90072C1.24999 9.69558 1.24999 10.6731 1.25 11.9026V12.0974C1.24999 13.3268 1.24999 14.3044 1.32829 15.0993C1.40896 15.9182 1.57718 16.6058 1.95112 17.2408C2.32632 17.878 2.84154 18.3484 3.51047 18.7951C4.15616 19.2263 4.99241 19.6651 6.03737 20.2135L8.10481 21.2984C8.95628 21.7453 9.64006 22.1041 10.2288 22.3476C10.8384 22.5997 11.3953 22.75 12 22.75C12.6047 22.75 13.1616 22.5997 13.7712 22.3476C14.3599 22.1041 15.0437 21.7453 15.8951 21.2985L17.9626 20.2135C19.0076 19.6651 19.8438 19.2263 20.4895 18.7951C21.1585 18.3484 21.6737 17.878 22.0489 17.2408C22.4228 16.6058 22.591 15.9182 22.6717 15.0993C22.75 14.3044 22.75 13.3269 22.75 12.0975V11.9025C22.75 10.6731 22.75 9.69557 22.6717 8.90072C22.591 8.08184 22.4228 7.39421 22.0489 6.75918C21.6737 6.12201 21.1585 5.65164 20.4895 5.20491C19.8438 4.77371 19.0076 4.33487 17.9626 3.7865L15.8951 2.70154C15.0437 2.25472 14.3599 1.89589 13.7712 1.65242C13.1616 1.40029 12.6047 1.25 12 1.25ZM8.7708 4.04608C9.66052 3.57917 10.284 3.2528 10.802 3.03856C11.3062 2.83004 11.6605 2.75 12 2.75C12.3395 2.75 12.6938 2.83004 13.198 3.03856C13.716 3.2528 14.3395 3.57917 15.2292 4.04608L17.2292 5.09563C18.3189 5.66748 19.0845 6.07032 19.6565 6.45232C19.9387 6.64078 20.1604 6.81578 20.3395 6.99174L17.0088 8.65708L8.50895 4.18349L8.7708 4.04608ZM6.94466 5.00439L6.7708 5.09563C5.68111 5.66747 4.91553 6.07032 4.34352 6.45232C4.06131 6.64078 3.83956 6.81578 3.66054 6.99174L12 11.1615L15.3572 9.48289L7.15069 5.16369C7.07096 5.12173 7.00191 5.06743 6.94466 5.00439ZM2.93768 8.30737C2.88718 8.52125 2.84901 8.76413 2.82106 9.04778C2.75084 9.7606 2.75 10.6644 2.75 11.9415V12.0585C2.75 13.3356 2.75084 14.2394 2.82106 14.9522C2.88974 15.6494 3.02022 16.1002 3.24367 16.4797C3.46587 16.857 3.78727 17.1762 4.34352 17.5477C4.91553 17.9297 5.68111 18.3325 6.7708 18.9044L8.7708 19.9539C9.66052 20.4208 10.284 20.7472 10.802 20.9614C10.9656 21.0291 11.1134 21.0832 11.25 21.1255V12.4635L2.93768 8.30737ZM12.75 21.1255C12.8866 21.0832 13.0344 21.0291 13.198 20.9614C13.716 20.7472 14.3395 20.4208 15.2292 19.9539L17.2292 18.9044C18.3189 18.3325 19.0845 17.9297 19.6565 17.5477C20.2127 17.1762 20.5341 16.857 20.7563 16.4797C20.9798 16.1002 21.1103 15.6494 21.1789 14.9522C21.2492 14.2394 21.25 13.3356 21.25 12.0585V11.9415C21.25 10.6644 21.2492 9.7606 21.1789 9.04778C21.151 8.76412 21.1128 8.52125 21.0623 8.30736L17.75 9.96352V13C17.75 13.4142 17.4142 13.75 17 13.75C16.5858 13.75 16.25 13.4142 16.25 13V10.7135L12.75 12.4635V21.1255Z" fill="currentColor"></path> </g></svg> ${loteId}</td>
+      <td>${fecha}</td>
+      <td>${despachosLote[0].empleado || 'No especificado'}</td>
+      <td>${despachosLote[0].observaciones || ''}</td>
+      <td>${productosBtn}
+        <dialog id="${productosId}" class="dialog w-full sm:max-w-[425px] max-h-[612px]" aria-labelledby="${productosId}-title" aria-describedby="${productosId}-description" onclick="if (event.target === this) this.close()">
+        <article>
+        <header><h4>Productos despachados</h4></header>
+        <section>
+        <div><table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              ${(function() {
+                const tiendas = Array.from(new Set((despachosLote||[]).map(i => i.tienda)));
+                return tiendas.map(t => `<th>${t}</th>`).join('') + '<th>Total</th>';
+              })()}
+            </tr>
+          </thead>
+          <tbody>
+            ${(function() {
+              const items = despachosLote||[];
+              const tiendas = Array.from(new Set(items.map(i => i.tienda)));
+              const productos = Array.from(new Set(items.map(i => i.producto)));
+              return productos.map(prod => {
+                let total = 0;
+                const tds = tiendas.map(t => {
+                  const found = items.find(i => i.producto === prod && i.tienda === t);
+                  if (found) { total += Number(found.cantidad_despachada)||0; return `<td>${found.cantidad_despachada}</td>`; }
+                  return '<td>0</td>';
+                }).join('');
+                return `<tr><td>${prod}</td>${tds}<td><strong>${total}</strong></td></tr>`;
+              }).join('');
+            })()}
+          </tbody>
+        </table></div>
+        </section>
+        <footer><button class="btn-outline" onclick="this.closest('dialog').close()">Cerrar</button></footer>
+        </article></dialog>
+      </td>
+    </tr>`;
   });
-  
+  html += `</tbody></table></div>`;
   return html;
 }
 
 // Función para mostrar recepciones formateadas
 function mostrarRecepcionesFormateadas(datos) {
-  let html = `<h3 style="color: #27ae60; margin-bottom: 1.5em;">🏪 Consulta de Recepciones</h3>`;
-  
-  // Intentar diferentes estructuras de datos
+  let html = `<h3>Consulta de Recepciones</h3>`;
   let recepciones = datos.recepciones || datos || [];
-  if (!Array.isArray(recepciones)) {
-    recepciones = [];
-  }
-  
-  if (recepciones.length === 0) {
-    return html + `<p style="color: #6c757d; text-align: center; padding: 2em;">No hay registros de recepciones</p>`;
-  }
-  
+  if (!Array.isArray(recepciones)) recepciones = [];
+  if (recepciones.length === 0) return html + `<p>No hay registros de recepciones</p>`;
+  html += `<div class="border p-4 rounded-lg"><table class="table">
+    <thead>
+      <tr>
+        <th>Lote</th>
+        <th>Fecha Recepción</th>
+        <th>Tienda</th>
+        <th>Responsable</th>
+        <th>Observaciones</th>
+        <th>Productos</th>
+      </tr>
+    </thead>
+    <tbody>`;
   // Agrupar por lote y tienda
   const recepcionesPorLote = {};
   recepciones.forEach(recepcion => {
@@ -306,44 +352,50 @@ function mostrarRecepcionesFormateadas(datos) {
     }
     recepcionesPorLote[key].items.push(recepcion);
   });
-  
-  Object.values(recepcionesPorLote).forEach(recepcionGroup => {
+  Object.values(recepcionesPorLote).forEach((recepcionGroup, idx) => {
     const fecha = new Date(recepcionGroup.fecha).toLocaleString('es-ES');
-    
-    html += `<div style="margin-bottom: 2em; padding: 1.5em; border-left: 4px solid #27ae60; background: #f0f9f4; border-radius: 0 5px 5px 0;">`;
-    html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1em;">`;
-    html += `<h4 style="color: #27ae60; margin: 0;">📦 Lote #${recepcionGroup.lote_id} - 🏬 ${recepcionGroup.tienda}</h4>`;
-    html += `<span style="background: #27ae60; color: white; padding: 0.25em 0.75em; border-radius: 15px; font-size: 0.9em;">RECIBIDO</span>`;
-    html += `</div>`;
-    
-    html += `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1em; margin-bottom: 1em;">`;
-    html += `<div><strong>📅 Fecha Recepción:</strong><br>${fecha}</div>`;
-    html += `<div><strong>👤 Empleado:</strong><br>${recepcionGroup.empleado || 'No especificado'}</div>`;
-    html += `</div>`;
-    
-    if (recepcionGroup.observaciones) {
-      html += `<div style="background: white; padding: 0.75em; border-radius: 5px; margin-bottom: 1em;">`;
-      html += `<strong>📝 Observaciones:</strong> ${recepcionGroup.observaciones}`;
-      html += `</div>`;
+    const productosId = `rec-dialog-${idx}`;
+    let productosBtn = '';
+    if (recepcionGroup.items.length > 0) {
+      productosBtn = `<button type="button" onclick="document.getElementById('${productosId}').showModal()" class="btn-outline" data-productos-id="${productosId}">Ver productos</button>`;
+    } else {
+      productosBtn = '<span>Sin productos</span>';
     }
-    
-    html += `<h5 style="color: #27ae60; margin: 1em 0 0.5em 0;">📦 Productos Recibidos:</h5>`;
-    html += `<div style="display: grid; gap: 0.5em;">`;
-    recepcionGroup.items.forEach(item => {
-      const confirmadoIcon = item.confirmado ? '✅' : '❌';
-      const confirmadoText = item.confirmado ? 'Confirmado' : 'No confirmado';
-      const confirmadoColor = item.confirmado ? '#27ae60' : '#dc3545';
-      
-      html += `<div style="background: white; padding: 0.75em; border-radius: 5px; border: 1px solid #27ae60;">`;
-      html += `<strong>${item.producto}</strong>: `;
-      html += `<span style="color: #27ae60; font-weight: bold;">${item.cantidad_recibida} unidades</span> `;
-      html += `<span style="color: ${confirmadoColor}; font-weight: bold;">${confirmadoIcon} ${confirmadoText}</span>`;
-      html += `</div>`;
-    });
-    html += `</div>`;
-    html += `</div>`;
+    html += `<tr>
+      <td><svg viewBox="0 0 24 24" class="w-4 inline-flex items-center" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C11.3953 1.25 10.8384 1.40029 10.2288 1.65242C9.64008 1.89588 8.95633 2.25471 8.1049 2.70153L6.03739 3.78651C4.99242 4.33487 4.15616 4.77371 3.51047 5.20491C2.84154 5.65164 2.32632 6.12201 1.95112 6.75918C1.57718 7.39421 1.40896 8.08184 1.32829 8.90072C1.24999 9.69558 1.24999 10.6731 1.25 11.9026V12.0974C1.24999 13.3268 1.24999 14.3044 1.32829 15.0993C1.40896 15.9182 1.57718 16.6058 1.95112 17.2408C2.32632 17.878 2.84154 18.3484 3.51047 18.7951C4.15616 19.2263 4.99241 19.6651 6.03737 20.2135L8.10481 21.2984C8.95628 21.7453 9.64006 22.1041 10.2288 22.3476C10.8384 22.5997 11.3953 22.75 12 22.75C12.6047 22.75 13.1616 22.5997 13.7712 22.3476C14.3599 22.1041 15.0437 21.7453 15.8951 21.2985L17.9626 20.2135C19.0076 19.6651 19.8438 19.2263 20.4895 18.7951C21.1585 18.3484 21.6737 17.878 22.0489 17.2408C22.4228 16.6058 22.591 15.9182 22.6717 15.0993C22.75 14.3044 22.75 13.3269 22.75 12.0975V11.9025C22.75 10.6731 22.75 9.69557 22.6717 8.90072C22.591 8.08184 22.4228 7.39421 22.0489 6.75918C21.6737 6.12201 21.1585 5.65164 20.4895 5.20491C19.8438 4.77371 19.0076 4.33487 17.9626 3.7865L15.8951 2.70154C15.0437 2.25472 14.3599 1.89589 13.7712 1.65242C13.1616 1.40029 12.6047 1.25 12 1.25ZM8.7708 4.04608C9.66052 3.57917 10.284 3.2528 10.802 3.03856C11.3062 2.83004 11.6605 2.75 12 2.75C12.3395 2.75 12.6938 2.83004 13.198 3.03856C13.716 3.2528 14.3395 3.57917 15.2292 4.04608L17.2292 5.09563C18.3189 5.66748 19.0845 6.07032 19.6565 6.45232C19.9387 6.64078 20.1604 6.81578 20.3395 6.99174L17.0088 8.65708L8.50895 4.18349L8.7708 4.04608ZM6.94466 5.00439L6.7708 5.09563C5.68111 5.66747 4.91553 6.07032 4.34352 6.45232C4.06131 6.64078 3.83956 6.81578 3.66054 6.99174L12 11.1615L15.3572 9.48289L7.15069 5.16369C7.07096 5.12173 7.00191 5.06743 6.94466 5.00439ZM2.93768 8.30737C2.88718 8.52125 2.84901 8.76413 2.82106 9.04778C2.75084 9.7606 2.75 10.6644 2.75 11.9415V12.0585C2.75 13.3356 2.75084 14.2394 2.82106 14.9522C2.88974 15.6494 3.02022 16.1002 3.24367 16.4797C3.46587 16.857 3.78727 17.1762 4.34352 17.5477C4.91553 17.9297 5.68111 18.3325 6.7708 18.9044L8.7708 19.9539C9.66052 20.4208 10.284 20.7472 10.802 20.9614C10.9656 21.0291 11.1134 21.0832 11.25 21.1255V12.4635L2.93768 8.30737ZM12.75 21.1255C12.8866 21.0832 13.0344 21.0291 13.198 20.9614C13.716 20.7472 14.3395 20.4208 15.2292 19.9539L17.2292 18.9044C18.3189 18.3325 19.0845 17.9297 19.6565 17.5477C20.2127 17.1762 20.5341 16.857 20.7563 16.4797C20.9798 16.1002 21.1103 15.6494 21.1789 14.9522C21.2492 14.2394 21.25 13.3356 21.25 12.0585V11.9415C21.25 10.6644 21.2492 9.7606 21.1789 9.04778C21.151 8.76412 21.1128 8.52125 21.0623 8.30736L17.75 9.96352V13C17.75 13.4142 17.4142 13.75 17 13.75C16.5858 13.75 16.25 13.4142 16.25 13V10.7135L12.75 12.4635V21.1255Z" fill="currentColor"></path> </g></svg> ${recepcionGroup.lote_id}</td>
+      <td>${fecha}</td>
+      <td>${recepcionGroup.tienda}</td>
+      <td>${recepcionGroup.empleado || 'No especificado'}</td>
+      <td>${recepcionGroup.observaciones || ''}</td>
+      <td>${productosBtn}
+        <dialog id="${productosId}" class="dialog w-full sm:max-w-[425px] max-h-[612px]" aria-labelledby="${productosId}-title" aria-describedby="${productosId}-description" onclick="if (event.target === this) this.close()">
+        <article>
+        <header><h4>Productos recibidos</h4></header>
+        <section>
+        <div class="table-responsive"><table class="table table-sm">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Confirmado</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${recepcionGroup.items.map(item => {
+              const confirmadoIcon = item.confirmado ? '✅' : '❌';
+              const confirmadoText = item.confirmado ? 'Confirmado' : 'No confirmado';
+              const confirmadoColor = item.confirmado ? '#27ae60' : '#dc3545';
+              return `<tr><td>${item.producto}</td><td>${item.cantidad_recibida}</td><td style="color:${confirmadoColor};font-weight:bold;">${confirmadoIcon} ${confirmadoText}</td></tr>`;
+            }).join('')}
+          </tbody>
+        </table></div>
+        </section>
+        <footer><button class="btn-outline" onclick="this.closest('dialog').close()">Cerrar</button></footer>
+        </article></dialog>
+      </td>
+    </tr>`;
   });
-  
+  html += `</tbody></table></div>`;
   return html;
 }
 
