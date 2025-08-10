@@ -144,9 +144,20 @@ $app->post('/pedidos', function ($request, $response) {
     // Crear automáticamente un lote para este pedido
     $codigo_lote = 'L' . date('Ymd') . '-' . str_pad($pedido->id, 4, '0', STR_PAD_LEFT);
     $lote = Lote::create([
+
         'codigo_lote' => $codigo_lote,
         'pedido_id' => $pedido->id,
         'estado' => 'pendiente'
+    ]);
+
+    // Crear alerta persistente por nuevo lote
+    $empleado = isset($data['empleado']) && $data['empleado'] ? $data['empleado'] : 'Un usuario';
+    Alerta::create([
+        'fecha' => date('Y-m-d H:i:s'),
+        'fase' => 'pedido',
+        'tipo' => 'info',
+        'mensaje' => $empleado . ' ha creado un nuevo lote (' . $codigo_lote . ') para el pedido #' . $pedido->id,
+        'read' => false
     ]);
     
     // Cargar las relaciones para la respuesta
@@ -320,6 +331,16 @@ $app->post('/produccion', function ($request, $response) {
     // Actualizar estado del lote a "producido" después de registrar la producción
     $lote->estado = 'producido';
     $lote->save();
+
+        // Crear alerta persistente por registro de producción
+        $empleado = isset($data['empleado']) && $data['empleado'] ? $data['empleado'] : 'Un usuario';
+        Alerta::create([
+            'fecha' => date('Y-m-d H:i:s'),
+            'fase' => 'produccion',
+            'tipo' => 'info',
+            'mensaje' => $empleado . ' ha registrado la producción para el lote ' . $lote->codigo_lote . '.',
+            'read' => false
+        ]);
     
     // Calcular cantidad_solicitada agrupada por producto
     $solicitadasPorProducto = [];
@@ -446,6 +467,16 @@ $app->post('/despacho', function ($request, $response) {
     // Actualizar estado del lote a "despachado"
     $lote->estado = 'despachado';
     $lote->save();
+
+        // Crear alerta persistente por registro de despacho
+        $empleado = isset($data['empleado']) && $data['empleado'] ? $data['empleado'] : 'Un usuario';
+        Alerta::create([
+            'fecha' => date('Y-m-d H:i:s'),
+            'fase' => 'despacho',
+            'tipo' => 'info',
+            'mensaje' => $empleado . ' ha registrado el despacho para el lote ' . $lote->codigo_lote . '.',
+            'read' => false
+        ]);
     
     $response->getBody()->write(json_encode([
         'despachos' => $despachos,
@@ -571,6 +602,16 @@ $app->post('/recepcion', function ($request, $response) {
                 'observaciones' => $data['observaciones'] ?? null
             ]);
             $recepciones[] = $recepcion;
+            // Crear alerta persistente por registro de recepción
+            $empleado = isset($data['empleado']) && $data['empleado'] ? $data['empleado'] : 'Un usuario';
+            $tienda = isset($itemData['tienda']) && $itemData['tienda'] ? $itemData['tienda'] : 'una tienda';
+            Alerta::create([
+                'fecha' => date('Y-m-d H:i:s'),
+                'fase' => 'recepcion',
+                'tipo' => 'info',
+                'mensaje' => $empleado . ' ha registrado la recepcion en ' . $tienda . ' para el lote ' . $lote->codigo_lote . '.',
+                'read' => false
+            ]);
         }
     } else {
         $response->getBody()->write(json_encode(['error' => 'Se requieren items para la recepción']));

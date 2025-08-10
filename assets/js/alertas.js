@@ -20,7 +20,7 @@ async function cargarAlertas() {
       let bg = '';
       switch (alerta.tipo) {
         case 'info':
-          bg = 'bg-blue-50 border-blue-200';
+          bg = 'bg-green-50 border-green-200';
           break;
         case 'warning':
           bg = 'bg-yellow-50 border-yellow-200';
@@ -36,7 +36,7 @@ async function cargarAlertas() {
       let icon = '';
       switch (alerta.tipo) {
         case 'info':
-          icon = `<svg class="inline w-4 h-4 text-blue-500 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor"/><line x1="12" y1="16" x2="12" y2="12" stroke="currentColor"/><circle cx="12" cy="8" r="1" fill="currentColor"/></svg>`;
+          icon = `<svg class="inline w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor"/><line x1="12" y1="16" x2="12" y2="12" stroke="currentColor"/><circle cx="12" cy="8" r="1" fill="currentColor"/></svg>`;
           break;
         case 'warning':
           icon = `<svg class="inline w-4 h-4 text-yellow-500 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor"/><line x1="12" y1="8" x2="12" y2="12" stroke="currentColor"/><line x1="12" y1="16" x2="12" y2="16" stroke="currentColor"/></svg>`;
