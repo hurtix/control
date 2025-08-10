@@ -1,3 +1,17 @@
+// Habilita o deshabilita el botón Despachar según inputs de cantidad a despachar
+function verificarInputsDespachoLote() {
+  const inputs = document.querySelectorAll('.cantidad-despacho-input');
+  const btn = document.getElementById('btn-despachar-lote');
+  if (!btn) return;
+  let todosLlenos = true;
+  inputs.forEach(input => {
+    // El cero es válido, solo vacío es inválido
+    if (input.value === '' || input.value === null) {
+      todosLlenos = false;
+    }
+  });
+  btn.disabled = !todosLlenos;
+}
 // Funciones para actualizar datos de producción, despacho y recepción
 const actualizarProductoLote = (loteId, productosData) => {
   const container = document.getElementById('productos-lote-container');
@@ -195,7 +209,6 @@ const actualizarDistribucionDespacho = async (loteId) => {
         htmlGeneral += '<th>Cantidad a Despachar</th>';
         htmlGeneral += '<th>Estado</th>';
         htmlGeneral += '</tr></thead><tbody>';
-        
 
         Object.values(productosSummary).forEach(item => {
           htmlGeneral += '<tr>';
@@ -206,7 +219,9 @@ const actualizarDistribucionDespacho = async (loteId) => {
           htmlGeneral += `<input type="number" class="cantidad-despacho-input input w-20 text-center border-red-500" data-producto="${item.producto}" `;
           htmlGeneral += `value="" min="0" max="${item.cantidad_producida}" step="1" `;
           htmlGeneral += `placeholder="" `;
-          htmlGeneral += `oninput="actualizarEstadoDespacho(this, ${item.cantidad_solicitada})">`;
+          htmlGeneral += `oninput="actualizarEstadoDespacho(this, ${item.cantidad_solicitada}); actualizarDistribucionPorInput('${item.producto}'); verificarInputsDespachoLote()">`;
+  // Inicializar estado del botón Despachar al renderizar
+  setTimeout(verificarInputsDespachoLote, 0);
           htmlGeneral += `</td>`;
           htmlGeneral += `<td class="estado-despacho" style="color: #dc3545;">Sin data</td>`;
           htmlGeneral += '</tr>';
@@ -279,12 +294,12 @@ window.actualizarEstadoDespacho = function(input, cantidadSolicitada) {
         // === TABLA 2: MATRIZ DE DISTRIBUCIÓN POR TIENDAS ===
         const tablaDistribucion = document.createElement('div');
         tablaDistribucion.className = 'bg-white p-4 rounded-lg shadow-sm mb-4';
-        
+
         // Obtener lista única de productos y tiendas
         const productos = [...new Set(distribucion.distribucion_calculada.map(item => item.producto))];
         const tiendas = [...new Set(distribucion.distribucion_calculada.map(item => item.tienda))];
-        
-        // Crear matriz de datos
+
+        // Crear matriz de datos base (proporciones y solicitados)
         const matriz = {};
         distribucion.distribucion_calculada.forEach(item => {
           if (!matriz[item.producto]) {
@@ -292,49 +307,93 @@ window.actualizarEstadoDespacho = function(input, cantidadSolicitada) {
           }
           matriz[item.producto][item.tienda] = {
             cantidad_solicitada: item.cantidad_solicitada,
-            cantidad_a_despachar: item.cantidad_a_despachar,
             proporcion: item.proporcion
           };
         });
-        
-        let htmlDistribucion = '<h4>Distribución por Tiendas</h4>';
-        htmlDistribucion += '<table class="table bg-white">';
-        htmlDistribucion += '<thead class="bg-black [&_th]:text-white"><tr>';
-        htmlDistribucion += '<th>Producto</th>';
-        
-        // Columnas de tiendas
-        tiendas.forEach(tienda => {
-          htmlDistribucion += `<th>${tienda}</th>`;
-        });
-        
-        htmlDistribucion += '</tr></thead><tbody>';
-        
-        // Filas de productos
-        productos.forEach(producto => {
-          htmlDistribucion += '<tr>';
-          htmlDistribucion += `<td>${producto}</td>`;
-          
-          tiendas.forEach(tienda => {
-            const datos = matriz[producto] && matriz[producto][tienda];
-            if (datos) {
-              htmlDistribucion += `<td>`;
-              htmlDistribucion += `<div>`;
-              htmlDistribucion += `<div><strong>${datos.cantidad_a_despachar}</strong> unidades</div>`;
-              htmlDistribucion += `<div>(${datos.proporcion}% del total)</div>`;
-              htmlDistribucion += `<div>Solicitado: ${datos.cantidad_solicitada}</div>`;
-              htmlDistribucion += `</div>`;
-              htmlDistribucion += `</td>`;
-            } else {
-              htmlDistribucion += `<td>-</td>`;
-            }
+
+        // Función para renderizar la tabla de distribución por tiendas según la cantidad a despachar
+        window.actualizarDistribucionPorInput = function(productoEditado) {
+          // Obtener los valores actuales de todos los inputs de cantidad a despachar
+          const inputs = document.querySelectorAll('input.cantidad-despacho-input');
+          const cantidadesPorProducto = {};
+          inputs.forEach(input => {
+            const prod = input.getAttribute('data-producto');
+            cantidadesPorProducto[prod] = parseFloat(input.value) || 0;
           });
-          
-          htmlDistribucion += '</tr>';
-        });
-        
-        htmlDistribucion += '</tbody></table>';
-        htmlDistribucion += '<div class="alert mt-4">  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg><h6>Esta distribución se basa en las proporciones del pedido original.</h6></div>';
-        tablaDistribucion.innerHTML = htmlDistribucion;
+
+          // Renderizar la tabla de distribución de nuevo
+          let htmlDistribucion = '<h4>Distribución por Tiendas</h4>';
+          htmlDistribucion += '<table class="table bg-white">';
+          htmlDistribucion += '<thead class="bg-black [&_th]:text-white"><tr>';
+          htmlDistribucion += '<th>Producto</th>';
+          tiendas.forEach(tienda => {
+            htmlDistribucion += `<th>${tienda}</th>`;
+          });
+          htmlDistribucion += '</tr></thead><tbody>';
+
+          productos.forEach(prod => {
+            htmlDistribucion += '<tr>';
+            htmlDistribucion += `<td>${prod}</td>`;
+            // --- Reparto justo de unidades enteras por producto ---
+            let cantidades = [];
+            let residuos = [];
+            let suma = 0;
+            let cantidadBase = cantidadesPorProducto[prod] || 0;
+            tiendas.forEach(tienda => {
+              const datos = matriz[prod] && matriz[prod][tienda];
+              if (datos) {
+                let exacto = cantidadBase * datos.proporcion / 100;
+                let entero = Math.floor(exacto);
+                cantidades.push({ tienda, valor: entero, proporcion: datos.proporcion, solicitado: datos.cantidad_solicitada, exacto });
+                residuos.push({ tienda, residuo: exacto - entero });
+                suma += entero;
+              } else {
+                cantidades.push({ tienda, valor: null });
+                residuos.push({ tienda, residuo: -1 });
+              }
+            });
+            // Repartir sobrantes según mayor residuo decimal
+            let faltan = Math.round(cantidadBase) - suma;
+            if (faltan > 0) {
+              let indices = residuos
+                .map((r, i) => ({ i, residuo: r.residuo }))
+                .filter(r => r.residuo >= 0)
+                .sort((a, b) => b.residuo - a.residuo)
+                .map(r => r.i);
+              for (let j = 0; j < faltan; j++) {
+                cantidades[indices[j % indices.length]].valor += 1;
+              }
+            }
+            tiendas.forEach((tienda, idx) => {
+              const datos = matriz[prod] && matriz[prod][tienda];
+              const c = cantidades[idx];
+              if (datos && c.valor !== null) {
+                htmlDistribucion += `<td>`;
+                htmlDistribucion += `<div>`;
+                htmlDistribucion += `<div><strong>${c.valor}</strong> unidades</div>`;
+                htmlDistribucion += `<div>(${datos.proporcion}% del total)</div>`;
+                htmlDistribucion += `<div>Solicitado: ${datos.cantidad_solicitada}</div>`;
+                htmlDistribucion += `<div class='text-xs text-gray-500 mt-1 hidden'>\
+                  <em>Cálculo:</em><br>
+                  <span class='block'>Cantidad a despachar × Proporción tienda / 100</span>
+                  <span class='block'>= <b>${cantidadBase}</b> × <b>${datos.proporcion}</b>% / 100</span>
+                  <span class='block'>= <b>${c.valor}</b> unidades</span>
+                </div>`;
+                htmlDistribucion += `</div>`;
+                htmlDistribucion += `</td>`;
+              } else {
+                htmlDistribucion += `<td>-</td>`;
+              }
+            });
+            htmlDistribucion += '</tr>';
+          });
+          htmlDistribucion += '</tbody></table>';
+          htmlDistribucion += '<div class="alert mt-4">  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg><h6>Esta distribución se basa en las proporciones del pedido original y la cantidad a despachar ingresada para cada producto.</h6></div>';
+          tablaDistribucion.innerHTML = htmlDistribucion;
+        };
+
+        // Render inicial con los valores actuales de los inputs (todos vacíos al inicio)
+        window.actualizarDistribucionPorInput(productos[0]);
         lista.appendChild(tablaDistribucion);
         
       } else {
