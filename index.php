@@ -1,3 +1,4 @@
+
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
@@ -8,6 +9,38 @@ use Illuminate\Database\Capsule\Manager as DB;
 
 $app = AppFactory::create();
 $app->addBodyParsingMiddleware();
+
+// Endpoint para crear una alerta
+$app->post('/alertas', function ($request, $response) {
+    $data = $request->getParsedBody();
+    $alerta = Alerta::create([
+        'fecha' => $data['fecha'] ?? date('Y-m-d H:i:s'),
+        'fase' => $data['fase'] ?? '',
+        'tipo' => $data['tipo'] ?? 'warning',
+        'mensaje' => $data['mensaje'] ?? '',
+        'read' => $data['read'] ?? false
+    ]);
+    $response->getBody()->write($alerta->toJson());
+    return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
+});
+
+// Endpoint para consultar todas las alertas
+$app->post('/alertas/{id}/read', function ($request, $response, $args) {
+    $alerta = Alerta::find($args['id']);
+    if (!$alerta) {
+        return $response->withStatus(404)->withHeader('Content-Type', 'application/json')
+            ->write(json_encode(['error' => 'Alerta no encontrada']));
+    }
+    $alerta->read = true;
+    $alerta->save();
+    $response->getBody()->write($alerta->toJson());
+    return $response->withHeader('Content-Type', 'application/json');
+});
+$app->get('/alertas', function ($request, $response) {
+    $alertas = Alerta::orderBy('fecha', 'desc')->get();
+    $response->getBody()->write($alertas->toJson());
+    return $response->withHeader('Content-Type', 'application/json');
+});
 
 // Middleware para servir archivos estáticos
 $app->add(function ($request, $handler) {
@@ -693,66 +726,6 @@ $app->get('/reporte/produccion', function ($request, $response) {
     return $response->withHeader('Content-Type', 'application/json');
 });
 
-// Alertas de diferencias entre despachado y recibido
-$app->get('/alertas', function ($request, $response) {
-    $hoy = date('Y-m-d');
-    $alertas = [];
-    
-    // Producción no registrada hoy
-    if (Produccion::where('fecha', $hoy)->count() == 0) {
-        $alertas[] = [
-            'tipo' => 'advertencia',
-            'titulo' => 'Producción Pendiente',
-            'mensaje' => 'No hay producción registrada para hoy.',
-            'fecha' => $hoy
-        ];
-    }
-    
-    // Despachos sin recepción confirmada
-    $despachos = Despacho::where('fecha', $hoy)->get();
-    foreach ($despachos as $d) {
-        $rec = Recepcion::where('producto', $d->producto)
-            ->where('fecha', $d->fecha)
-            ->where('cantidad_recibida', $d->cantidad_despachada)
-            ->where('tienda', $d->tienda)
-            ->where('confirmado', 1)
-            ->first();
-        if (!$rec) {
-            $alertas[] = [
-                'tipo' => 'critico',
-                'titulo' => 'Despacho No Confirmado',
-                'mensaje' => "El despacho de {$d->producto} a {$d->tienda} ({$d->cantidad_despachada} unidades) no ha sido confirmado en recepción.",
-                'fecha' => $d->fecha
-            ];
-        }
-    }
-    
-    // Diferencias entre despachado y recibido
-    $despachados = Despacho::where('fecha', $hoy)
-        ->selectRaw('producto, tienda, SUM(cantidad_despachada) as total')
-        ->groupBy('producto', 'tienda')
-        ->get();
-    foreach ($despachados as $d) {
-        $recibido = Recepcion::where('fecha', $hoy)
-            ->where('producto', $d->producto)
-            ->where('tienda', $d->tienda)
-            ->where('confirmado', 1)
-            ->selectRaw('SUM(cantidad_recibida) as total')
-            ->value('total');
-        if ($recibido === null) $recibido = 0;
-        if ($d->total != $recibido) {
-            $alertas[] = [
-                'tipo' => 'advertencia',
-                'titulo' => 'Diferencia en Cantidades',
-                'mensaje' => "Diferencia detectada para {$d->producto} en {$d->tienda}: Despachado {$d->total}, Recibido {$recibido}.",
-                'fecha' => $hoy
-            ];
-        }
-    }
-    
-    $response->getBody()->write(json_encode($alertas));
-    return $response->withHeader('Content-Type', 'application/json');
-});
 
 $app->get('/traza/{producto}', function ($request, $response, $args) {
     $producto = $args['producto'];

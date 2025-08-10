@@ -1,6 +1,19 @@
+
 <?php
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Database\Eloquent\Model;
+// Modelo para alertas persistentes
+class Alerta extends Model {
+    protected $table = 'alertas';
+    public $timestamps = true;
+    protected $fillable = [
+        'fecha',
+        'fase',
+        'tipo',
+        'mensaje',
+        'read'
+    ];
+}
 
 class Rol extends Model {
     protected $table = 'roles';
