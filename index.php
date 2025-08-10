@@ -240,22 +240,31 @@ $app->post('/produccion', function ($request, $response) {
         'observaciones' => $data['observaciones'] ?? null
     ]);
     
-    // Crear items de producción basados en los productos del pedido
+    // === SOLO GUARDAR PRODUCCION POR PRODUCTO ===
     $produccionItems = [];
     if (isset($data['productos']) && is_array($data['productos'])) {
-        // Si se especifican productos específicos con cantidades
+        // Agrupar cantidades producidas por producto
+        $producidasPorProducto = [];
         foreach ($data['productos'] as $productoData) {
+            $producto = $productoData['producto'];
+            $cantidad = (int)$productoData['cantidad_producida'];
+            if (!isset($producidasPorProducto[$producto])) {
+                $producidasPorProducto[$producto] = 0;
+            }
+            $producidasPorProducto[$producto] += $cantidad;
+        }
+        foreach ($producidasPorProducto as $producto => $cantidadTotal) {
             $item = ProduccionItem::create([
                 'lote_id' => $data['lote_id'],
-                'producto' => $productoData['producto'],
-                'cantidad_producida' => $productoData['cantidad_producida'],
+                'producto' => $producto,
+                'cantidad_producida' => $cantidadTotal,
                 'fecha' => $data['fecha'],
                 'empleado' => $data['empleado']
             ]);
             $produccionItems[] = $item;
         }
     } else {
-        // Fallback: crear items para todos los productos del lote
+        // Fallback: crear items para todos los productos del lote (suma solicitada)
         $productosDelLote = [];
         foreach ($lote->pedido->items as $pedidoItem) {
             if (!isset($productosDelLote[$pedidoItem->producto])) {
@@ -263,7 +272,6 @@ $app->post('/produccion', function ($request, $response) {
             }
             $productosDelLote[$pedidoItem->producto] += $pedidoItem->cantidad_solicitada;
         }
-        
         foreach ($productosDelLote as $producto => $cantidadTotal) {
             $item = ProduccionItem::create([
                 'lote_id' => $data['lote_id'],
@@ -280,10 +288,46 @@ $app->post('/produccion', function ($request, $response) {
     $lote->estado = 'producido';
     $lote->save();
     
+    // Calcular cantidad_solicitada agrupada por producto
+    $solicitadasPorProducto = [];
+    foreach ($lote->pedido->items as $pedidoItem) {
+        $producto = $pedidoItem->producto;
+        $cantidad = (int)$pedidoItem->cantidad_solicitada;
+        if (!isset($solicitadasPorProducto[$producto])) {
+            $solicitadasPorProducto[$producto] = 0;
+        }
+        $solicitadasPorProducto[$producto] += $cantidad;
+    }
+
+    // Preparar resumen por producto
+    $resumen = [];
+    foreach ($produccionItems as $item) {
+        $producto = $item->producto;
+        $cantidad_producida = (int)$item->cantidad_producida;
+        $cantidad_solicitada = isset($solicitadasPorProducto[$producto]) ? (int)$solicitadasPorProducto[$producto] : 0;
+        $diferencia = $cantidad_producida - $cantidad_solicitada;
+        $resumen[] = [
+            'producto' => $producto,
+            'cantidad_producida' => $cantidad_producida,
+            'cantidad_solicitada' => $cantidad_solicitada,
+            'diferencia' => $diferencia,
+            'estado' => $diferencia < 0 ? 'déficit' : ($diferencia > 0 ? 'superávit' : 'justo')
+        ];
+    }
+
+    // Ocultar cantidad_producida en los items del pedido en la respuesta
+    $loteArray = $lote->toArray();
+    if (isset($loteArray['pedido']['items'])) {
+        foreach ($loteArray['pedido']['items'] as &$item) {
+            unset($item['cantidad_producida']);
+        }
+        unset($item); // break reference
+    }
+
     $response->getBody()->write(json_encode([
         'produccion' => $produccion,
-        'items' => $produccionItems,
-        'lote' => $lote
+        'resumen' => $resumen,
+        'lote' => $loteArray
     ]));
     return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
 });
