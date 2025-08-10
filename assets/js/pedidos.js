@@ -177,7 +177,7 @@ async function actualizarTiendasProducto(selectProducto) {
                 if (infoDiv) {
                     if (inventarioResponse && inventarioResponse[tienda]) {
                         const inv = inventarioResponse[tienda];
-                        infoDiv.innerHTML = `Stock: ${inv.cantidad}`;
+                        infoDiv.innerHTML = `Stock actual: ${inv.cantidad}`;
                         infoDiv.innerHTML += `<br>Ult. Act: ${inv.fecha}`;
                     } else {
                         infoDiv.textContent = 'Sin inventario';
@@ -324,6 +324,9 @@ const removerProductoPedido = (button) => {
 
 // Función para validar y actualizar totales al cambiar cantidades
 const actualizarTotales = (input) => {
+  // Mostrar stock resultante (suma simple)
+  actualizarStockResultado(input);
+
   // Permitir vacío, pero si hay valor, validar que no sea negativo y convertir a entero
   if (input.value === '' || input.value === null) {
     // No modificar el valor, solo feedback visual
@@ -353,6 +356,33 @@ const actualizarTotales = (input) => {
   // Actualizar totales por tienda
   actualizarTotalesPorTienda();
 };
+
+// Suma simple: stock actual mostrado en la fila + input
+function actualizarStockResultado(input) {
+  const tienda = input.dataset.tienda;
+  const fila = input.closest('.producto-tienda-item');
+  if (!fila) return;
+  // Buscar el div donde mostrar el resultado
+  let stockDiv = fila.querySelector(`.stock-resultado[data-tienda="${tienda}"]`);
+  if (!stockDiv) {
+    // Si no existe, lo creamos (por compatibilidad)
+    stockDiv = document.createElement('div');
+    stockDiv.className = 'stock-resultado text-xs text-gray-700 mt-1';
+    stockDiv.setAttribute('data-tienda', tienda);
+    input.parentNode.appendChild(stockDiv);
+  }
+  // Buscar el stock actual mostrado en la fila
+  const infoDiv = fila.querySelector(`.inventario-info[data-tienda="${tienda}"]`);
+  let stockActual = 0;
+  if (infoDiv) {
+    const match = infoDiv.textContent.match(/Stock actual:\s*(\d+)/);
+    if (match) {
+      stockActual = parseInt(match[1]) || 0;
+    }
+  }
+  const cantidad = parseInt(input.value) || 0;
+  stockDiv.innerHTML = `Stock nuevo: <span class="stock-actual"></span><span class="stock-final">${stockActual + cantidad}</span>`;
+}
 
 // Calcular el total para un producto sumando todas sus cantidades
 const calcularTotalProducto = (fila) => {
