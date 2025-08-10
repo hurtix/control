@@ -196,24 +196,80 @@ const actualizarDistribucionDespacho = async (loteId) => {
         htmlGeneral += '<th>Estado</th>';
         htmlGeneral += '</tr></thead><tbody>';
         
+
         Object.values(productosSummary).forEach(item => {
-          const producidoMenor = item.cantidad_producida < item.cantidad_solicitada;
-          const statusColor = producidoMenor ? '#dc3545' : '#28a745';
-          const statusText = producidoMenor ? 'Déficit' : 'Completo';
-          
           htmlGeneral += '<tr>';
           htmlGeneral += `<td><strong>${item.producto}</strong></td>`;
           htmlGeneral += `<td>${item.cantidad_solicitada}</td>`;
           htmlGeneral += `<td>${item.cantidad_producida}</td>`;
           htmlGeneral += `<td>`;
-          htmlGeneral += `<input type="number" class="cantidad-despacho-input input" data-producto="${item.producto}" `;
-          htmlGeneral += `value="${item.cantidad_producida}" min="0" max="${item.cantidad_producida}" `;
-          // htmlGeneral += `style="width: 80px; padding: 4px; border: 1px solid #ccc; border-radius: 3px;" `;
-          htmlGeneral += `onchange="validarCantidadDespacho(this, ${item.cantidad_producida})">`;
+          htmlGeneral += `<input type="number" class="cantidad-despacho-input input w-20 text-center border-red-500" data-producto="${item.producto}" `;
+          htmlGeneral += `value="" min="0" max="${item.cantidad_producida}" step="1" `;
+          htmlGeneral += `placeholder="" `;
+          htmlGeneral += `oninput="actualizarEstadoDespacho(this, ${item.cantidad_solicitada})">`;
           htmlGeneral += `</td>`;
-          htmlGeneral += `<td style="color: ${statusColor};">${statusText}</td>`;
+          htmlGeneral += `<td class="estado-despacho" style="color: #dc3545;">Sin data</td>`;
           htmlGeneral += '</tr>';
         });
+
+// Validación visual y estado para cantidad a despachar
+window.actualizarEstadoDespacho = function(input, cantidadSolicitada) {
+  const tr = input.closest('tr');
+  const estadoTd = tr ? tr.querySelector('.estado-despacho') : null;
+  let estado = 'Sin data';
+  let color = '#dc3545';
+  const producido = parseFloat(input.getAttribute('max'));
+  // Eliminar tooltip previo si existe
+  let tooltip = input.parentNode.querySelector('.tooltip-despacho');
+  if (tooltip) tooltip.remove();
+
+  if (input.value === '' || isNaN(parseFloat(input.value)) || parseFloat(input.value) < 0) {
+    input.classList.remove('border-green-500');
+    input.classList.add('border-red-500');
+    input.setCustomValidity('Campo obligatorio');
+    estado = 'Sin data';
+    color = '#dc3545';
+  } else {
+    let valor = parseFloat(input.value);
+    if (valor > producido) {
+      valor = producido;
+      input.value = producido;
+      // Mostrar tooltip
+      tooltip = document.createElement('div');
+      tooltip.className = 'tooltip-despacho';
+      tooltip.style.position = 'absolute';
+      tooltip.style.background = 'red';
+      tooltip.style.color = '#fff';
+      tooltip.style.padding = '4px 10px';
+      tooltip.style.borderRadius = '4px';
+      tooltip.style.fontSize = '0.9em';
+      tooltip.style.top = (input.offsetTop - 32) + 'px';
+      tooltip.style.left = input.offsetLeft + 'px';
+      tooltip.style.zIndex = 1000;
+      tooltip.textContent = 'No puedes ingresar más de lo producido';
+      input.parentNode.style.position = 'relative';
+      input.parentNode.appendChild(tooltip);
+      setTimeout(() => { if (tooltip) tooltip.remove(); }, 2000);
+    }
+    if (valor < producido) {
+      input.classList.remove('border-red-500', 'border-green-500');
+      input.classList.add('border-yellow-400');
+      input.setCustomValidity('');
+      estado = 'Déficit';
+      color = '#ffc107';
+    } else if (valor === producido) {
+      input.classList.remove('border-red-500', 'border-yellow-400');
+      input.classList.add('border-green-500');
+      input.setCustomValidity('');
+      estado = 'Completo';
+      color = '#28a745';
+    }
+  }
+  if (estadoTd) {
+    estadoTd.textContent = estado;
+    estadoTd.style.color = color;
+  }
+};
         
         htmlGeneral += '</tbody></table>';
         htmlGeneral += '<div class="alert mt-4">  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg><h6>Ajuste las cantidades a despachar según disponibilidad. No puede exceder lo producido.</h6></div>';
