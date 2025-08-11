@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Control de Panadería</title>
+  <title>Imperium - Café Cauca</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/basecoat.cdn.min.css">
   <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/js/all.min.js" defer></script>

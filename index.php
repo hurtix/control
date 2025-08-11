@@ -2339,4 +2339,102 @@ $app->get('/header.php', function ($request, $response, $args) {
     }
 });
 
+// Ruta específica para pedidos.php
+$app->get('/pedidos.php', function ($request, $response, $args) {
+    $path = __DIR__ . '/pedidos.php';
+    if (file_exists($path)) {
+        ob_start();
+        include $path;
+        $html = ob_get_clean();
+        $response->getBody()->write($html);
+        return $response->withHeader('Content-Type', 'text/html');
+    } else {
+        return $response->withStatus(404)->write('Archivo no encontrado');
+    }
+});
+
+// Ruta específica para produccion.php
+$app->get('/produccion.php', function ($request, $response, $args) {
+    $path = __DIR__ . '/produccion.php';
+    if (file_exists($path)) {
+        ob_start();
+        include $path;
+        $html = ob_get_clean();
+        $response->getBody()->write($html);
+        return $response->withHeader('Content-Type', 'text/html');
+    } else {
+        return $response->withStatus(404)->write('Archivo no encontrado');
+    }
+});
+
+// Ruta específica para despacho.php
+$app->get('/despacho.php', function ($request, $response, $args) {
+    $path = __DIR__ . '/despacho.php';
+    if (file_exists($path)) {
+        ob_start();
+        include $path;
+        $html = ob_get_clean();
+        $response->getBody()->write($html);
+        return $response->withHeader('Content-Type', 'text/html');
+    } else {
+        return $response->withStatus(404)->write('Archivo no encontrado');
+    }
+});
+
+// Ruta específica para recepcion.php
+$app->get('/recepcion.php', function ($request, $response, $args) {
+    $path = __DIR__ . '/recepcion.php';
+    if (file_exists($path)) {
+        ob_start();
+        include $path;
+        $html = ob_get_clean();
+        $response->getBody()->write($html);
+        return $response->withHeader('Content-Type', 'text/html');
+    } else {
+        return $response->withStatus(404)->write('Archivo no encontrado');
+    }
+});
+
+// Ruta específica para inventario.php
+$app->get('/inventario.php', function ($request, $response, $args) {
+    $path = __DIR__ . '/inventario.php';
+    if (file_exists($path)) {
+        ob_start();
+        include $path;
+        $html = ob_get_clean();
+        $response->getBody()->write($html);
+        return $response->withHeader('Content-Type', 'text/html');
+    } else {
+        return $response->withStatus(404)->write('Archivo no encontrado');
+    }
+});
+
+// Ruta específica para trazabilidad.php
+$app->get('/trazabilidad.php', function ($request, $response, $args) {
+    $path = __DIR__ . '/trazabilidad.php';
+    if (file_exists($path)) {
+        ob_start();
+        include $path;
+        $html = ob_get_clean();
+        $response->getBody()->write($html);
+        return $response->withHeader('Content-Type', 'text/html');
+    } else {
+        return $response->withStatus(404)->write('Archivo no encontrado');
+    }
+});
+
+// Ruta específica para ajustes.php
+$app->get('/ajustes.php', function ($request, $response, $args) {
+    $path = __DIR__ . '/ajustes.php';
+    if (file_exists($path)) {
+        ob_start();
+        include $path;
+        $html = ob_get_clean();
+        $response->getBody()->write($html);
+        return $response->withHeader('Content-Type', 'text/html');
+    } else {
+        return $response->withStatus(404)->write('Archivo no encontrado');
+    }
+});
+
 $app->run();
