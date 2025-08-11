@@ -1,7 +1,5 @@
-
 <?php
 require __DIR__ . '/vendor/autoload.php';
-
 
 require __DIR__ . '/models.php';
 // Asegura que Maestro esté disponible en el scope global
@@ -161,8 +159,11 @@ $app->get('/dashboard.html', function ($request, $response, $args) {
     return $response->withHeader('Content-Type', 'text/html');
 });
 
+
 $app->get('/dashboard.php', function ($request, $response, $args) {
-    $html = file_get_contents(__DIR__ . '/dashboard.php');
+    ob_start();
+    include __DIR__ . '/dashboard.php';
+    $html = ob_get_clean();
     $response->getBody()->write($html);
     return $response->withHeader('Content-Type', 'text/html');
 });
@@ -2310,21 +2311,31 @@ $app->put('/productos/{id}/familia', function ($request, $response, $args) {
     try {
         $productoId = (int)$args['id'];
         $data = $request->getParsedBody();
-        
         $producto = Maestro::where('id', $productoId)->where('tipo', 'producto')->first();
         if (!$producto) {
             throw new Exception("Producto no encontrado");
         }
-        
         $producto->familia_id = $data['familia_id'] ?? null;
         $producto->save();
-        
         $response->getBody()->write(json_encode(['mensaje' => 'Familia asignada exitosamente']));
         return $response->withHeader('Content-Type', 'application/json');
-        
     } catch (Exception $e) {
         $response->getBody()->write(json_encode(['error' => $e->getMessage()]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
+
+// Ruta específica para header.php (puedes agregar más rutas similares aquí)
+$app->get('/header.php', function ($request, $response, $args) {
+    $path = __DIR__ . '/header.php';
+    if (file_exists($path)) {
+        ob_start();
+        include $path;
+        $html = ob_get_clean();
+        $response->getBody()->write($html);
+        return $response->withHeader('Content-Type', 'text/html');
+    } else {
+        return $response->withStatus(404)->write('Archivo no encontrado');
     }
 });
 

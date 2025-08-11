@@ -1,197 +1,144 @@
-<?php   ?>
-<!DOCTYPE html>
-<html lang="es">
+<?php include 'header.php'; ?>
 
-<head>
-  <meta charset="UTF-8">
-  <title>Control de Panadería</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/basecoat.cdn.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/js/all.min.js" defer></script>
-  <link rel="stylesheet" href="assets/css/styles.css">
+<?php include 'auth-header.php'; ?>
 
-</head>
-
-<body>
-  <!-- Header de autenticación -->
-  <div id="auth-header" class="bg-black text-white px-8 py-2 mb-8 flex justify-between items-center gap-2 rounded-full">
-    <div class="w-full">
-      <h1>Cafe Cauca</h1>
-      <!-- Aquí se insertará la notificación si es necesaria -->
-    </div>
-    <div class="w-full flex justify-end items-center gap-x-2">
-      
-<div id="notifications" class="popover">
-  <button id="notifications-trigger" type="button" aria-expanded="false" aria-controls="notifications-popover" class="btn-outline bg-transparent text-white p-0 border-none mr-4">
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C7.71983 1.25 4.25004 4.71979 4.25004 9V9.7041C4.25004 10.401 4.04375 11.0824 3.65717 11.6622L2.50856 13.3851C1.17547 15.3848 2.19318 18.1028 4.51177 18.7351C5.26738 18.9412 6.02937 19.1155 6.79578 19.2581L6.79768 19.2632C7.56667 21.3151 9.62198 22.75 12 22.75C14.378 22.75 16.4333 21.3151 17.2023 19.2632L17.2042 19.2581C17.9706 19.1155 18.7327 18.9412 19.4883 18.7351C21.8069 18.1028 22.8246 15.3848 21.4915 13.3851L20.3429 11.6622C19.9563 11.0824 19.75 10.401 19.75 9.7041V9C19.75 4.71979 16.2802 1.25 12 1.25ZM15.3764 19.537C13.1335 19.805 10.8664 19.8049 8.62349 19.5369C9.33444 20.5585 10.571 21.25 12 21.25C13.4289 21.25 14.6655 20.5585 15.3764 19.537ZM5.75004 9C5.75004 5.54822 8.54826 2.75 12 2.75C15.4518 2.75 18.25 5.54822 18.25 9V9.7041C18.25 10.6972 18.544 11.668 19.0948 12.4943L20.2434 14.2172C21.0086 15.3649 20.4245 16.925 19.0936 17.288C14.4494 18.5546 9.5507 18.5546 4.90644 17.288C3.57561 16.925 2.99147 15.3649 3.75664 14.2172L4.90524 12.4943C5.45609 11.668 5.75004 10.6972 5.75004 9.7041V9Z" fill="currentColor"></path> </g></svg>
-  </button>
-  <div id="notifications-popover" data-popover aria-hidden="true" class="w-80">
-    <div class="grid gap-4">
-      <header class="grid gap-1.5">
-        <h4 class="leading-none font-medium">Notificaciones</h4>
-      </header>
-      <section class="max-h-[200px] overflow-scroll">
-        <ul id="notifications-list"></ul>
-      </section>
-      <button id="clear-all-notifications" class="btn-destructive">Clear all</button>
-    </div>
-  </div>
-</div>
+<main>
 
 
-      <div>
-        <span class="flex items-center"><img class="w-10 h-10 rounded-full"
-            src="https://basecoatui.com/assets/images/avatar-2.png" alt=""><span id="user-info"
-            class="ml-2 mr-4 flex flex-col">Cargando...</span></span>
-        <!-- Aquí se insertará la notificación si es necesaria -->
-      </div>
-      <span>Salir</span>
-      <button class="btn-sm-icon-destructive" onclick="logout()">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g fill="currentColor">
-            <path d="M12 3.25a.75.75 0 0 1 0 1.5 7.25 7.25 0 0 0 0 14.5.75.75 0 0 1 0 1.5 8.75 8.75 0 1 1 0-17.5" />
-            <path
-              d="M16.47 9.53a.75.75 0 0 1 1.06-1.06l3 3c.3.3.3.77 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H10a.75.75 0 0 1 0-1.5h8.19z" />
-          </g>
-        </svg>
-      </button>
-    </div>
-  </div>
+<!-- <h1>Control de Panadería</h1> -->
 
-  <!-- <h1>Control de Panadería</h1> -->
-
-  <!-- Sección de Gestión de Familias de Productos -->
-  <div id="seccion-familias" class="mt-8">
+<!-- Sección de Gestión de Familias de Productos -->
+<div id="seccion-familias" class="mt-8">
     <h2>Gestión de Familias de Productos</h2>
     <p class="text-sm text-gray-600 mb-4">
-      Administra las familias de productos para organizar el inventario. Solo administradores pueden acceder a esta función.
+        Administra las familias de productos para organizar el inventario. Solo administradores pueden acceder a esta función.
     </p>
-    
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-top: 1em;">
-      <!-- Crear Familia -->
-      <div>
-        <h3>Crear Nueva Familia</h3>
-        <form id="form-nueva-familia">
-          <div class="grid gap-3">
-            <label class="label">Nombre de la Familia</label>
-            <input class="input" type="text" name="nombre" placeholder="ej. Panadería" required>
-          </div>
-          <div class="grid gap-3">
-            <label class="label">Descripción</label>
-            <textarea class="textarea" name="descripcion" placeholder="Descripción de la familia (opcional)"></textarea>
-          </div>
-          <button class="btn mt-4" type="submit">Crear Familia</button>
-        </form>
-        <div id="result-nueva-familia" class="result mt-4"></div>
-      </div>
 
-      <!-- Lista de Familias -->
-      <div>
-        <h3>Familias Existentes</h3>
-        <button class="btn-outline mb-4" onclick="cargarFamilias()">Actualizar Lista</button>
-        <div id="lista-familias" class="result"></div>
-      </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-top: 1em;">
+        <!-- Crear Familia -->
+        <div>
+            <h3>Crear Nueva Familia</h3>
+            <form id="form-nueva-familia">
+                <div class="grid gap-3">
+                    <label class="label">Nombre de la Familia</label>
+                    <input class="input" type="text" name="nombre" placeholder="ej. Panadería" required>
+                </div>
+                <div class="grid gap-3">
+                    <label class="label">Descripción</label>
+                    <textarea class="textarea" name="descripcion" placeholder="Descripción de la familia (opcional)"></textarea>
+                </div>
+                <button class="btn mt-4" type="submit">Crear Familia</button>
+            </form>
+            <div id="result-nueva-familia" class="result mt-4"></div>
+        </div>
+
+        <!-- Lista de Familias -->
+        <div>
+            <h3>Familias Existentes</h3>
+            <button class="btn-outline mb-4" onclick="cargarFamilias()">Actualizar Lista</button>
+            <div id="lista-familias" class="result"></div>
+        </div>
     </div>
 
     <!-- Editar Familia -->
     <div id="form-editar-familia-container" style="display: none; margin-top: 2em; padding: 1em; border: 1px solid #ddd; border-radius: 8px;">
-      <h3>Editar Familia</h3>
-      <form id="form-editar-familia">
-        <input type="hidden" name="id">
-        <div class="grid gap-3">
-          <label class="label">Nombre de la Familia</label>
-          <input class="input" type="text" name="nombre" required>
-        </div>
-        <div class="grid gap-3">
-          <label class="label">Descripción</label>
-          <textarea class="textarea" name="descripcion"></textarea>
-        </div>
-        <div class="flex gap-2 mt-4">
-          <button class="btn" type="submit">Guardar Cambios</button>
-          <button class="btn-outline" type="button" onclick="cancelarEdicionFamilia()">Cancelar</button>
-        </div>
-      </form>
-      <div id="result-editar-familia" class="result mt-4"></div>
+        <h3>Editar Familia</h3>
+        <form id="form-editar-familia">
+            <input type="hidden" name="id">
+            <div class="grid gap-3">
+                <label class="label">Nombre de la Familia</label>
+                <input class="input" type="text" name="nombre" required>
+            </div>
+            <div class="grid gap-3">
+                <label class="label">Descripción</label>
+                <textarea class="textarea" name="descripcion"></textarea>
+            </div>
+            <div class="flex gap-2 mt-4">
+                <button class="btn" type="submit">Guardar Cambios</button>
+                <button class="btn-outline" type="button" onclick="cancelarEdicionFamilia()">Cancelar</button>
+            </div>
+        </form>
+        <div id="result-editar-familia" class="result mt-4"></div>
     </div>
-  </div>
+</div>
 
-  <!-- Sección de Inventario Final -->
-  <div id="seccion-inventario" class="mt-8">
+<!-- Sección de Inventario Final -->
+<div id="seccion-inventario" class="mt-8">
     <h2>Inventario Final Diario</h2>
     <p class="text-sm text-gray-600 mb-4">
-      Registra el conteo de productos al final del día. Solo usuarios de tienda pueden acceder a esta función.
+        Registra el conteo de productos al final del día. Solo usuarios de tienda pueden acceder a esta función.
     </p>
-    
+
     <div class="flex gap-4 mb-6">
-      <div>
-        <label class="label">Fecha y Hora</label>
-        <input class="input fecha-auto" type="datetime-local" id="fecha-inventario" readonly>
-      </div>
-      <div>
-        <label class="label">Tienda</label>
-        <select class="select" id="select-tienda-inventario">
-          <option value="">-- Seleccionar tienda --</option>
-        </select>
-      </div>
+        <div>
+            <label class="label">Fecha y Hora</label>
+            <input class="input fecha-auto" type="datetime-local" id="fecha-inventario" readonly>
+        </div>
+        <div>
+            <label class="label">Tienda</label>
+            <select class="select" id="select-tienda-inventario">
+                <option value="">-- Seleccionar tienda --</option>
+            </select>
+        </div>
     </div>
 
     <div id="inventario-productos-container">
-      <form id="form-inventario">
-        <div class="mb-4">
-          <h3 class="text-lg font-semibold mb-3">Productos por Familia</h3>
-          <div id="tabla-inventario-container" class="border border-gray-200 p-4 rounded-lg">
-            <div id="inventario-controles" class="flex justify-between items-center mb-4" style="display: none;">
-              <div class="flex gap-2">
-                <button type="button" id="btn-guardar-progreso" class="btn-outline">
-                  Guardar Progreso
-                </button>
-                <button type="button" id="btn-limpiar-progreso" class="btn-destructive">
-                  Limpiar Todo
-                </button>
-              </div>
-              <div id="indicador-progreso" class="text-sm text-gray-600">
-                <span id="productos-completados">0</span> de <span id="productos-totales">0</span> productos completados
-              </div>
-            </div>
-            
-            <table id="tabla-inventario" class="table" style="display: none;">
-              <thead>
-                <tr class="bg-gray-50">
-                  <th>Familia</th>
-                  <th>Producto</th>
-                  <th>Cantidad</th>
-                </tr>
-              </thead>
-              <tbody id="productos-inventario-tbody">
-                <!-- Los productos se cargarán automáticamente aquí -->
-              </tbody>
-            </table>
-            <div id="loading-productos" class="text-center py-8 text-gray-500">
-              Selecciona una tienda para cargar los productos...
-            </div>
-          </div>
-        </div>
-        
-        <button class="btn mt-4" type="submit" id="btn-registrar-inventario" style="display: none;">
-          Registrar Inventario Final
-        </button>
-      </form>
-      
-      <div id="result-inventario" class="result mt-4"></div>
-    </div>
-  </div>
+        <form id="form-inventario">
+            <div class="mb-4">
+                <h3 class="text-lg font-semibold mb-3">Productos por Familia</h3>
+                <div id="tabla-inventario-container" class="border border-gray-200 p-4 rounded-lg">
+                    <div id="inventario-controles" class="flex justify-between items-center mb-4" style="display: none;">
+                        <div class="flex gap-2">
+                            <button type="button" id="btn-guardar-progreso" class="btn-outline">
+                                Guardar Progreso
+                            </button>
+                            <button type="button" id="btn-limpiar-progreso" class="btn-destructive">
+                                Limpiar Todo
+                            </button>
+                        </div>
+                        <div id="indicador-progreso" class="text-sm text-gray-600">
+                            <span id="productos-completados">0</span> de <span id="productos-totales">0</span> productos completados
+                        </div>
+                    </div>
 
-  <h2>Registrar Pedido</h2>
-  <form id="form-pedido">
+                    <table id="tabla-inventario" class="table" style="display: none;">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th>Familia</th>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productos-inventario-tbody">
+                            <!-- Los productos se cargarán automáticamente aquí -->
+                        </tbody>
+                    </table>
+                    <div id="loading-productos" class="text-center py-8 text-gray-500">
+                        Selecciona una tienda para cargar los productos...
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn mt-4" type="submit" id="btn-registrar-inventario" style="display: none;">
+                Registrar Inventario Final
+            </button>
+        </form>
+
+        <div id="result-inventario" class="result mt-4"></div>
+    </div>
+</div>
+
+<h2>Registrar Pedido</h2>
+<form id="form-pedido">
     <div class="flex justify-start gap-x-8">
-      <div class="grid gap-3">
-        <label class="label">Fecha Pedido</label>
-        <input class="input" type="text" name="fecha_pedido" readonly class="fecha-auto"></label>
-      </div>
-      <div class="grid gap-3">
-        <label class="label">Fecha Requerida</label>
-        <input class="input" type="date" name="fecha_requerida" required></label>
-      </div>
+        <div class="grid gap-3">
+            <label class="label">Fecha Pedido</label>
+            <input class="input" type="text" name="fecha_pedido" readonly class="fecha-auto"></label>
+        </div>
+        <div class="grid gap-3">
+            <label class="label">Fecha Requerida</label>
+            <input class="input" type="date" name="fecha_requerida" required></label>
+        </div>
     </div>
 
     <!-- Campo de empleado oculto que se llenará automáticamente -->
@@ -199,575 +146,493 @@
 
     <h3>Productos y Tiendas</h3>
     <div class="table-container border border-gray-200 p-4 rounded-lg">
-      <table class="pedidos-table table">
-        <thead>
-          <tr class="[&_th]:font-bold">
-            <th>Producto</th>
-            <th>Tiendas</th>
-            <th>Total</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="productos-tiendas-container">
-          <tr class="producto-tienda-item">
-            <td>
-              <select class="producto-select select" onchange="actualizarTiendasProducto(this).catch(console.error)">>
-                <option value="">-- Seleccionar producto --</option>
-              </select>
-            </td>
-            <td class="tiendas-cantidades" style="visibility: hidden;">
-              <div class="tiendas-grid grid grid-cols-3 gap-x-8" id="tiendas-grid-0"></div>
-            </td>
-            <td class="producto-total" style="visibility: hidden;">
-              <span class="font-bold text-lg">0</span>
-            </td>
-            <td>
-              <button type="button" class="btn-sm-icon-destructive" onclick="removerProductoPedido(this)"><svg
-                  viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <g fill="currentColor">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                      d="M10.3 2.25h3.4q.3 0 .57.03c.7.11 1.32.55 1.64 1.18q.13.24.22.54l.1.34.04.09a1.25 1.25 0 0 0 1.23.82h3a.75.75 0 0 1 0 1.5h-17a.75.75 0 0 1 0-1.5h3.09a1.25 1.25 0 0 0 1.17-.91L7.87 4q.1-.3.22-.54c.32-.63.93-1.07 1.64-1.18q.25-.04.58-.03m-1.3 3 .18-.43.1-.3.14-.37a.8.8 0 0 1 .54-.4h4.08q.36.09.54.4c.03.04.05.1.14.37l.1.3.04.12q.05.15.13.31z" />
-                    <path
-                      d="M5.92 8.45a.75.75 0 1 0-1.5.1l.46 6.95c.09 1.28.16 2.32.32 3.13.17.85.45 1.55 1.04 2.1.6.56 1.32.8 2.17.91.83.11 1.87.11 3.15.11h.88c1.29 0 2.32 0 3.15-.1a3.7 3.7 0 0 0 2.17-.91c.59-.55.87-1.26 1.04-2.1.16-.82.23-1.86.32-3.14l.46-6.95a.75.75 0 0 0-1.5-.1l-.45 6.9a26 26 0 0 1-.3 3c-.14.67-.33 1.04-.6 1.3-.27.25-.65.41-1.34.5-.71.1-1.65.1-3 .1h-.78c-1.35 0-2.29 0-3-.1-.7-.09-1.07-.25-1.34-.5-.27-.26-.46-.62-.6-1.3-.14-.72-.2-1.65-.3-3z" />
-                    <path
-                      d="M9.43 10.25c.4-.04.78.26.82.68l.5 5a.75.75 0 0 1-1.5.14l-.5-5a.75.75 0 0 1 .68-.82m5.14 0c.42.04.72.41.68.82l-.5 5a.75.75 0 0 1-1.5-.14l.5-5a.75.75 0 0 1 .82-.68" />
-                  </g>
-                </svg></button>
-            </td>
-          </tr>
-        </tbody>
-        <tfoot>
-          <tr class="font-bold bg-gray-100">
-            <td class="text-right pr-4">Totales c/tienda</td>
-            <td>
-              <div id="tiendas-totales-grid"></div>
-            </td>
-            <td><span id="gran-total" class="text-lg">0</span> unidades</td>
-            <td></td>
-          </tr>
-        </tfoot>
-      </table>
+        <table class="pedidos-table table">
+            <thead>
+                <tr class="[&_th]:font-bold">
+                    <th>Producto</th>
+                    <th>Tiendas</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="productos-tiendas-container">
+                <tr class="producto-tienda-item">
+                    <td>
+                        <select class="producto-select select" onchange="actualizarTiendasProducto(this).catch(console.error)">>
+                            <option value="">-- Seleccionar producto --</option>
+                        </select>
+                    </td>
+                    <td class="tiendas-cantidades" style="visibility: hidden;">
+                        <div class="tiendas-grid grid grid-cols-3 gap-x-8" id="tiendas-grid-0"></div>
+                    </td>
+                    <td class="producto-total" style="visibility: hidden;">
+                        <span class="font-bold text-lg">0</span>
+                    </td>
+                    <td>
+                        <button type="button" class="btn-sm-icon-destructive" onclick="removerProductoPedido(this)"><svg
+                                viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g fill="currentColor">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                        d="M10.3 2.25h3.4q.3 0 .57.03c.7.11 1.32.55 1.64 1.18q.13.24.22.54l.1.34.04.09a1.25 1.25 0 0 0 1.23.82h3a.75.75 0 0 1 0 1.5h-17a.75.75 0 0 1 0-1.5h3.09a1.25 1.25 0 0 0 1.17-.91L7.87 4q.1-.3.22-.54c.32-.63.93-1.07 1.64-1.18q.25-.04.58-.03m-1.3 3 .18-.43.1-.3.14-.37a.8.8 0 0 1 .54-.4h4.08q.36.09.54.4c.03.04.05.1.14.37l.1.3.04.12q.05.15.13.31z" />
+                                    <path
+                                        d="M5.92 8.45a.75.75 0 1 0-1.5.1l.46 6.95c.09 1.28.16 2.32.32 3.13.17.85.45 1.55 1.04 2.1.6.56 1.32.8 2.17.91.83.11 1.87.11 3.15.11h.88c1.29 0 2.32 0 3.15-.1a3.7 3.7 0 0 0 2.17-.91c.59-.55.87-1.26 1.04-2.1.16-.82.23-1.86.32-3.14l.46-6.95a.75.75 0 0 0-1.5-.1l-.45 6.9a26 26 0 0 1-.3 3c-.14.67-.33 1.04-.6 1.3-.27.25-.65.41-1.34.5-.71.1-1.65.1-3 .1h-.78c-1.35 0-2.29 0-3-.1-.7-.09-1.07-.25-1.34-.5-.27-.26-.46-.62-.6-1.3-.14-.72-.2-1.65-.3-3z" />
+                                    <path
+                                        d="M9.43 10.25c.4-.04.78.26.82.68l.5 5a.75.75 0 0 1-1.5.14l-.5-5a.75.75 0 0 1 .68-.82m5.14 0c.42.04.72.41.68.82l-.5 5a.75.75 0 0 1-1.5-.14l.5-5a.75.75 0 0 1 .82-.68" />
+                                </g>
+                            </svg></button>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr class="font-bold bg-gray-100">
+                    <td class="text-right pr-4">Totales c/tienda</td>
+                    <td>
+                        <div id="tiendas-totales-grid"></div>
+                    </td>
+                    <td><span id="gran-total" class="text-lg">0</span> unidades</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
     <div class="flex justify-between mt-4">
-      <button type="button" class="btn-outline" onclick="agregarProductoPedido()">+ Agregar Producto</button>
-  <button type="button" id="btn-guardar-progreso-pedidos" class="btn-outline">Guardar Progreso</button>
-  <button type="button" id="btn-limpiar-progreso-pedidos" class="btn-destructive">Limpiar Todo</button>
-  <button type="submit" class="btn">Registrar Pedido</button>
+        <button type="button" class="btn-outline" onclick="agregarProductoPedido()">+ Agregar Producto</button>
+        <button type="button" id="btn-guardar-progreso-pedidos" class="btn-outline">Guardar Progreso</button>
+        <button type="button" id="btn-limpiar-progreso-pedidos" class="btn-destructive">Limpiar Todo</button>
+        <button type="submit" class="btn">Registrar Pedido</button>
     </div>
 
     <div class="endpoint">POST /pedidos</div>
-  </form>
-  <div id="result-pedido" class="result"></div>
+</form>
+<div id="result-pedido" class="result"></div>
 
-  <h2>Registrar Producción</h2>
-  <form id="form-produccion">
+<h2>Registrar Producción</h2>
+<form id="form-produccion">
     <div class="flex justify-end">
-      <div>
-        <label class="label mb-1">Fecha y hora a registrar</label>
-        <input class="input" type="text" name="fecha" readonly class="fecha-auto">
-        <input type="hidden" name="lote_id" id="input-lote-id" required>
-      </div>
+        <div>
+            <label class="label mb-1">Fecha y hora a registrar</label>
+            <input class="input" type="text" name="fecha" readonly class="fecha-auto">
+            <input type="hidden" name="lote_id" id="input-lote-id" required>
+        </div>
     </div>
     <div class="flex gap-x-4">
-      <div class="w-1/3">
-        <h3>Seleccionar Lote</h3>
-        <div id="lotes-cards-container" class="lotes-cards-container border p-4 rounded-lg bg-gray-100"></div>
-      </div>
-
-      <div id="productos-lote-container" class="w-2/3" style="display: none;">
-        <h3 class="mb-4">Productos del Lote</h3>
-        <div id="productos-lote-lista"></div>
-        <div class="grid gap-3 mt-8">
-          <label>Observaciones</label> <textarea class="textarea" name="observaciones"
-            placeholder="Observaciones adicionales (opcional)"></textarea>
+        <div class="w-1/3">
+            <h3>Seleccionar Lote</h3>
+            <div id="lotes-cards-container" class="lotes-cards-container border p-4 rounded-lg bg-gray-100"></div>
         </div>
-        <button type="submit" id="btn-registrar-produccion" class="btn mt-3" disabled>Registrar Producción</button>
 
-      </div>
+        <div id="productos-lote-container" class="w-2/3" style="display: none;">
+            <h3 class="mb-4">Productos del Lote</h3>
+            <div id="productos-lote-lista"></div>
+            <div class="grid gap-3 mt-8">
+                <label>Observaciones</label> <textarea class="textarea" name="observaciones"
+                    placeholder="Observaciones adicionales (opcional)"></textarea>
+            </div>
+            <button type="submit" id="btn-registrar-produccion" class="btn mt-3" disabled>Registrar Producción</button>
+
+        </div>
     </div>
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado">
 
 
     <div class="endpoint">POST /produccion</div>
-  </form>
-  <div id="result-produccion" class="result"></div>
+</form>
+<div id="result-produccion" class="result"></div>
 
-  <h2>Registrar Despacho</h2>
-  <form id="form-despacho">
+<h2>Registrar Despacho</h2>
+<form id="form-despacho">
     <div class="flex justify-end">
-      <div class="grid gap-3">
-        <label class="label">Fecha y hora a registrar</label>
-        <input class="input" type="text" name="fecha" readonly class="fecha-auto">
-        <input type="hidden" name="lote_id" id="input-lote-id-despacho" required>
-      </div>
+        <div class="grid gap-3">
+            <label class="label">Fecha y hora a registrar</label>
+            <input class="input" type="text" name="fecha" readonly class="fecha-auto">
+            <input type="hidden" name="lote_id" id="input-lote-id-despacho" required>
+        </div>
     </div>
     <div class="flex gap-x-4">
-      <div class="w-1/3">
-        <h3>Seleccionar Lote</h3>
-        <div id="lotes-despacho-cards-container" class="lotes-cards-container border p-4 rounded-lg bg-gray-100"></div>
-      </div>
+        <div class="w-1/3">
+            <h3>Seleccionar Lote</h3>
+            <div id="lotes-despacho-cards-container" class="lotes-cards-container border p-4 rounded-lg bg-gray-100"></div>
+        </div>
 
-      <div id="distribucion-despacho-container" class="w-2/3" style="display: none;">
-        <h3>Distribución Automática</h3>
-        <p style="color: #666; font-size: 0.9em; margin-bottom: 1em;">
-          Las cantidades se distribuirán automáticamente entre las tiendas según las proporciones del pedido original.
-        </p>
-        <div id="distribucion-despacho-lista"></div>
-        <label>Observaciones <textarea class="textarea" name="observaciones"
-            placeholder="Observaciones adicionales (opcional)"></textarea></label>
-  <button class="btn mt-4" type="submit" id="btn-despachar-lote">Despachar Automáticamente</button>
-      </div>
+        <div id="distribucion-despacho-container" class="w-2/3" style="display: none;">
+            <h3>Distribución Automática</h3>
+            <p style="color: #666; font-size: 0.9em; margin-bottom: 1em;">
+                Las cantidades se distribuirán automáticamente entre las tiendas según las proporciones del pedido original.
+            </p>
+            <div id="distribucion-despacho-lista"></div>
+            <label>Observaciones <textarea class="textarea" name="observaciones"
+                    placeholder="Observaciones adicionales (opcional)"></textarea></label>
+            <button class="btn mt-4" type="submit" id="btn-despachar-lote">Despachar Automáticamente</button>
+        </div>
     </div>
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado-despacho">
 
 
     <div class="endpoint">POST /despacho (distribución automática)</div>
-  </form>
-  <div id="result-despacho" class="result"></div>
+</form>
+<div id="result-despacho" class="result"></div>
 
-  <h2>Registrar Recepción</h2>
-  <form id="form-recepcion">
+<h2>Registrar Recepción</h2>
+<form id="form-recepcion">
     <div class="flex justify-end">
-      <div class="grid gap-3">
-        <label class="label">Fecha</label>
-        <input class="input fecha-auto" type="text" name="fecha" readonly>
-      </div>
+        <div class="grid gap-3">
+            <label class="label">Fecha</label>
+            <input class="input fecha-auto" type="text" name="fecha" readonly>
+        </div>
     </div>
     <div class="flex gap-x-4">
-    <div class="w-1/3">
-      <label>Lote</label>
-      <div id="lotes-recepcion-container" class="card-container max-h-[400px] overflow-scroll p-4 bg-gray-100 rounded-lg flex flex-col gap-3">
-        <!-- Aquí se mostrarán los lotes disponibles para recepción -->
-        <div class="spinner-container">
-          <div class="spinner"></div>
-          <p>Cargando lotes...</p>
+        <div class="w-1/3">
+            <label>Lote</label>
+            <div id="lotes-recepcion-container" class="card-container max-h-[400px] overflow-scroll p-4 bg-gray-100 rounded-lg flex flex-col gap-3">
+                <!-- Aquí se mostrarán los lotes disponibles para recepción -->
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                    <p>Cargando lotes...</p>
+                </div>
+            </div>
+            <input type="hidden" name="lote_id" id="lote-recepcion-selected">
         </div>
-      </div>
-      <input type="hidden" name="lote_id" id="lote-recepcion-selected">
-    </div>
-<div class="w-2/3">
-    <div id="tiendas-lote-container" style="display: none;">
-      <input type="hidden" name="tienda" id="tienda-usuario-actual">
-      <!-- La tienda se detectará automáticamente según el usuario -->
-    </div>
+        <div class="w-2/3">
+            <div id="tiendas-lote-container" style="display: none;">
+                <input type="hidden" name="tienda" id="tienda-usuario-actual">
+                <!-- La tienda se detectará automáticamente según el usuario -->
+            </div>
 
-    <div id="despachos-tienda-container" style="display: none;">
-      <h3>Items a recibir por la tienda</h3>
-      <p class="text-sm text-gray-600 mb-4">
-        Confirme las cantidades recibidas para esta tienda específica.
-      </p>
-      <div id="despachos-tienda-lista"></div>
-      <label>Observaciones <textarea class="textarea" name="observaciones"
-        placeholder="Observaciones adicionales (opcional)"></textarea></label>
-  <button class="btn mt-4" type="submit" id="btn-registrar-recepcion" disabled>Registrar Recepción de Tienda</button>
+            <div id="despachos-tienda-container" style="display: none;">
+                <h3>Items a recibir por la tienda</h3>
+                <p class="text-sm text-gray-600 mb-4">
+                    Confirme las cantidades recibidas para esta tienda específica.
+                </p>
+                <div id="despachos-tienda-lista"></div>
+                <label>Observaciones <textarea class="textarea" name="observaciones"
+                        placeholder="Observaciones adicionales (opcional)"></textarea></label>
+                <button class="btn mt-4" type="submit" id="btn-registrar-recepcion" disabled>Registrar Recepción de Tienda</button>
+            </div>
+
+        </div>
+
     </div>
-     
-  </div>
-  
-  </div>
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado-recepcion">
 
-   
+
     <div class="endpoint">POST /recepcion (por tienda individual)</div>
-  </form>
-  <div id="result-recepcion" class="result"></div>
+</form>
+<div id="result-recepcion" class="result"></div>
 
-  <h2>Consultas y Reportes</h2>
-  <button class="btn-outline" onclick="consultar('pedidos')">Consultar Pedidos</button>
-  <button class="btn-outline" onclick="consultar('produccion')">Consultar Producción</button>
-  <button class="btn-outline" onclick="consultar('despacho')">Consultar Despachos</button>
-  <button class="btn-outline" onclick="consultar('recepcion')">Consultar Recepciones</button>
-  <button class="btn-outline" onclick="consultar('alertas')">Ver Alertas</button>
-  <div class="endpoint">GET /pedidos, /produccion, /despacho, /recepcion, /alertas</div>
-  <div id="result-consultas" class="result"></div>
+<h2>Consultas y Reportes</h2>
+<button class="btn-outline" onclick="consultar('pedidos')">Consultar Pedidos</button>
+<button class="btn-outline" onclick="consultar('produccion')">Consultar Producción</button>
+<button class="btn-outline" onclick="consultar('despacho')">Consultar Despachos</button>
+<button class="btn-outline" onclick="consultar('recepcion')">Consultar Recepciones</button>
+<button class="btn-outline" onclick="consultar('alertas')">Ver Alertas</button>
+<div class="endpoint">GET /pedidos, /produccion, /despacho, /recepcion, /alertas</div>
+<div id="result-consultas" class="result"></div>
 
-  <div>
-  <h2>Trazabilidad</h2>
-  <div class="flex gap-x-4">
-    <div class="w-1/6">
-  <form id="form-traza">
-    <div class="grid gap-3">
-    <label class="label">Lote</label>
-      <select class="select w-full" name="lote" id="select-lote-traza">
-        <option value="">-- Seleccionar lote --</option>
-      </select>
-    <button class="btn" type="submit">Consultar Trazabilidad</button>
+<div>
+    <h2>Trazabilidad</h2>
+    <div class="flex gap-x-4">
+        <div class="w-1/6">
+            <form id="form-traza">
+                <div class="grid gap-3">
+                    <label class="label">Lote</label>
+                    <select class="select w-full" name="lote" id="select-lote-traza">
+                        <option value="">-- Seleccionar lote --</option>
+                    </select>
+                    <button class="btn" type="submit">Consultar Trazabilidad</button>
+                </div>
+                <div class="endpoint">GET /traza/lote/{lote_id}</div>
+            </form>
+        </div>
+        <div class="w-5/6">
+            <div id="result-traza" class="result card p-4 min-h-[400px]"></div>
+        </div>
     </div>
-    <div class="endpoint">GET /traza/lote/{lote_id}</div>
-  </form>
-  </div>
-  <div class="w-5/6">
-  <div id="result-traza" class="result card p-4 min-h-[400px]"></div>
-  </div>
-  </div>
 </div>
-  <h2>Gestión de Datos Maestros</h2>
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2em; margin-top: 1em;">
+<h2>Gestión de Datos Maestros</h2>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2em; margin-top: 1em;">
 
     <div>
-      <h3>Productos</h3>
-      <form id="form-producto">
-        <div class="grid gap-3">
-          <label class="label">Nombre del Producto</label>
-          <input class="input" type="text" name="nombre" required placeholder="Ej: Pan Integral">
-        </div>
-        <div class="grid gap-3">
-          <label class="label">Familia de Producto</label>
-          <select class="select" name="familia_id" id="familia-select-producto">
-            <option value="">-- Sin familia asignada --</option>
-          </select>
-          <small style="color: #6c757d; font-size: 0.8em;">Opcional: Selecciona una familia para organizar mejor el inventario</small>
-        </div>
-        <button class="btn" type="submit">Agregar Producto</button>
-        <div class="endpoint">POST /maestros/producto</div>
-      </form>
-      <div id="result-producto" class="result"></div>
+        <h3>Productos</h3>
+        <form id="form-producto">
+            <div class="grid gap-3">
+                <label class="label">Nombre del Producto</label>
+                <input class="input" type="text" name="nombre" required placeholder="Ej: Pan Integral">
+            </div>
+            <div class="grid gap-3">
+                <label class="label">Familia de Producto</label>
+                <select class="select" name="familia_id" id="familia-select-producto">
+                    <option value="">-- Sin familia asignada --</option>
+                </select>
+                <small style="color: #6c757d; font-size: 0.8em;">Opcional: Selecciona una familia para organizar mejor el inventario</small>
+            </div>
+            <button class="btn" type="submit">Agregar Producto</button>
+            <div class="endpoint">POST /maestros/producto</div>
+        </form>
+        <div id="result-producto" class="result"></div>
     </div>
 
     <div>
-      <h3>Empleados</h3>
-      <form id="form-empleado-maestro">
-        <div class="grid gap-3">
-          <label class="label">DNI</label>
-          <input class="input" type="text" name="dni" pattern="[0-9]{7,8}" title="Solo números, 7-8 dígitos" required
-            placeholder="12345678">
-        </div>
-        <div class="grid gap-3">
-          <label class="label">Nombre del Empleado</label>
-          <input class="input" type="text" name="nombre" required placeholder="Ej: Juan Pérez">
-        </div>
-        <button class="btn" type="submit">Agregar Empleado</button>
-        <div class="endpoint">POST /maestros/empleado</div>
-      </form>
-      <div id="result-empleado-maestro" class="result"></div>
+        <h3>Empleados</h3>
+        <form id="form-empleado-maestro">
+            <div class="grid gap-3">
+                <label class="label">DNI</label>
+                <input class="input" type="text" name="dni" pattern="[0-9]{7,8}" title="Solo números, 7-8 dígitos" required
+                    placeholder="12345678">
+            </div>
+            <div class="grid gap-3">
+                <label class="label">Nombre del Empleado</label>
+                <input class="input" type="text" name="nombre" required placeholder="Ej: Juan Pérez">
+            </div>
+            <button class="btn" type="submit">Agregar Empleado</button>
+            <div class="endpoint">POST /maestros/empleado</div>
+        </form>
+        <div id="result-empleado-maestro" class="result"></div>
     </div>
 
     <div>
-      <h3>Tiendas</h3>
-      <form id="form-tienda-maestro">
-        <div class="grid gap-3">
-          <label class="label">Nombre de la Tienda</label>
-          <input class="input" type="text" name="nombre" required placeholder="Ej: Sucursal Norte">
-        </div>
-        <button class="btn" type="submit">Agregar Tienda</button>
-        <div class="endpoint">POST /maestros/tienda</div>
-      </form>
-      <div id="result-tienda-maestro" class="result"></div>
+        <h3>Tiendas</h3>
+        <form id="form-tienda-maestro">
+            <div class="grid gap-3">
+                <label class="label">Nombre de la Tienda</label>
+                <input class="input" type="text" name="nombre" required placeholder="Ej: Sucursal Norte">
+            </div>
+            <button class="btn" type="submit">Agregar Tienda</button>
+            <div class="endpoint">POST /maestros/tienda</div>
+        </form>
+        <div id="result-tienda-maestro" class="result"></div>
     </div>
 
-  </div>
+</div>
 
-  <h2>Datos Maestros Registrados</h2>
-  <div style="margin-top: 1em;">
+<h2>Datos Maestros Registrados</h2>
+<div style="margin-top: 1em;">
     <button class="btn-outline" onclick="verMaestros('all')">📋 Ver Todos</button>
     <button class="btn-outline" onclick="verMaestros('producto')">📦 Productos</button>
     <button class="btn-outline" onclick="verMaestros('empleado')">👥 Empleados</button>
     <button class="btn-outline" onclick="verMaestros('tienda')">🏪 Tiendas</button>
     <div class="endpoint">GET /maestros</div>
-  </div>
-  <div id="result-maestros-list" class="result"></div>
+</div>
+<div id="result-maestros-list" class="result"></div>
 
-  <h2>Administración de Roles</h2>
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-top: 1em;">
+<h2>Administración de Roles</h2>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-top: 1em;">
 
     <!-- Gestión de Roles -->
     <div>
-      <h3>Gestión de Roles</h3>
+        <h3>Gestión de Roles</h3>
 
-      <!-- Crear nuevo rol -->
-      <form id="form-nuevo-rol">
-        <div class="grid gap-3">
-          <label class="label">Nombre del Rol</label>
-          <input class="input" type="text" name="nombre" required>
-        </div>
-        <div class="grid gap-3">
-          <label class="label">Descripción</label>
-          <input class="input" type="text" name="descripcion" required>
-        </div>
-        <button class="btn" type="submit">Crear Rol</button>
-        <div class="endpoint">POST /roles</div>
-      </form>
-      <div id="result-nuevo-rol" class="result"></div>
+        <!-- Crear nuevo rol -->
+        <form id="form-nuevo-rol">
+            <div class="grid gap-3">
+                <label class="label">Nombre del Rol</label>
+                <input class="input" type="text" name="nombre" required>
+            </div>
+            <div class="grid gap-3">
+                <label class="label">Descripción</label>
+                <input class="input" type="text" name="descripcion" required>
+            </div>
+            <button class="btn" type="submit">Crear Rol</button>
+            <div class="endpoint">POST /roles</div>
+        </form>
+        <div id="result-nuevo-rol" class="result"></div>
 
-      <!-- Listar roles -->
-      <div style="margin-top: 2em;">
-        <button class="btn-outline" onclick="listarRoles()">Ver Roles</button>
-        <div class="endpoint">GET /roles</div>
-      </div>
-      <div id="result-roles" class="result"></div>
+        <!-- Listar roles -->
+        <div style="margin-top: 2em;">
+            <button class="btn-outline" onclick="listarRoles()">Ver Roles</button>
+            <div class="endpoint">GET /roles</div>
+        </div>
+        <div id="result-roles" class="result"></div>
     </div>
 
     <!-- Gestión de Permisos -->
     <div>
-      <h3>Gestión de Permisos</h3>
+        <h3>Gestión de Permisos</h3>
 
-      <!-- Crear nuevo permiso -->
-      <form id="form-nuevo-permiso">
-        <div class="grid gap-3">
-          <label class="label">Endpoint</label>
-          <input class="input" type="text" name="endpoint" placeholder="/nuevo-endpoint" required>
+        <!-- Crear nuevo permiso -->
+        <form id="form-nuevo-permiso">
+            <div class="grid gap-3">
+                <label class="label">Endpoint</label>
+                <input class="input" type="text" name="endpoint" placeholder="/nuevo-endpoint" required>
+            </div>
+            <div class="grid gap-3">
+                <label class="label">Método</label>
+                <select class="select" name="metodo">
+                    <option value="*">Todos (*)</option>
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+                </label>
+                <div class="grid gap-3">
+                    <label class="label">Descripción</label>
+                    <input class="input" type="text" name="descripcion" required>
+                </div>
+                <button class="btn" type="submit">Crear Permiso</button>
+                <div class="endpoint">POST /permisos</div>
+        </form>
+        <div id="result-nuevo-permiso" class="result"></div>
+
+        <!-- Listar permisos -->
+        <div style="margin-top: 2em;">
+            <button class="btn-outline" onclick="listarPermisos()">Ver Permisos</button>
+            <div class="endpoint">GET /permisos</div>
         </div>
-        <div class="grid gap-3">
-          <label class="label">Método</label>
-          <select class="select" name="metodo">
-            <option value="*">Todos (*)</option>
-            <option value="GET">GET</option>
-            <option value="POST">POST</option>
-            <option value="PUT">PUT</option>
-            <option value="DELETE">DELETE</option>
-          </select>
-          </label>
-          <div class="grid gap-3">
-            <label class="label">Descripción</label>
-            <input class="input" type="text" name="descripcion" required>
-          </div>
-          <button class="btn" type="submit">Crear Permiso</button>
-          <div class="endpoint">POST /permisos</div>
-      </form>
-      <div id="result-nuevo-permiso" class="result"></div>
-
-      <!-- Listar permisos -->
-      <div style="margin-top: 2em;">
-        <button class="btn-outline" onclick="listarPermisos()">Ver Permisos</button>
-        <div class="endpoint">GET /permisos</div>
-      </div>
-      <div id="result-permisos" class="result"></div>
+        <div id="result-permisos" class="result"></div>
     </div>
-  </div>
+</div>
 
-  <!-- Asignación de Permisos a Roles -->
-  <div style="margin-top: 2em;">
+<!-- Asignación de Permisos a Roles -->
+<div style="margin-top: 2em;">
     <h3>Asignar Permisos a Roles</h3>
     <form id="form-asignar-permisos">
-      <div class="form-row">
-        <div class="grid gap-3">
-          <label class="label">Rol</label>
-          <select id="select-rol-permisos" class="select" name="rol_id" required></select>
+        <div class="form-row">
+            <div class="grid gap-3">
+                <label class="label">Rol</label>
+                <select id="select-rol-permisos" class="select" name="rol_id" required></select>
+            </div>
+            <button class="btn-outline" type="button" onclick="cargarPermisosDelRol()">Ver Permisos Actuales</button>
         </div>
-        <button class="btn-outline" type="button" onclick="cargarPermisosDelRol()">Ver Permisos Actuales</button>
-      </div>
 
-      <div id="permisos-disponibles"
-        style="margin-top: 1em; max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 1em; background: #f9f9f9;">
-        <p>Selecciona un rol para ver los permisos disponibles</p>
-      </div>
+        <div id="permisos-disponibles"
+            style="margin-top: 1em; max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 1em; background: #f9f9f9;">
+            <p>Selecciona un rol para ver los permisos disponibles</p>
+        </div>
 
-      <button class="btn" type="submit">Asignar Permisos Seleccionados</button>
-      <div class="endpoint">POST /roles/{id}/permisos</div>
+        <button class="btn" type="submit">Asignar Permisos Seleccionados</button>
+        <div class="endpoint">POST /roles/{id}/permisos</div>
     </form>
     <div id="result-asignar-permisos" class="result"></div>
-  </div>
+</div>
 
-  <!-- Verificador de Permisos -->
-  <div style="margin-top: 2em;">
+<!-- Verificador de Permisos -->
+<div style="margin-top: 2em;">
     <h3>Verificar Permisos</h3>
     <form id="form-verificar-permiso">
-      <div class="form-row">
-        <div class="grid gap-3">
-          <label class="label">Rol</label>
-          <input class="input" type="text" name="rol_nombre" placeholder="admin" required>
-        </div>
-        <div class="grid gap-3">
-          <label class="label">Endpoint</label>
-          <input class="input" type="text" name="endpoint" placeholder="/pedidos" required>
-        </div>
-        <div class="grid gap-3">
-          <label class="label">Método</label>
-          <select class="select" name="metodo">
-            <option value="GET">GET</option>
-            <option value="POST">POST</option>
-            <option value="PUT">PUT</option>
-            <option value="DELETE">DELETE</option>
-          </select>
-          </label>
-          <button class="btn" type="submit">Verificar</button>
-        </div>
-        <!-- <div class="endpoint">GET /roles/{nombre}/permiso</div> -->
+        <div class="form-row">
+            <div class="grid gap-3">
+                <label class="label">Rol</label>
+                <input class="input" type="text" name="rol_nombre" placeholder="admin" required>
+            </div>
+            <div class="grid gap-3">
+                <label class="label">Endpoint</label>
+                <input class="input" type="text" name="endpoint" placeholder="/pedidos" required>
+            </div>
+            <div class="grid gap-3">
+                <label class="label">Método</label>
+                <select class="select" name="metodo">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+                </label>
+                <button class="btn" type="submit">Verificar</button>
+            </div>
+            <!-- <div class="endpoint">GET /roles/{nombre}/permiso</div> -->
     </form>
     <div id="result-verificar-permiso" class="result"></div>
-  </div>
+</div>
 
-  <h2>Gestión de Usuarios</h2>
-  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-top: 1em;">
+<h2>Gestión de Usuarios</h2>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; margin-top: 1em;">
 
     <!-- Crear Usuario -->
     <div>
-      <h3>Crear Usuario</h3>
-      <form id="form-nuevo-usuario">
-        <div class="grid gap-3">
-          <label class="label">Empleado</label>
-          <select class="select" name="empleado_id" id="select-empleado-usuario" required>
-            <option value="">-- Seleccionar empleado --</option>
-          </select>
-        </div>
-        <div class="grid gap-3">
-          <label class="label">Password</label>
-          <input class="input" type="password" name="password" required>
-        </div>
-        <div class="grid gap-3">
-          <label class="label">Rol</label>
-          <select class="select" name="rol_id" id="select-rol-usuario" required onchange="mostrarCampoTienda()">
-            <option value="">-- Seleccionar rol --</option>
-          </select>
-        </div>
+        <h3>Crear Usuario</h3>
+        <form id="form-nuevo-usuario">
+            <div class="grid gap-3">
+                <label class="label">Empleado</label>
+                <select class="select" name="empleado_id" id="select-empleado-usuario" required>
+                    <option value="">-- Seleccionar empleado --</option>
+                </select>
+            </div>
+            <div class="grid gap-3">
+                <label class="label">Password</label>
+                <input class="input" type="password" name="password" required>
+            </div>
+            <div class="grid gap-3">
+                <label class="label">Rol</label>
+                <select class="select" name="rol_id" id="select-rol-usuario" required onchange="mostrarCampoTienda()">
+                    <option value="">-- Seleccionar rol --</option>
+                </select>
+            </div>
 
-        <div id="campo-tienda-usuario" style="display: none;">
-          <label class="label">Tienda</label>
-          <select name="tienda_id" id="select-tienda-usuario">
-            <option value="">-- Seleccionar tienda --</option>
-          </select>
-          <p style="color: #dc3545; font-size: 0.9em; margin-top: 0.3em;">
-            ⚠️ El usuario solo tendrá acceso a la tienda seleccionada
-          </p>
-        </div>
-        <p style="color: #666; font-size: 0.9em; margin-top: 0.5em;">
-          El usuario se crea para el empleado seleccionado. El DNI y nombre se toman del empleado.
-        </p>
-        <button class="btn" type="submit">Crear Usuario</button>
-        <div class="endpoint">POST /usuarios</div>
-      </form>
-      <div id="result-nuevo-usuario" class="result"></div>
+            <div id="campo-tienda-usuario" style="display: none;">
+                <label class="label">Tienda</label>
+                <select name="tienda_id" id="select-tienda-usuario">
+                    <option value="">-- Seleccionar tienda --</option>
+                </select>
+                <p style="color: #dc3545; font-size: 0.9em; margin-top: 0.3em;">
+                    ⚠️ El usuario solo tendrá acceso a la tienda seleccionada
+                </p>
+            </div>
+            <p style="color: #666; font-size: 0.9em; margin-top: 0.5em;">
+                El usuario se crea para el empleado seleccionado. El DNI y nombre se toman del empleado.
+            </p>
+            <button class="btn" type="submit">Crear Usuario</button>
+            <div class="endpoint">POST /usuarios</div>
+        </form>
+        <div id="result-nuevo-usuario" class="result"></div>
     </div>
 
     <!-- Listar Usuarios -->
     <div>
-      <h3>Usuarios Registrados</h3>
-      <button class="btn-outline" onclick="listarUsuarios()">Ver Usuarios</button>
-      <div class="endpoint">GET /usuarios</div>
-      <div id="result-usuarios" class="result"></div>
+        <h3>Usuarios Registrados</h3>
+        <button class="btn-outline" onclick="listarUsuarios()">Ver Usuarios</button>
+        <div class="endpoint">GET /usuarios</div>
+        <div id="result-usuarios" class="result"></div>
     </div>
-  </div>
+</div>
 
-  <!-- Editar Usuario -->
-  <div style="margin-top: 2em;">
+<!-- Editar Usuario -->
+<div style="margin-top: 2em;">
     <h3>Editar Usuario</h3>
     <form id="form-editar-usuario" style="display: none;">
-      <input type="hidden" name="id">
-      <div class="grid gap-3">
-        <label class="label">Empleado </label>
-        <select class="select" name="empleado_id" id="select-empleado-editar" required>
-          <option value="">-- Seleccionar empleado --</option>
-        </select>
+        <input type="hidden" name="id">
         <div class="grid gap-3">
-          <label class="label">Nuevo Password (opcional)</label>
-          <input class="input" type="password" name="password" placeholder="Dejar vacío para mantener el actual">
+            <label class="label">Empleado </label>
+            <select class="select" name="empleado_id" id="select-empleado-editar" required>
+                <option value="">-- Seleccionar empleado --</option>
+            </select>
+            <div class="grid gap-3">
+                <label class="label">Nuevo Password (opcional)</label>
+                <input class="input" type="password" name="password" placeholder="Dejar vacío para mantener el actual">
+            </div>
         </div>
-      </div>
-      <div class="grid gap-3">
-        <label class="label">Rol </label>
-        <select class="select" name="rol_id" id="select-rol-editar" required onchange="mostrarCampoTiendaEditar()">
-          <option value="">-- Seleccionar rol --</option>
-        </select>
-      </div>
-      <div class="grid gap-3">
-        <label class="label">Estado </label>
-        <select class="select" name="activo" required>
-          <option value="1">Activo</option>
-          <option value="0">Inactivo</option>
-        </select>
-      </div>
-      <div id="campo-tienda-usuario-editar" style="display: none; margin-top: 0.5em;">
-        <label>Tienda
-          <select name="tienda_id" id="select-tienda-editar">
-            <option value="">-- Seleccionar tienda --</option>
-          </select>
-        </label>
-        <p style="color: #dc3545; font-size: 0.9em; margin-top: 0.3em;">
-          ⚠️ El usuario solo tendrá acceso a la tienda seleccionada
-        </p>
-      </div>
-      <div class="form-row">
-        <button class="btn-secondary" type="button" onclick="cancelarEdicionUsuario()">Cancelar</button>
-        <button class="btn" type="submit">Actualizar Usuario</button>
-      </div>
-      <div class="endpoint">PUT /usuarios/{id}</div>
+        <div class="grid gap-3">
+            <label class="label">Rol </label>
+            <select class="select" name="rol_id" id="select-rol-editar" required onchange="mostrarCampoTiendaEditar()">
+                <option value="">-- Seleccionar rol --</option>
+            </select>
+        </div>
+        <div class="grid gap-3">
+            <label class="label">Estado </label>
+            <select class="select" name="activo" required>
+                <option value="1">Activo</option>
+                <option value="0">Inactivo</option>
+            </select>
+        </div>
+        <div id="campo-tienda-usuario-editar" style="display: none; margin-top: 0.5em;">
+            <label>Tienda
+                <select name="tienda_id" id="select-tienda-editar">
+                    <option value="">-- Seleccionar tienda --</option>
+                </select>
+            </label>
+            <p style="color: #dc3545; font-size: 0.9em; margin-top: 0.3em;">
+                ⚠️ El usuario solo tendrá acceso a la tienda seleccionada
+            </p>
+        </div>
+        <div class="form-row">
+            <button class="btn-secondary" type="button" onclick="cancelarEdicionUsuario()">Cancelar</button>
+            <button class="btn" type="submit">Actualizar Usuario</button>
+        </div>
+        <div class="endpoint">PUT /usuarios/{id}</div>
     </form>
     <div id="result-editar-usuario" class="result"></div>
-  </div>
-
-  <!-- Scripts -->
-  <script src="assets/js/main.js"></script>
-  <script src="assets/js/forms.js"></script>
-  <script src="assets/js/lotes.js"></script>
-  <script src="assets/js/pedidos.js"></script>
-  <script src="assets/js/workflow.js"></script>
-  <script src="assets/js/events.js"></script>
-  <script src="assets/js/maestros.js"></script>
-  <script src="assets/js/roles.js"></script>
-  <script src="assets/js/usuarios.js"></script>
-  <script src="assets/js/inventario.js"></script>
-  <script src="assets/js/familias.js"></script>
-
-  <!-- Sistema de autenticación -->
-  <script>
-    // currentUser ya está declarado en main.js como variable global
-
-    // Verificar autenticación al cargar la página
-    async function checkAuth() {
-      try {
-        const response = await fetch('/session');
-        if (!response.ok) {
-          window.location.href = '/login.php';
-          return;
-        }
-
-        const result = await response.json();
-        if (!result.authenticated) {
-          window.location.href = '/login.php';
-          return;
-        }
-
-        // Usuario autenticado
-        currentUser = result.usuario;
-        updateUserInfo();
-
-      } catch (error) {
-        console.error('Error verificando autenticación:', error);
-  window.location.href = '/login.php';
-      }
-    }
-
-    // Actualizar información del usuario en el header
-    function updateUserInfo() {
-      const userInfo = document.getElementById('user-info');
-      if (currentUser) {
-        userInfo.innerHTML = `${currentUser.nombre} <span class="badge-secondary">${currentUser.rol}</span>`;
-
-        // Establecer automáticamente el nombre del empleado en todos los formularios
-        if (currentUser.nombre) {
-          // Establecer el valor en los campos ocultos de empleado
-          document.querySelectorAll('[id^="select-empleado"]').forEach(select => {
-            console.log(`Actualizando campo empleado: ${select.id} con valor ${currentUser.nombre}`);
-            select.value = currentUser.nombre;
-          });
-
-          // Establecer explícitamente el valor del campo oculto de producción
-          if (document.getElementById('select-empleado')) {
-            document.getElementById('select-empleado').value = currentUser.nombre;
-            console.log(`Campo select-empleado actualizado con: ${currentUser.nombre}`);
-          }
-        }
-      }
-    }
-
-    // Función de logout
-    async function logout() {
-      try {
-        await fetch('/logout', { method: 'POST' });
-      } catch (error) {
-        console.error('Error en logout:', error);
-      } finally {
-  window.location.href = '/login.php';
-      }
-    }
-
-    // Verificar autenticación al cargar
-    checkAuth();
-  </script>
-</body>
-
-  <script src="assets/js/alertas.js"></script>
-</html>
+</div>
+</main>
+<?php include 'footer.php'; ?>

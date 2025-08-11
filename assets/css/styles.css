@@ -1,7 +1,7 @@
 :root {
 
 }
-body {
+main {
   margin: 2em;
   border: 1px solid #e5e7eb; /* Tailwind gray-200 */
   border-radius: 1em;
