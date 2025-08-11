@@ -161,8 +161,20 @@ $app->get('/dashboard.html', function ($request, $response, $args) {
     return $response->withHeader('Content-Type', 'text/html');
 });
 
+$app->get('/dashboard.php', function ($request, $response, $args) {
+    $html = file_get_contents(__DIR__ . '/dashboard.php');
+    $response->getBody()->write($html);
+    return $response->withHeader('Content-Type', 'text/html');
+});
+
 $app->get('/login.html', function ($request, $response, $args) {
     $html = file_get_contents(__DIR__ . '/login.html');
+    $response->getBody()->write($html);
+    return $response->withHeader('Content-Type', 'text/html');
+});
+
+$app->get('/login.php', function ($request, $response, $args) {
+    $html = file_get_contents(__DIR__ . '/login.php');
     $response->getBody()->write($html);
     return $response->withHeader('Content-Type', 'text/html');
 });

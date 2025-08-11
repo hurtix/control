@@ -1,3 +1,4 @@
+<?php ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -159,7 +160,7 @@
         
         if (result.success) {
           // Login exitoso - redirigir al dashboard
-          window.location.href = '/dashboard.html';
+          window.location.href = '/dashboard.php';
         } else {
           // Mostrar error visual mejorado
           document.getElementById('error-title').textContent = '¡Algo salió mal!';
@@ -188,7 +189,7 @@
           const result = await response.json();
           if (result.authenticated) {
             // Ya está logueado, ir al dashboard
-            window.location.href = '/dashboard.html';
+            window.location.href = '/dashboard.php';
           }
         }
       } catch (error) {

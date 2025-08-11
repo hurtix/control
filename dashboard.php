@@ -1,3 +1,4 @@
+<?php   ?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -709,13 +710,13 @@
       try {
         const response = await fetch('/session');
         if (!response.ok) {
-          window.location.href = '/login.html';
+          window.location.href = '/login.php';
           return;
         }
 
         const result = await response.json();
         if (!result.authenticated) {
-          window.location.href = '/login.html';
+          window.location.href = '/login.php';
           return;
         }
 
@@ -725,7 +726,7 @@
 
       } catch (error) {
         console.error('Error verificando autenticación:', error);
-        window.location.href = '/login.html';
+  window.location.href = '/login.php';
       }
     }
 
@@ -759,7 +760,7 @@
       } catch (error) {
         console.error('Error en logout:', error);
       } finally {
-        window.location.href = '/login.html';
+  window.location.href = '/login.php';
       }
     }
 
