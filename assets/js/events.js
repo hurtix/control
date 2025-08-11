@@ -129,33 +129,22 @@ formProduccion.onsubmit = async e => {
     data.empleado = currentUser.nombre;
   }
   
-  // Recopilar productos y cantidades producidas
-  const productosCards = document.querySelectorAll('#productos-lote-lista .flex.flex-row');
+  // Recopilar productos y cantidades producidas desde la tabla
+  const productosRows = document.querySelectorAll('#productos-lote-lista tr');
   const productos = [];
-  
-  productosCards.forEach(card => {
-    const productoId = card.dataset.producto;
-    const productoNombre = card.dataset.nombreProducto;
-    const cantidadInput = card.querySelector('.cantidad-producida-input');
-    const switchValidacion = card.querySelector('input[type="checkbox"][role="switch"]');
-    
-    if (productoId && cantidadInput && switchValidacion) {
-      const cantidadProducida = parseInt(cantidadInput.value);
-      const validado = switchValidacion.checked;
-      
-      // Solo incluir productos validados
-      if (validado && cantidadProducida > 0) {
-        productos.push({
-          producto: productoId,
-          cantidad_producida: cantidadProducida,
-          empleado: data.empleado // Asegurar que cada producto tenga el empleado
-        });
-      }
+  productosRows.forEach(row => {
+    const productoId = row.dataset.producto;
+    const cantidadInput = row.querySelector('.cantidad-producida-input');
+    if (productoId && cantidadInput && cantidadInput.value && !isNaN(parseFloat(cantidadInput.value)) && parseFloat(cantidadInput.value) >= 0) {
+      productos.push({
+        producto: productoId,
+        cantidad_producida: parseFloat(cantidadInput.value),
+        empleado: data.empleado
+      });
     }
   });
-  
   if (productos.length === 0) {
-    alert('Debe especificar cantidades producidas y validar todos los productos');
+    alert('Debe especificar cantidades producidas para todos los productos');
     return;
   }
   
