@@ -1,3 +1,16 @@
+// Habilita o deshabilita el botón de registrar recepción según inputs de cantidad recibida
+window.verificarInputsRecepcionLote = function() {
+  const inputs = document.querySelectorAll('.cantidad-recibida-input');
+  const btn = document.getElementById('btn-registrar-recepcion');
+  if (!btn) return;
+  let todosLlenos = true;
+  inputs.forEach(input => {
+    if (input.value === '' || input.value === null || isNaN(parseFloat(input.value)) || parseFloat(input.value) < 0) {
+      todosLlenos = false;
+    }
+  });
+  btn.disabled = !todosLlenos;
+}
 // Habilita o deshabilita el botón Despachar según inputs de cantidad a despachar
 function verificarInputsDespachoLote() {
   const inputs = document.querySelectorAll('.cantidad-despacho-input');
@@ -699,33 +712,26 @@ async function cargarDespachosLoteTiendaRecepcion(loteId, tiendaNombre) {
         html += '<th>Producto</th>';
         html += '<th>Cantidad Despachada</th>';
         html += '<th>Cantidad Recibida</th>';
-        html += '<th>Confirmado</th>';
+        html += '<th>Estado</th>';
         html += '</tr></thead><tbody>';
         
         despachosTienda.forEach((despacho, index) => {
           html += '<tr>';
           html += `<td><strong>${despacho.producto}</strong></td>`;
           html += `<td>${despacho.cantidad_despachada}</td>`;
-          html += `<td>
-                    <input type="number" 
-                           class="cantidad-recibida-input input" 
-                           data-producto="${despacho.producto}"
-                           data-tienda="${despacho.tienda}"
-                           data-despachado="${despacho.cantidad_despachada}"
-                           min="0" 
-                           max="${despacho.cantidad_despachada}" 
-                           value="${despacho.cantidad_despachada}" 
-                           style="width: 100px;"
-                           required>
-                   </td>`;
-          html += `<td>
-                    <select class="confirmado-input select" 
-                            data-producto="${despacho.producto}"
-                            data-tienda="${despacho.tienda}">
-                      <option value="1">Sí</option>
-                      <option value="0">No</option>
-                    </select>
-                   </td>`;
+            html += `<td style="position:relative;">
+              <input type="number" 
+                class="cantidad-recibida-input input w-20 text-center" 
+                data-producto="${despacho.producto}"
+                data-tienda="${despacho.tienda}"
+                data-despachado="${despacho.cantidad_despachada}"
+                min="0" 
+                max="${despacho.cantidad_despachada}" 
+                value="" 
+                style="width: 100px;"
+                required>
+            </td>`;
+            html += `<td class="estado-recepcion" style="color:#dc3545;">Sin data</td>`;
           html += '</tr>';
         });
         
@@ -739,6 +745,71 @@ async function cargarDespachosLoteTiendaRecepcion(loteId, tiendaNombre) {
         
         tabla.innerHTML = html;
         lista.appendChild(tabla);
+
+          // Lógica de color y estado para inputs de cantidad recibida
+          const filas = tabla.querySelectorAll('tr');
+          filas.forEach(fila => {
+            const input = fila.querySelector('.cantidad-recibida-input');
+            const estadoTd = fila.querySelector('.estado-recepcion');
+            if (!input || !estadoTd) return;
+            input.addEventListener('input', function() {
+              const max = parseFloat(input.getAttribute('max'));
+              let valor = parseFloat(input.value);
+              let estado = 'Sin data';
+              let color = '#dc3545';
+              // Eliminar tooltip previo si existe
+              let tooltip = input.parentNode.querySelector('.tooltip-recepcion');
+              if (tooltip) tooltip.remove();
+              if (input.value === '' || isNaN(valor) || valor < 0) {
+                input.classList.remove('border-green-500', 'border-yellow-400');
+                input.classList.add('border-red-500');
+                input.setCustomValidity('Campo obligatorio');
+                estado = 'Sin data';
+                color = '#dc3545';
+              } else {
+                if (valor > max) {
+                  valor = max;
+                  input.value = max;
+                  // Mostrar tooltip
+                  tooltip = document.createElement('div');
+                  tooltip.className = 'tooltip-recepcion';
+                  tooltip.style.position = 'absolute';
+                  tooltip.style.background = 'red';
+                  tooltip.style.color = '#fff';
+                  tooltip.style.padding = '4px 10px';
+                  tooltip.style.borderRadius = '4px';
+                  tooltip.style.fontSize = '0.9em';
+                  tooltip.style.top = (input.offsetTop - 32) + 'px';
+                  tooltip.style.left = input.offsetLeft + 'px';
+                  tooltip.style.zIndex = 1000;
+                  tooltip.textContent = 'No puedes ingresar más de lo despachado';
+                  input.parentNode.style.position = 'relative';
+                  input.parentNode.appendChild(tooltip);
+                  setTimeout(() => { if (tooltip) tooltip.remove(); }, 2000);
+                }
+                if (valor < max) {
+                  input.classList.remove('border-red-500', 'border-green-500');
+                  input.classList.add('border-yellow-400');
+                  input.setCustomValidity('');
+                  estado = 'Déficit';
+                  color = '#ffc107';
+                } else if (valor === max) {
+                  input.classList.remove('border-red-500', 'border-yellow-400');
+                  input.classList.add('border-green-500');
+                  input.setCustomValidity('');
+                  estado = 'Completo';
+                  color = '#28a745';
+                }
+              }
+              estadoTd.textContent = estado;
+              estadoTd.style.color = color;
+              verificarInputsRecepcionLote();
+            });
+          });
+
+        // Verificar estado inicial del botón al renderizar
+        setTimeout(verificarInputsRecepcionLote, 0);
+
       } else {
         lista.innerHTML = '<div class="empty-message">No hay productos para recibir en esta tienda para este lote</div>';
       }

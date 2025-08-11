@@ -608,6 +608,13 @@ $app->post('/recepcion', function ($request, $response) {
     $recepciones = [];
     if (isset($data['items']) && is_array($data['items'])) {
         foreach ($data['items'] as $itemData) {
+            // Buscar la cantidad despachada para este producto y tienda
+            $despacho = Despacho::where('lote_id', $data['lote_id'])
+                ->where('producto', $itemData['producto'])
+                ->where('tienda', $itemData['tienda'])
+                ->first();
+            $cantidad_despachada = $despacho ? (int)$despacho->cantidad_despachada : null;
+
             $recepcion = Recepcion::create([
                 'lote_id' => $data['lote_id'],
                 'producto' => $itemData['producto'],
@@ -629,6 +636,16 @@ $app->post('/recepcion', function ($request, $response) {
                 'mensaje' => $empleado . ' ha registrado la recepcion en ' . $tienda . ' para el lote ' . $lote->codigo_lote . '.',
                 'read' => false
             ]);
+            // Alerta de déficit en recepción
+            if ($cantidad_despachada !== null && (int)$itemData['cantidad_recibida'] < $cantidad_despachada) {
+                Alerta::create([
+                    'fecha' => date('Y-m-d H:i:s'),
+                    'fase' => 'recepcion',
+                    'tipo' => 'warning',
+                    'mensaje' => "Déficit en recepción: Se recibieron {$itemData['cantidad_recibida']} de {$itemData['producto']}, pero se despacharon $cantidad_despachada (lote {$lote->codigo_lote}, tienda $tienda).",
+                    'read' => false
+                ]);
+            }
         }
     } else {
         $response->getBody()->write(json_encode(['error' => 'Se requieren items para la recepción']));
