@@ -1,4 +1,3 @@
-
 <?php
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +12,20 @@ class Alerta extends Model {
         'mensaje',
         'read'
     ];
+}
+
+
+class AlertaUsuario extends Model {
+    protected $table = 'alerta_usuario';
+    public $timestamps = true;
+    protected $fillable = ['alerta_id', 'usuario_id', 'read'];
+
+    public function alerta() {
+        return $this->belongsTo(Alerta::class, 'alerta_id');
+    }
+    public function usuario() {
+        return $this->belongsTo(Usuario::class, 'usuario_id');
+    }
 }
 
 class Rol extends Model {

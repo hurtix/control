@@ -2,7 +2,12 @@
 <?php
 require __DIR__ . '/vendor/autoload.php';
 
+
 require __DIR__ . '/models.php';
+// Asegura que Maestro esté disponible en el scope global
+if (!class_exists('Maestro')) {
+    class_alias('Maestro', 'Maestro');
+}
 
 use Slim\Factory\AppFactory;
 use Illuminate\Database\Capsule\Manager as DB;
@@ -11,34 +16,80 @@ $app = AppFactory::create();
 $app->addBodyParsingMiddleware();
 
 // Endpoint para crear una alerta
+
 $app->post('/alertas', function ($request, $response) {
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        return $response->withStatus(401)->withHeader('Content-Type', 'application/json')
+            ->write(json_encode(['error' => 'No autenticado']));
+    }
     $data = $request->getParsedBody();
     $alerta = Alerta::create([
         'fecha' => $data['fecha'] ?? date('Y-m-d H:i:s'),
         'fase' => $data['fase'] ?? '',
         'tipo' => $data['tipo'] ?? 'warning',
         'mensaje' => $data['mensaje'] ?? '',
-        'read' => $data['read'] ?? false
+        'read' => false
+    ]);
+    // Relacionar alerta con usuario autenticado
+    AlertaUsuario::create([
+        'alerta_id' => $alerta->id,
+        'usuario_id' => $_SESSION['user_id'],
+        'leida' => false,
+        'created_at' => date('Y-m-d H:i:s'),
+        'updated_at' => date('Y-m-d H:i:s'),
     ]);
     $response->getBody()->write($alerta->toJson());
     return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
 });
 
 // Endpoint para consultar todas las alertas
+
 $app->post('/alertas/{id}/read', function ($request, $response, $args) {
-    $alerta = Alerta::find($args['id']);
-    if (!$alerta) {
-        return $response->withStatus(404)->withHeader('Content-Type', 'application/json')
-            ->write(json_encode(['error' => 'Alerta no encontrada']));
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        return $response->withStatus(401)->withHeader('Content-Type', 'application/json')
+            ->write(json_encode(['error' => 'No autenticado']));
     }
-    $alerta->read = true;
-    $alerta->save();
-    $response->getBody()->write($alerta->toJson());
+    $alertaUsuario = AlertaUsuario::where('alerta_id', $args['id'])
+        ->where('usuario_id', $_SESSION['user_id'])
+        ->first();
+    if (!$alertaUsuario) {
+        return $response->withStatus(404)->withHeader('Content-Type', 'application/json')
+            ->write(json_encode(['error' => 'Alerta no encontrada para este usuario']));
+    }
+    $alertaUsuario->read = true;
+    $alertaUsuario->updated_at = date('Y-m-d H:i:s');
+    $alertaUsuario->save();
+    $response->getBody()->write($alertaUsuario->toJson());
     return $response->withHeader('Content-Type', 'application/json');
 });
+
 $app->get('/alertas', function ($request, $response) {
-    $alertas = Alerta::orderBy('fecha', 'desc')->get();
-    $response->getBody()->write($alertas->toJson());
+    session_start();
+    if (!isset($_SESSION['user_id'])) {
+        return $response->withStatus(401)->withHeader('Content-Type', 'application/json')
+            ->write(json_encode(['error' => 'No autenticado']));
+    }
+    $alertasUsuario = AlertaUsuario::with('alerta')
+        ->where('usuario_id', $_SESSION['user_id'])
+        ->orderByDesc('created_at')
+        ->get();
+    // Formatear respuesta para incluir datos de la alerta y el estado de lectura
+    $result = $alertasUsuario->map(function($au) {
+        $alerta = $au->alerta;
+        return [
+            'id' => $alerta->id,
+            'fecha' => $alerta->fecha,
+            'fase' => $alerta->fase,
+            'tipo' => $alerta->tipo,
+            'mensaje' => $alerta->mensaje,
+            'read' => $au->read,
+            'alerta_usuario_id' => $au->id,
+            'created_at' => $au->created_at,
+        ];
+    });
+    $response->getBody()->write($result->toJson());
     return $response->withHeader('Content-Type', 'application/json');
 });
 
@@ -152,13 +203,24 @@ $app->post('/pedidos', function ($request, $response) {
 
     // Crear alerta persistente por nuevo lote
     $empleado = isset($data['empleado']) && $data['empleado'] ? $data['empleado'] : 'Un usuario';
-    Alerta::create([
+    $alerta = Alerta::create([
         'fecha' => date('Y-m-d H:i:s'),
         'fase' => 'pedido',
         'tipo' => 'info',
         'mensaje' => $empleado . ' ha creado un nuevo lote (' . $codigo_lote . ') para el pedido #' . $pedido->id,
         'read' => false
     ]);
+    // Relacionar alerta con todos los usuarios activos
+    $usuarios = Usuario::where('activo', true)->get();
+    foreach ($usuarios as $usuario) {
+        AlertaUsuario::create([
+            'alerta_id' => $alerta->id,
+            'usuario_id' => $usuario->id,
+            'read' => false,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+    }
     
     // Cargar las relaciones para la respuesta
     $pedido->load('items', 'lote');
@@ -334,13 +396,23 @@ $app->post('/produccion', function ($request, $response) {
 
         // Crear alerta persistente por registro de producción
         $empleado = isset($data['empleado']) && $data['empleado'] ? $data['empleado'] : 'Un usuario';
-        Alerta::create([
+        $alerta = Alerta::create([
             'fecha' => date('Y-m-d H:i:s'),
             'fase' => 'produccion',
             'tipo' => 'info',
             'mensaje' => $empleado . ' ha registrado la producción para el lote ' . $lote->codigo_lote . '.',
             'read' => false
         ]);
+        $usuarios = Usuario::where('activo', true)->get();
+        foreach ($usuarios as $usuario) {
+            AlertaUsuario::create([
+                'alerta_id' => $alerta->id,
+                'usuario_id' => $usuario->id,
+                'read' => false,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+        }
     
     // Calcular cantidad_solicitada agrupada por producto
     $solicitadasPorProducto = [];
@@ -370,19 +442,41 @@ $app->post('/produccion', function ($request, $response) {
         ];
         // Crear alerta si hay déficit o superávit
         if ($estado === 'déficit') {
-            Alerta::create([
+            $alerta = Alerta::create([
                 'fecha' => date('Y-m-d H:i:s'),
                 'fase' => 'produccion',
                 'tipo' => 'warning',
-                'mensaje' => "Déficit en producción: Se produjeron $cantidad_producida de $producto, pero se solicitaron $cantidad_solicitada (lote {$lote->codigo_lote})."
+                'mensaje' => "Déficit en producción: Se produjeron $cantidad_producida de $producto, pero se solicitaron $cantidad_solicitada (lote {$lote->codigo_lote}).",
+                'read' => false
             ]);
+            $usuarios = Usuario::where('activo', true)->get();
+            foreach ($usuarios as $usuario) {
+                AlertaUsuario::create([
+                    'alerta_id' => $alerta->id,
+                    'usuario_id' => $usuario->id,
+                    'read' => false,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
         } elseif ($estado === 'superávit') {
-            Alerta::create([
+            $alerta = Alerta::create([
                 'fecha' => date('Y-m-d H:i:s'),
                 'fase' => 'produccion',
                 'tipo' => 'warning',
-                'mensaje' => "Superávit en producción: Se produjeron $cantidad_producida de $producto, pero se solicitaron $cantidad_solicitada (lote {$lote->codigo_lote})."
+                'mensaje' => "Superávit en producción: Se produjeron $cantidad_producida de $producto, pero se solicitaron $cantidad_solicitada (lote {$lote->codigo_lote}).",
+                'read' => false
             ]);
+            $usuarios = Usuario::where('activo', true)->get();
+            foreach ($usuarios as $usuario) {
+                AlertaUsuario::create([
+                    'alerta_id' => $alerta->id,
+                    'usuario_id' => $usuario->id,
+                    'read' => false,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
         }
     }
 
@@ -472,18 +566,6 @@ $app->post('/despacho', function ($request, $response) {
                     'observaciones' => $data['observaciones'] ?? null
                 ]);
                 $despachos[] = $despacho;
-                // Alerta de déficit en despacho
-                if ($cantidadParaTienda < $itemPedido['cantidad_solicitada']) {
-                    $empleado = isset($data['empleado']) && $data['empleado'] ? $data['empleado'] : 'Un usuario';
-                    $codigo_lote = $lote->codigo_lote;
-                    Alerta::create([
-                        'fecha' => date('Y-m-d H:i:s'),
-                        'fase' => 'despacho',
-                        'tipo' => 'warning',
-                        'mensaje' => "Déficit en despacho: Se despacharon $cantidadParaTienda de $producto, pero se solicitaron {$itemPedido['cantidad_solicitada']} (lote $codigo_lote, tienda {$itemPedido['tienda']}).",
-                        'read' => false
-                    ]);
-                }
             }
         }
     }
@@ -492,15 +574,60 @@ $app->post('/despacho', function ($request, $response) {
     $lote->estado = 'despachado';
     $lote->save();
 
-        // Crear alerta persistente por registro de despacho
-        $empleado = isset($data['empleado']) && $data['empleado'] ? $data['empleado'] : 'Un usuario';
-        Alerta::create([
-            'fecha' => date('Y-m-d H:i:s'),
-            'fase' => 'despacho',
-            'tipo' => 'info',
-            'mensaje' => $empleado . ' ha registrado el despacho para el lote ' . $lote->codigo_lote . '.',
-            'read' => false
+    // Resumen global por producto: comparar total despachado vs solicitado
+    $pedido = $lote->pedido;
+    $totalesSolicitados = [];
+    $totalesDespachados = [];
+    foreach ($pedido->items as $item) {
+        $producto = $item->producto;
+        $totalesSolicitados[$producto] = ($totalesSolicitados[$producto] ?? 0) + (int)$item->cantidad_solicitada;
+    }
+    foreach ($despachos as $despacho) {
+        $producto = $despacho->producto;
+        $totalesDespachados[$producto] = ($totalesDespachados[$producto] ?? 0) + (int)$despacho->cantidad_despachada;
+    }
+    foreach ($totalesSolicitados as $producto => $solicitado) {
+        $despachado = $totalesDespachados[$producto] ?? 0;
+        if ($despachado < $solicitado) {
+            $alerta = Alerta::create([
+                'fecha' => date('Y-m-d H:i:s'),
+                'fase' => 'despacho',
+                'tipo' => 'warning',
+                'mensaje' => "Déficit en despacho: Se despacharon $despachado de $producto, pero se solicitaron $solicitado (lote {$lote->codigo_lote}).",
+                'read' => false
+            ]);
+            $usuarios = Usuario::where('activo', true)->get();
+            foreach ($usuarios as $usuario) {
+                AlertaUsuario::create([
+                    'alerta_id' => $alerta->id,
+                    'usuario_id' => $usuario->id,
+                    'read' => false,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+            }
+        }
+    }
+
+    // Crear alerta persistente por registro de despacho
+    $empleado = isset($data['empleado']) && $data['empleado'] ? $data['empleado'] : 'Un usuario';
+    $alerta = Alerta::create([
+        'fecha' => date('Y-m-d H:i:s'),
+        'fase' => 'despacho',
+        'tipo' => 'info',
+        'mensaje' => $empleado . ' ha registrado el despacho para el lote ' . $lote->codigo_lote . '.',
+        'read' => false
+    ]);
+    $usuarios = Usuario::where('activo', true)->get();
+    foreach ($usuarios as $usuario) {
+        AlertaUsuario::create([
+            'alerta_id' => $alerta->id,
+            'usuario_id' => $usuario->id,
+            'read' => false,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
         ]);
+    }
     
     $response->getBody()->write(json_encode([
         'despachos' => $despachos,
@@ -638,23 +765,43 @@ $app->post('/recepcion', function ($request, $response) {
             $empleado = isset($data['empleado']) && $data['empleado'] ? $data['empleado'] : 'Un usuario';
             $tienda = isset($itemData['tienda']) && $itemData['tienda'] ? $itemData['tienda'] : 'una tienda';
             if ($cantidad_despachada !== null && (int)$itemData['cantidad_recibida'] < $cantidad_despachada) {
-                Alerta::create([
+                $alerta = Alerta::create([
                     'fecha' => date('Y-m-d H:i:s'),
                     'fase' => 'recepcion',
                     'tipo' => 'warning',
                     'mensaje' => "Déficit en recepción: Se recibieron {$itemData['cantidad_recibida']} de {$itemData['producto']}, pero se despacharon $cantidad_despachada (lote {$lote->codigo_lote}, tienda $tienda).",
                     'read' => false
                 ]);
+                $usuarios = Usuario::where('activo', true)->get();
+                foreach ($usuarios as $usuario) {
+                    AlertaUsuario::create([
+                        'alerta_id' => $alerta->id,
+                        'usuario_id' => $usuario->id,
+                        'read' => false,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s'),
+                    ]);
+                }
             }
             // Crear alerta persistente por registro de recepción solo una vez por tienda/lote
             if (!$alertaRecepcionCreada) {
-                Alerta::create([
+                $alerta = Alerta::create([
                     'fecha' => date('Y-m-d H:i:s'),
                     'fase' => 'recepcion',
                     'tipo' => 'info',
                     'mensaje' => $empleado . ' ha registrado la recepcion en ' . $tienda . ' para el lote ' . $lote->codigo_lote . '.',
                     'read' => false
                 ]);
+                $usuarios = Usuario::where('activo', true)->get();
+                foreach ($usuarios as $usuario) {
+                    AlertaUsuario::create([
+                        'alerta_id' => $alerta->id,
+                        'usuario_id' => $usuario->id,
+                        'read' => false,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s'),
+                    ]);
+                }
                 $alertaRecepcionCreada = true;
             }
         }
