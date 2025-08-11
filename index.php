@@ -444,15 +444,12 @@ $app->post('/despacho', function ($request, $response) {
     foreach ($produccionItems as $produccionItem) {
         $producto = $produccionItem->producto;
         $cantidadProducida = $produccionItem->cantidad_producida;
-        
         // Obtener items del pedido para este producto
         $itemsPedido = $lote->pedido->items->where('producto', $producto);
         $totalSolicitado = $itemsPedido->sum('cantidad_solicitada');
-        
         if ($totalSolicitado > 0) {
             $cantidadDistribuida = 0;
             $itemsPedidoArray = $itemsPedido->values()->toArray();
-            
             // Distribuir proporcionalmente, ajustando el último para evitar diferencias de redondeo
             foreach ($itemsPedidoArray as $index => $itemPedido) {
                 if ($index === count($itemsPedidoArray) - 1) {
@@ -463,9 +460,7 @@ $app->post('/despacho', function ($request, $response) {
                     $proporcion = $itemPedido['cantidad_solicitada'] / $totalSolicitado;
                     $cantidadParaTienda = round($cantidadProducida * $proporcion);
                 }
-                
                 $cantidadDistribuida += $cantidadParaTienda;
-                
                 // Crear registro de despacho
                 $despacho = Despacho::create([
                     'lote_id' => $data['lote_id'],
@@ -477,6 +472,18 @@ $app->post('/despacho', function ($request, $response) {
                     'observaciones' => $data['observaciones'] ?? null
                 ]);
                 $despachos[] = $despacho;
+                // Alerta de déficit en despacho
+                if ($cantidadParaTienda < $itemPedido['cantidad_solicitada']) {
+                    $empleado = isset($data['empleado']) && $data['empleado'] ? $data['empleado'] : 'Un usuario';
+                    $codigo_lote = $lote->codigo_lote;
+                    Alerta::create([
+                        'fecha' => date('Y-m-d H:i:s'),
+                        'fase' => 'despacho',
+                        'tipo' => 'warning',
+                        'mensaje' => "Déficit en despacho: Se despacharon $cantidadParaTienda de $producto, pero se solicitaron {$itemPedido['cantidad_solicitada']} (lote $codigo_lote, tienda {$itemPedido['tienda']}).",
+                        'read' => false
+                    ]);
+                }
             }
         }
     }
@@ -606,6 +613,7 @@ $app->post('/recepcion', function ($request, $response) {
     
     // Crear registros de recepción
     $recepciones = [];
+    $alertaRecepcionCreada = false;
     if (isset($data['items']) && is_array($data['items'])) {
         foreach ($data['items'] as $itemData) {
             // Buscar la cantidad despachada para este producto y tienda
@@ -626,17 +634,9 @@ $app->post('/recepcion', function ($request, $response) {
                 'observaciones' => $data['observaciones'] ?? null
             ]);
             $recepciones[] = $recepcion;
-            // Crear alerta persistente por registro de recepción
+            // Alerta de déficit en recepción
             $empleado = isset($data['empleado']) && $data['empleado'] ? $data['empleado'] : 'Un usuario';
             $tienda = isset($itemData['tienda']) && $itemData['tienda'] ? $itemData['tienda'] : 'una tienda';
-            Alerta::create([
-                'fecha' => date('Y-m-d H:i:s'),
-                'fase' => 'recepcion',
-                'tipo' => 'info',
-                'mensaje' => $empleado . ' ha registrado la recepcion en ' . $tienda . ' para el lote ' . $lote->codigo_lote . '.',
-                'read' => false
-            ]);
-            // Alerta de déficit en recepción
             if ($cantidad_despachada !== null && (int)$itemData['cantidad_recibida'] < $cantidad_despachada) {
                 Alerta::create([
                     'fecha' => date('Y-m-d H:i:s'),
@@ -645,6 +645,17 @@ $app->post('/recepcion', function ($request, $response) {
                     'mensaje' => "Déficit en recepción: Se recibieron {$itemData['cantidad_recibida']} de {$itemData['producto']}, pero se despacharon $cantidad_despachada (lote {$lote->codigo_lote}, tienda $tienda).",
                     'read' => false
                 ]);
+            }
+            // Crear alerta persistente por registro de recepción solo una vez por tienda/lote
+            if (!$alertaRecepcionCreada) {
+                Alerta::create([
+                    'fecha' => date('Y-m-d H:i:s'),
+                    'fase' => 'recepcion',
+                    'tipo' => 'info',
+                    'mensaje' => $empleado . ' ha registrado la recepcion en ' . $tienda . ' para el lote ' . $lote->codigo_lote . '.',
+                    'read' => false
+                ]);
+                $alertaRecepcionCreada = true;
             }
         }
     } else {
