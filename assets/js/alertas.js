@@ -1,3 +1,35 @@
+// Marcar todas las notificaciones como leídas para el usuario actual
+async function marcarTodasAlertasLeidas() {
+  const ul = document.getElementById('notifications-list');
+  if (!ul) return;
+  // Obtener todos los botones de marcar como leída
+  const botones = ul.querySelectorAll('button[onclick^="marcarAlertaLeida"]');
+  // Marcar todas en paralelo
+  await Promise.all(Array.from(botones).map(btn => {
+    const alertaId = btn.getAttribute('onclick').match(/marcarAlertaLeida\((\d+),/);
+    if (alertaId && alertaId[1]) {
+      return api(`/alertas/${alertaId[1]}/read`, 'POST');
+    }
+    return Promise.resolve();
+  }));
+  // Limpiar la lista visualmente
+  ul.innerHTML = '<li class="text-gray-500">No hay notificaciones nuevas</li>';
+  // Actualizar badge
+  const badge = document.getElementById('notifications-badge');
+  if (badge) {
+    badge.textContent = '';
+    badge.style.display = 'none';
+  }
+}
+
+// Enlazar el botón de limpiar notificaciones
+document.addEventListener('DOMContentLoaded', () => {
+  cargarAlertas();
+  const clearBtn = document.getElementById('clear-all-notifications');
+  if (clearBtn) {
+    clearBtn.onclick = marcarTodasAlertasLeidas;
+  }
+});
 // Notificaciones de alertas persistentes
 
 async function cargarAlertas() {
@@ -99,4 +131,4 @@ async function marcarAlertaLeida(id, btn) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', cargarAlertas);
+// (La inicialización de cargarAlertas ahora está dentro del otro DOMContentLoaded)
