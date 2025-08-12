@@ -66,8 +66,8 @@ $app->post('/alertas/{id}/read', function ($request, $response, $args) {
 $app->get('/alertas', function ($request, $response) {
     session_start();
     if (!isset($_SESSION['user_id'])) {
-        return $response->withStatus(401)->withHeader('Content-Type', 'application/json')
-            ->write(json_encode(['error' => 'No autenticado']));
+        $response->getBody()->write(json_encode(['error' => 'No autenticado']));
+        return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
     }
     $alertasUsuario = AlertaUsuario::with('alerta')
         ->where('usuario_id', $_SESSION['user_id'])
@@ -2426,6 +2426,20 @@ $app->get('/trazabilidad.php', function ($request, $response, $args) {
 // Ruta específica para ajustes.php
 $app->get('/ajustes.php', function ($request, $response, $args) {
     $path = __DIR__ . '/ajustes.php';
+    if (file_exists($path)) {
+        ob_start();
+        include $path;
+        $html = ob_get_clean();
+        $response->getBody()->write($html);
+        return $response->withHeader('Content-Type', 'text/html');
+    } else {
+        return $response->withStatus(404)->write('Archivo no encontrado');
+    }
+});
+
+// Ruta específica para reportes.php
+$app->get('/reportes.php', function ($request, $response, $args) {
+    $path = __DIR__ . '/reportes.php';
     if (file_exists($path)) {
         ob_start();
         include $path;

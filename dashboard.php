@@ -8,7 +8,7 @@ $rol = $_SESSION['user_rol'] ?? '';
 // Define qué tarjetas puede ver cada rol (los keys deben coincidir con los usados en las tarjetas)
 $acceso = [
     //'admin' => ['pedidos', 'produccion', 'despacho', 'recepcion', 'inventario', 'trazabilidad', 'reportes','ajustes'],
-    'admin' => ['pedidos', 'trazabilidad', 'ajustes'],
+    'admin' => ['pedidos', 'trazabilidad', 'reportes', 'ajustes'],
     'produccion' => ['produccion'],
     'despacho' => ['despacho'],
     'tienda' => ['recepcion', 'inventario'],
