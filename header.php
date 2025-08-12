@@ -13,4 +13,4 @@
 
 </head>
 
-<body>
+<body class="bg-gray-100">

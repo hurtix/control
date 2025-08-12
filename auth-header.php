@@ -2,7 +2,7 @@
   <div id="auth-header" class="fixed top-0 left-0 w-full bg-black text-white px-8 py-2 flex justify-between items-center gap-2 z-1">
       <div class="w-full">
         <a href="/dashboard.php">
-          <h1>Cafe Cauca</h1>
+          <h1>Imperium</h1>
           </a>
           <!-- Aquí se insertará la notificación si es necesaria -->
       </div>

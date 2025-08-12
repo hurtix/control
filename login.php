@@ -1,4 +1,6 @@
-<?php ?>
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -21,9 +23,9 @@
     }
   </style> -->
 </head>
-<body>
+<body class="bg-gray-100">
   <div class="max-w-[400px] mx-auto flex flex-col justify-center items-center h-screen">
-    <div class="border border-gray-200 p-8 rounded-lg shadow-lg flex flex-col gap-y-4">
+    <div class="bg-white border border-gray-200 p-8 rounded-lg shadow-lg flex flex-col gap-y-4">
     <h1 class="text-center">Imperium</h1>
 
     <form id="form-login" class="flex flex-col gap-y-4">
@@ -153,7 +155,8 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(data)
+          body: JSON.stringify(data),
+          credentials: 'same-origin'
         });
         
         const result = await response.json();
