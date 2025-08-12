@@ -12,15 +12,15 @@ async function listarUsuarios() {
     }
     
     let html = `
-      <table style="width: 100%; border-collapse: collapse; margin-top: 1em;">
+      <table class="table">
         <thead>
-          <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-            <th style="padding: 0.5em; text-align: left; border: 1px solid #dee2e6;">ID</th>
-            <th style="padding: 0.5em; text-align: left; border: 1px solid #dee2e6;">Empleado</th>
-            <th style="padding: 0.5em; text-align: left; border: 1px solid #dee2e6;">DNI</th>
-            <th style="padding: 0.5em; text-align: left; border: 1px solid #dee2e6;">Rol</th>
-            <th style="padding: 0.5em; text-align: left; border: 1px solid #dee2e6;">Estado</th>
-            <th style="padding: 0.5em; text-align: left; border: 1px solid #dee2e6;">Acciones</th>
+          <tr>
+            <th>ID</th>
+            <th>Empleado</th>
+            <th>DNI</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -28,25 +28,25 @@ async function listarUsuarios() {
     
     usuarios.forEach(usuario => {
       const estadoBadge = usuario.activo ? 
-        '<span style="background: #d4edda; color: #155724; padding: 0.2em 0.5em; border-radius: 3px; font-size: 0.8em;">Activo</span>' :
-        '<span style="background: #f8d7da; color: #721c24; padding: 0.2em 0.5em; border-radius: 3px; font-size: 0.8em;">Inactivo</span>';
+        '<span class="badge bg-green-100 text-green-500">Activo</span>' :
+        '<span class="badge bg-red-100 text-red-500">Inactivo</span>';
       
       html += `
-        <tr style="border-bottom: 1px solid #dee2e6;">
-          <td style="padding: 0.5em; border: 1px solid #dee2e6;">${usuario.id}</td>
-          <td style="padding: 0.5em; border: 1px solid #dee2e6; font-weight: bold;">${usuario.empleado ? usuario.empleado.nombre : 'Sin empleado'}</td>
-          <td style="padding: 0.5em; border: 1px solid #dee2e6; font-weight: bold; color: #0056b3;">${usuario.empleado ? usuario.empleado.dni || 'Sin DNI' : '-'}</td>
-          <td style="padding: 0.5em; border: 1px solid #dee2e6;">
-            <span style="background: #e7f3ff; color: #004085; padding: 0.2em 0.5em; border-radius: 3px; font-size: 0.8em;">
+        <tr>
+          <td>${usuario.id}</td>
+          <td class="font-bold">${usuario.empleado ? usuario.empleado.nombre : 'Sin empleado'}</td>
+          <td>${usuario.empleado ? usuario.empleado.dni || 'Sin DNI' : '-'}</td>
+          <td>
+            <span class="font-mono text-xs bg-gray-100 text-gray-800 py-1 px-2">
               ${usuario.rol ? usuario.rol.nombre : 'Sin rol'}
             </span>
           </td>
-          <td style="padding: 0.5em; border: 1px solid #dee2e6;">${estadoBadge}</td>
-          <td style="padding: 0.5em; border: 1px solid #dee2e6;">
-            <button onclick="editarUsuario(${usuario.id})" style="background: #007bff; color: white; border: none; padding: 0.2em 0.5em; border-radius: 3px; cursor: pointer; margin-right: 0.2em;">Editar</button>
+          <td>${estadoBadge}</td>
+          <td>
+            <button onclick="editarUsuario(${usuario.id})" class="btn-outline">Editar</button>
             ${usuario.activo ? 
-              `<button onclick="desactivarUsuario(${usuario.id})" style="background: #dc3545; color: white; border: none; padding: 0.2em 0.5em; border-radius: 3px; cursor: pointer;">Desactivar</button>` :
-              `<button onclick="activarUsuario(${usuario.id})" style="background: #28a745; color: white; border: none; padding: 0.2em 0.5em; border-radius: 3px; cursor: pointer;">Activar</button>`
+              `<button onclick="desactivarUsuario(${usuario.id})" class="btn-destructive">Desactivar</button>` :
+              `<button onclick="activarUsuario(${usuario.id})" class="btn bg-green-500 text-white">Activar</button>`
             }
           </td>
         </tr>
@@ -127,8 +127,9 @@ async function editarUsuario(id) {
       return;
     }
     
-    const form = document.getElementById('form-editar-usuario');
-    form.style.display = 'block';
+  const dialog = document.getElementById('dialog-editar-usuario');
+  const form = document.getElementById('form-editar-usuario');
+  dialog.showModal();
     
     // Llenar el formulario
     form.querySelector('input[name="id"]').value = usuario.id;
@@ -232,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const result = await api(`/usuarios/${id}`, 'PUT', data);
         document.getElementById('result-editar-usuario').innerHTML = 
           `<div class="success">Usuario actualizado exitosamente</div>`;
-        cancelarEdicionUsuario();
+        document.getElementById('dialog-editar-usuario').close();
         await listarUsuarios(); // Refrescar la lista
       } catch (error) {
         console.error('Error actualizando usuario:', error);

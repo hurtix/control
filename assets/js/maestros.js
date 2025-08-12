@@ -915,33 +915,31 @@ const verMaestros = async (tipo) => {
       const productos = maestros.filter(m => m.tipo === 'producto' && m.activo);
       html += `
         <div style="margin-bottom: 2em;">
-          <h4 style="color: #0056b3; border-bottom: 2px solid #e9ecef; padding-bottom: 0.5em;">
-            📦 Productos (${productos.length})
-          </h4>
+          <h4>Productos (${productos.length})</h4>
           ${productos.length > 0 ? `
-            <table style="width: 100%; border-collapse: collapse; margin-top: 1em; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <table class="table">
               <thead>
-                <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">ID</th>
-                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Nombre del Producto</th>
-                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Familia</th>
-                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Fecha Registro</th>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre del Producto</th>
+                  <th>Familia</th>
+                  <th>Fecha Registro</th>
                 </tr>
               </thead>
               <tbody>
                 ${productos.map(p => `
-                  <tr style="border-bottom: 1px solid #dee2e6;">
-                    <td style="padding: 0.75em; border: 1px solid #dee2e6; font-weight: bold; color: #0056b3;">${p.id}</td>
-                    <td style="padding: 0.75em; border: 1px solid #dee2e6;">${p.nombre}</td>
-                    <td style="padding: 0.75em; border: 1px solid #dee2e6;">
-                      <select onchange="asignarFamiliaProducto(${p.id}, this.value)" style="padding: 0.25em; border: 1px solid #ced4da; border-radius: 3px; width: 100%;">
+                  <tr>
+                    <td>${p.id}</td>
+                    <td>${p.nombre}</td>
+                    <td>
+                      <select class="select" onchange="asignarFamiliaProducto(${p.id}, this.value)">
                         <option value="">-- Sin familia --</option>
                         ${familias.map(f => `
                           <option value="${f.id}" ${p.familia_id == f.id ? 'selected' : ''}>${f.nombre}</option>
                         `).join('')}
                       </select>
                     </td>
-                    <td style="padding: 0.75em; border: 1px solid #dee2e6; color: #6c757d;">
+                    <td>
                       ${new Date(p.created_at).toLocaleDateString('es-ES', {
                         year: 'numeric',
                         month: 'long',
@@ -952,7 +950,7 @@ const verMaestros = async (tipo) => {
                 `).join('')}
               </tbody>
             </table>
-          ` : '<p style="color: #6c757d; font-style: italic; margin: 1em 0;">No hay productos registrados</p>'}
+          ` : '<p>No hay productos registrados</p>'}
         </div>
       `;
     }
@@ -961,35 +959,33 @@ const verMaestros = async (tipo) => {
       const empleados = maestros.filter(m => m.tipo === 'empleado' && m.activo);
       html += `
         <div style="margin-bottom: 2em;">
-          <h4 style="color: #28a745; border-bottom: 2px solid #e9ecef; padding-bottom: 0.5em;">
-            👥 Empleados (${empleados.length})
-          </h4>
+          <h4>Empleados (${empleados.length})</h4>
           ${empleados.length > 0 ? `
-            <table style="width: 100%; border-collapse: collapse; margin-top: 1em; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <table class="table">
               <thead>
-                <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">ID</th>
-                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">DNI</th>
-                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Nombre del Empleado</th>
-                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Estado</th>
-                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Fecha Registro</th>
+                <tr>
+                  <th>ID</th>
+                  <th>DNI</th>
+                  <th>Nombre del Empleado</th>
+                  <th>Estado</th>
+                  <th>Fecha Registro</th>
                 </tr>
               </thead>
               <tbody>
                 ${empleados.map(e => `
-                  <tr style="border-bottom: 1px solid #dee2e6;">
-                    <td style="padding: 0.75em; border: 1px solid #dee2e6; font-weight: bold; color: #28a745;">${e.id}</td>
-                    <td style="padding: 0.75em; border: 1px solid #dee2e6; font-weight: bold; color: #0056b3;">
-                      ${e.dni ? e.dni : '<span style="color: #dc3545; font-style: italic;">Sin DNI</span>'}
+                  <tr>
+                    <td>${e.id}</td>
+                    <td>
+                      ${e.dni ? e.dni : '<span class="text-red-500">Sin DNI</span>'}
                     </td>
-                    <td style="padding: 0.75em; border: 1px solid #dee2e6;">${e.nombre}</td>
-                    <td style="padding: 0.75em; border: 1px solid #dee2e6;">
+                    <td>${e.nombre}</td>
+                    <td>
                       ${e.dni ? 
-                        '<span style="background: #d4edda; color: #155724; padding: 0.25em 0.5em; border-radius: 3px; font-size: 0.85em;">✓ Completo</span>' :
-                        '<span style="background: #f8d7da; color: #721c24; padding: 0.25em 0.5em; border-radius: 3px; font-size: 0.85em;">⚠ Falta DNI</span>'
+                        '<span class="badge bg-green-100 text-green-500">✓ Completo</span>' :
+                        '<span class="badge bg-red-100 text-red-500">⚠ Falta DNI</span>'
                       }
                     </td>
-                    <td style="padding: 0.75em; border: 1px solid #dee2e6; color: #6c757d;">
+                    <td>
                       ${new Date(e.created_at).toLocaleDateString('es-ES', {
                         year: 'numeric',
                         month: 'long',
@@ -1000,7 +996,7 @@ const verMaestros = async (tipo) => {
                 `).join('')}
               </tbody>
             </table>
-          ` : '<p style="color: #6c757d; font-style: italic; margin: 1em 0;">No hay empleados registrados</p>'}
+          ` : '<p>No hay empleados registrados</p>'}
         </div>
       `;
     }
@@ -1008,43 +1004,38 @@ const verMaestros = async (tipo) => {
     if (tipo === 'all' || tipo === 'tienda') {
       const tiendas = maestros.filter(m => m.tipo === 'tienda' && m.activo);
       html += `
-        <div style="margin-bottom: 2em;">
-          <h4 style="color: #dc3545; border-bottom: 2px solid #e9ecef; padding-bottom: 0.5em;">
-            🏪 Tiendas (${tiendas.length})
-          </h4>
+        <div>
+          <h4>Tiendas (${tiendas.length})</h4>
           ${tiendas.length > 0 ? `
-            <table style="width: 100%; border-collapse: collapse; margin-top: 1em; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <table class="table">
               <thead>
-                <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
-                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">ID</th>
-                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Nombre de la Tienda</th>
-                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Fecha Registro</th>
-                  <th style="padding: 0.75em; text-align: left; border: 1px solid #dee2e6; font-weight: 600;">Acciones</th>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre de la Tienda</th>
+                  <th>Fecha Registro</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
                 ${tiendas.map(t => `
-                  <tr style="border-bottom: 1px solid #dee2e6;">
-                    <td style="padding: 0.75em; border: 1px solid #dee2e6; font-weight: bold; color: #dc3545;">${t.id}</td>
-                    <td style="padding: 0.75em; border: 1px solid #dee2e6;">${t.nombre}</td>
-                    <td style="padding: 0.75em; border: 1px solid #dee2e6; color: #6c757d;">
+                  <tr>
+                    <td class="font-weight-bold text-danger">${t.id}</td>
+                    <td>${t.nombre}</td>
+                    <td>
                       ${new Date(t.created_at).toLocaleDateString('es-ES', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric'
                       })}
                     </td>
-                    <td style="padding: 0.75em; border: 1px solid #dee2e6;">
-                      <button onclick="gestionarUsuariosTienda(${t.id}, '${t.nombre}')" 
-                              style="background: #17a2b8; color: white; border: none; padding: 0.5em; border-radius: 4px; cursor: pointer;">
-                        👥 Gestionar Usuarios
-                      </button>
+                    <td>
+                      <button onclick="gestionarUsuariosTienda(${t.id}, '${t.nombre}')" class="btn-outline">Gestionar Usuarios</button>
                     </td>
                   </tr>
                 `).join('')}
               </tbody>
             </table>
-          ` : '<p style="color: #6c757d; font-style: italic; margin: 1em 0;">No hay tiendas registradas</p>'}
+          ` : '<p>No hay tiendas registradas</p>'}
         </div>
       `;
     }
@@ -1055,7 +1046,7 @@ const verMaestros = async (tipo) => {
   } catch (error) {
     console.error('Error cargando maestros:', error);
     resultMaestrosList.innerHTML = `
-      <div style="color: #dc3545; background: #f8d7da; border: 1px solid #f5c6cb; padding: 1em; border-radius: 5px;">
+      <div class="alert text-red-500">
         <strong>Error al cargar datos:</strong> ${error.message}
       </div>
     `;
@@ -1069,84 +1060,51 @@ async function gestionarUsuariosTienda(tiendaId, tiendaNombre) {
     const debugObject = (label, obj) => {
       //console.log(`DEBUG ${label}:`, JSON.stringify(obj, null, 2));
     };
-    
-    // 1. Crear el modal de gestión de usuarios
-    const modalId = 'modal-usuarios-tienda';
-    let modalElement = document.getElementById(modalId);
-    
-    // Si el modal no existe, lo creamos
-    if (!modalElement) {
-      modalElement = document.createElement('div');
-      modalElement.id = modalId;
-      modalElement.className = 'modal-usuarios-tienda';
-      modalElement.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-      `;
-      
-      document.body.appendChild(modalElement);
-    }
-    
+
+    // 1. Crear el dialog basecoat de gestión de usuarios
+    const dialogId = 'dialog-usuarios-tienda';
+    let dialog = document.getElementById(dialogId);
+    if (dialog) dialog.remove(); // Eliminar si ya existe para evitar duplicados
+
     // 2. Cargar los usuarios disponibles y los ya vinculados a la tienda
     const usuarios = await api('/usuarios', 'GET', null, 'admin');
-    debugObject('Todos los usuarios', usuarios.slice(0, 3)); // Solo debuggear 3 primeros para no saturar
-    
+    debugObject('Todos los usuarios', usuarios.slice(0, 3));
+
     const tiendaInfo = await api(`/tiendas/${tiendaId}/usuarios`, 'GET', null, 'admin');
     debugObject('Tienda Info', tiendaInfo);
-    
+
     const usuariosVinculados = tiendaInfo.usuarios || [];
-    
-    // 3. Generar el contenido del modal
-    modalElement.innerHTML = `
-      <div style="background: white; border-radius: 8px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-        <div style="padding: 1.5em; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center;">
-          <h3 style="margin: 0;">👥 Usuarios de la Tienda: ${tiendaNombre}</h3>
-          <button onclick="document.getElementById('${modalId}').remove()" style="background: none; border: none; font-size: 1.5em; cursor: pointer;">×</button>
-        </div>
-        
-        <div style="padding: 1.5em;">
-          <p style="margin-bottom: 1.5em; color: #6c757d;">
-            Seleccione los usuarios que tendrán acceso a esta tienda. Los usuarios con rol "tienda" solo podrán gestionar información de la tienda asignada.
-          </p>
-          
-          <form id="form-vincular-usuarios-tienda">
+
+    // 3. Generar el contenido del dialog
+    dialog = document.createElement('dialog');
+    dialog.id = dialogId;
+    dialog.className = 'dialog w-full sm:max-w-[700px] max-h-[90vh]';
+    dialog.setAttribute('aria-labelledby', `${dialogId}-title`);
+    dialog.setAttribute('aria-describedby', `${dialogId}-desc`);
+    dialog.onclick = function(event) { if (event.target === this) this.close(); };
+
+    dialog.innerHTML = `
+      <article>
+        <header>
+          <h2 id="${dialogId}-title">Usuarios vinculados a ${tiendaNombre}</h2>
+          <p id="${dialogId}-desc">Seleccione los usuarios que tendrán acceso a esta tienda. Los usuarios con rol "tienda" solo podrán gestionar información de la tienda asignada.</p>
+        </header>
+        <section>
+          <form id="form-vincular-usuarios-tienda" class="form grid gap-4">
             <input type="hidden" name="tienda_id" value="${tiendaId}">
-            
-            <div style="max-height: 50vh; overflow-y: auto; padding: 1em; border: 1px solid #dee2e6; border-radius: 5px; margin-bottom: 1.5em;">
-              <h4 style="margin-top: 0;">Seleccionar Usuarios:</h4>
-              
-              ${usuarios.length > 0 ? 
+            <h4>Seleccionar usuarios</h4>
+            <div class="grid gap-3 max-h-[50vh] overflow-y-auto p-4 border border-gray-300 rounded">
+              ${usuarios.length > 0 ?
                 usuarios.map(usuario => {
-                  // Accedemos correctamente al nombre del rol a través del objeto rol
                   const rolNombre = usuario.rol && typeof usuario.rol === 'object' ? usuario.rol.nombre : usuario.rol;
                   const isRolTienda = rolNombre === 'tienda';
-                  
-                  // Verificamos si el usuario está vinculado a esta tienda
                   const isVinculado = usuariosVinculados.some(u => u.id === usuario.id);
-                  
-                  // Si está vinculado, obtenemos el nombre de la tienda
-                  const tiendaActual = isVinculado ? 
-                    (usuariosVinculados.find(u => u.id === usuario.id) || {}).tienda_nombre : null;
-                  
-                  // Obtenemos el nombre del usuario - puede estar directamente o en objeto empleado
-                  const nombreUsuario = usuario.nombre || 
-                    (usuario.empleado && usuario.empleado.nombre ? usuario.empleado.nombre : 'Usuario sin nombre');
-                  
-                  // Obtenemos el DNI - puede estar directamente o en objeto empleado
-                  const dniUsuario = usuario.dni || 
-                    (usuario.empleado && usuario.empleado.dni ? usuario.empleado.dni : 'No especificado');
-                    
+                  const tiendaActual = isVinculado ? (usuariosVinculados.find(u => u.id === usuario.id) || {}).tienda_nombre : null;
+                  const nombreUsuario = usuario.nombre || (usuario.empleado && usuario.empleado.nombre ? usuario.empleado.nombre : 'Usuario sin nombre');
+                  const dniUsuario = usuario.dni || (usuario.empleado && usuario.empleado.dni ? usuario.empleado.dni : 'No especificado');
                   return `
-                    <div style="padding: 0.75em; border: 1px solid ${isVinculado ? '#28a745' : '#dee2e6'}; border-radius: 5px; margin-bottom: 0.5em; background: ${isVinculado ? '#f0fff0' : 'white'};">
-                      <div style="display: flex; align-items: center;">
+                    <div class="p-3 border rounded mb-2 ${isVinculado ? 'border-green-400 bg-green-50' : 'border-gray-200 bg-white'}">
+                      <div class="flex items-center">
                         <input 
                           type="checkbox" 
                           name="usuario_ids" 
@@ -1154,69 +1112,59 @@ async function gestionarUsuariosTienda(tiendaId, tiendaNombre) {
                           id="usuario-${usuario.id}" 
                           ${isVinculado ? 'checked' : ''} 
                           ${isRolTienda ? '' : 'disabled'} 
-                          style="margin-right: 1em;"
+                          class="mr-3"
                         >
                         <div>
-                          <label for="usuario-${usuario.id}" style="font-weight: bold; margin-bottom: 0.25em; display: block;">
-                            ${nombreUsuario} 
-                            <span style="background: ${isRolTienda ? '#17a2b8' : '#6c757d'}; color: white; padding: 0.2em 0.5em; border-radius: 3px; font-size: 0.8em; margin-left: 0.5em;">
+                          <label for="usuario-${usuario.id}" class="font-bold block mb-1">
+                            ${nombreUsuario}
+                            <span class="badge font-mono ${isRolTienda ? 'bg-green-100 text-green-500' : 'bg-red-100 text-red-500'}">
                               ${rolNombre || 'Sin rol'}
                             </span>
                           </label>
-                          <div style="font-size: 0.9em; color: #6c757d;">DNI: ${dniUsuario}</div>
-                          ${isRolTienda ? 
-                            (isVinculado ? 
-                              `<div style="font-size: 0.9em; color: #28a745; margin-top: 0.25em;">✓ Vinculado a: ${tiendaActual || tiendaNombre}</div>` : 
-                              '') : 
-                            `<div style="font-size: 0.9em; color: #dc3545; margin-top: 0.25em;">⚠️ No es usuario de tienda</div>`
+                          <div class="text-sm text-gray-500">DNI: ${dniUsuario}</div>
+                          ${isRolTienda ?
+                            (isVinculado ? `<div class="text-green-600 text-xs mt-1">✓ Vinculado a: ${tiendaActual || tiendaNombre}</div>` : '') :
+                            `<div class="text-xs mt-1">No está vinculado a la tienda</div>`
                           }
                         </div>
                       </div>
                     </div>
                   `;
-                }).join('') : 
-                '<p style="color: #6c757d; font-style: italic;">No hay usuarios registrados</p>'
+                }).join('') :
+                '<p class="text-gray-500 italic">No hay usuarios registrados</p>'
               }
             </div>
-            
-            <div style="display: flex; justify-content: flex-end; gap: 1em;">
-              <button type="button" onclick="document.getElementById('${modalId}').remove()" style="background: #6c757d; color: white; border: none; padding: 0.75em 1.5em; border-radius: 5px; cursor: pointer;">
-                Cancelar
-              </button>
-              <button type="submit" style="background: #28a745; color: white; border: none; padding: 0.75em 1.5em; border-radius: 5px; cursor: pointer;">
-                Guardar Cambios
-              </button>
-            </div>
+            <footer class="flex justify-end gap-3 mt-4">
+              <button type="button" class="btn-outline" onclick="this.closest('dialog').close()">Cancelar</button>
+              <button type="submit" class="btn">Guardar cambios</button>
+            </footer>
           </form>
-        </div>
-      </div>
+        </section>
+        <button type="button" aria-label="Cerrar dialog" onclick="this.closest('dialog').close()" class="absolute top-2 right-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+        </button>
+      </article>
     `;
-    
+
+    document.body.appendChild(dialog);
+    dialog.showModal();
+
     // 4. Manejar el submit del formulario
-    document.getElementById('form-vincular-usuarios-tienda').onsubmit = async (e) => {
+    dialog.querySelector('#form-vincular-usuarios-tienda').onsubmit = async (e) => {
       e.preventDefault();
-      
-      // Recopilar los IDs de usuarios seleccionados
       const form = e.target;
       const formData = new FormData(form);
       const usuarioIds = formData.getAll('usuario_ids').map(Number);
-      
       try {
-        // Enviar al servidor los usuarios seleccionados
         const response = await api(`/tiendas/${tiendaId}/usuarios`, 'POST', { usuario_ids: usuarioIds }, 'admin');
-        
-        // Mostrar mensaje de éxito
         alert(`Usuarios actualizados para la tienda ${tiendaNombre}`);
-        
-        // Cerrar el modal
-        document.getElementById(modalId).remove();
-        
+        dialog.close();
+        setTimeout(() => dialog.remove(), 200);
       } catch (error) {
         console.error('Error al vincular usuarios:', error);
         alert(`Error al vincular usuarios: ${error.message}`);
       }
     };
-    
   } catch (error) {
     console.error('Error gestionando usuarios de tienda:', error);
     alert(`Error: ${error.message}`);

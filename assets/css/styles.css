@@ -60,7 +60,7 @@ input[type="number"] {
   font-weight: bold;
 }
 
-form, .result { 
+.result { 
   margin-bottom: 2em; 
 }
 

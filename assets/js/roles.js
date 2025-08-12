@@ -122,17 +122,17 @@ window.listarRoles = async function() {
     const res = await api('/roles', 'GET', null, 'admin');
     
     if (res.roles && res.roles.length > 0) {
-      let html = '<table style="width: 100%; border-collapse: collapse;">';
-      html += '<thead><tr style="background: #f8f9fa;"><th style="padding: 0.5em; border: 1px solid #ddd;">ID</th><th style="padding: 0.5em; border: 1px solid #ddd;">Nombre</th><th style="padding: 0.5em; border: 1px solid #ddd;">Descripción</th><th style="padding: 0.5em; border: 1px solid #ddd;">Permisos</th><th style="padding: 0.5em; border: 1px solid #ddd;">Estado</th></tr></thead>';
+      let html = '<table class="table">';
+      html += '<thead><tr><th>ID</th><th>Nombre</th><th>Descripción</th><th>Permisos</th><th>Estado</th></tr></thead>';
       html += '<tbody>';
       
       res.roles.forEach(rol => {
         html += '<tr>';
-        html += `<td style="padding: 0.5em; border: 1px solid #ddd;">${rol.id}</td>`;
-        html += `<td style="padding: 0.5em; border: 1px solid #ddd; font-weight: bold;">${rol.nombre}</td>`;
-        html += `<td style="padding: 0.5em; border: 1px solid #ddd;">${rol.descripcion}</td>`;
-        html += `<td style="padding: 0.5em; border: 1px solid #ddd;">${rol.permisos ? rol.permisos.length : 0} permisos</td>`;
-        html += `<td style="padding: 0.5em; border: 1px solid #ddd;"><span style="color: ${rol.activo ? '#28a745' : '#dc3545'};">${rol.activo ? 'Activo' : 'Inactivo'}</span></td>`;
+        html += `<td>${rol.id}</td>`;
+        html += `<td class="font-mono">${rol.nombre}</td>`;
+        html += `<td>${rol.descripcion}</td>`;
+        html += `<td>${rol.permisos ? rol.permisos.length : 0} permisos</td>`;
+        html += `<td><span class="${rol.activo ? 'text-green-500' : 'text-red-500'}">${rol.activo ? 'Activo' : 'Inactivo'}</span></td>`;
         html += '</tr>';
       });
       
@@ -152,16 +152,16 @@ window.listarPermisos = async function() {
     const res = await api('/permisos', 'GET', null, 'admin');
     
     if (res.permisos && res.permisos.length > 0) {
-      let html = '<table style="width: 100%; border-collapse: collapse;">';
-      html += '<thead><tr style="background: #f8f9fa;"><th style="padding: 0.5em; border: 1px solid #ddd;">ID</th><th style="padding: 0.5em; border: 1px solid #ddd;">Endpoint</th><th style="padding: 0.5em; border: 1px solid #ddd;">Método</th><th style="padding: 0.5em; border: 1px solid #ddd;">Descripción</th></tr></thead>';
+      let html = '<table class="table">';
+      html += '<thead><tr><th>ID</th><th>Endpoint</th><th class="text-center">Método</th><th>Descripción</th></tr></thead>';
       html += '<tbody>';
       
       res.permisos.forEach(permiso => {
         html += '<tr>';
-        html += `<td style="padding: 0.5em; border: 1px solid #ddd;">${permiso.id}</td>`;
-        html += `<td style="padding: 0.5em; border: 1px solid #ddd; font-family: monospace; background: #f8f9fa;">${permiso.endpoint}</td>`;
-        html += `<td style="padding: 0.5em; border: 1px solid #ddd; text-align: center;"><span style="background: #007cba; color: white; padding: 0.2em 0.5em; border-radius: 3px; font-size: 0.8em;">${permiso.metodo}</span></td>`;
-        html += `<td style="padding: 0.5em; border: 1px solid #ddd;">${permiso.descripcion}</td>`;
+        html += `<td>${permiso.id}</td>`;
+        html += `<td class="font-mono">${permiso.endpoint}</td>`;
+        html += `<td class="text-center"><span class="badge">${permiso.metodo}</span></td>`;
+        html += `<td>${permiso.descripcion}</td>`;
         html += '</tr>';
       });
       
@@ -222,24 +222,24 @@ window.cargarPermisosDelRol = async function() {
     const permisosAsignados = permisosDelRol.permisos.map(p => p.id);
     
     let html = '<h4>Permisos Disponibles (marca los que quieres asignar):</h4>';
-    html += '<div style="max-height: 150px; overflow-y: auto;">';
+    html += '<div>';
     
     todosPermisos.permisos.forEach(permiso => {
       const checked = permisosAsignados.includes(permiso.id) ? 'checked' : '';
-      html += `<label style="display: flex; align-items: center; margin: 0.5em 0; padding: 0.5em; background: ${checked ? '#e8f5e8' : '#fff'}; border: 1px solid #ddd; border-radius: 3px;">`;
-      html += `<input type="checkbox" value="${permiso.id}" ${checked} style="margin-right: 0.5em;">`;
-      html += `<code style="margin-right: 0.5em; color: #007cba;">${permiso.endpoint}</code>`;
-      html += `<span style="margin-right: 0.5em; font-size: 0.8em; color: #666;">[${permiso.metodo}]</span>`;
+      html += `<label class="label alert mb-2">`;
+      html += `<input type="checkbox" class="input" value="${permiso.id}" ${checked}>`;
+      html += `<span class="font-mono">${permiso.endpoint}</span>`;
+      html += `<span>[${permiso.metodo}]</span>`;
       html += `<span>${permiso.descripcion}</span>`;
       html += `</label>`;
     });
     
     html += '</div>';
-    html += `<p style="margin-top: 1em; font-size: 0.9em; color: #666;"><strong>Permisos actuales:</strong> ${permisosAsignados.length} de ${todosPermisos.permisos.length}</p>`;
+    html += `<p><strong>Permisos actuales:</strong> ${permisosAsignados.length} de ${todosPermisos.permisos.length}</p>`;
     
     permisosContainer.innerHTML = html;
   } catch (error) {
-    permisosContainer.innerHTML = '<p style="color: #dc3545;">Error cargando permisos: ' + error.message + '</p>';
+    permisosContainer.innerHTML = '<p class="text-red-500">Error cargando permisos: ' + error.message + '</p>';
   }
 };
 
