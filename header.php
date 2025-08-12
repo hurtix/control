@@ -8,7 +8,7 @@
   <title>Imperium - Café Cauca</title>
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="/assets/libs/basecoat/basecoat.cdn.min.css">
-  <script src="/assets/libs/basecoat/basecoat.cdn.min.js" defer></script>
+  <script src="/assets/libs/basecoat/all.min.js" defer></script>
   <link rel="stylesheet" href="/assets/css/styles.css">
 
 </head>
