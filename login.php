@@ -63,12 +63,12 @@
       </div>
     </form>
     
-    <div style="margin-top: 2em; padding-top: 1em; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 0.9em;">
+    <!-- <div style="margin-top: 2em; padding-top: 1em; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 0.9em;">
       <p><strong>Para crear usuarios:</strong></p>
       <p>1. Crear empleado en "Datos Maestros"</p>
       <p>2. Crear rol en "Administración de Roles"</p>
       <p>3. Crear usuario en "Gestión de Usuarios"</p>
-    </div>
+    </div> -->
   </div>
 </div>
   <script src="assets/js/login-pin.js"></script>

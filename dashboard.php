@@ -2,7 +2,7 @@
 
 <?php include 'auth-header.php'; ?>
 
-<main class="bg-gray-100 !m-0 !p-8 h-screen flex justify-center items-center">
+<main class="lg:bg-gray-100 !my-20 !mx-2 !border-none !p-8 h-auto lg:h-screen flex justify-center items-center">
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 [&_.card]:p-0 [&_.card_a]:p-8 [&_.card_a]:font-bold [&_svg]:h-9 [&_svg]:w-9 [&_svg]:text-white [&_svg]:bg-black [&_svg]:rounded-full [&_svg]:p-2 [&_a]:flex [&_a]:flex-col [&_a]:gap-y-4">
     <div class="card">
         <a href="/pedidos.php">

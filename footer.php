@@ -1,10 +1,10 @@
-<div class="fixed left-0 bottom-0 w-full bg-white border-t border-gray-200 p-4">
+<!-- <div class="fixed left-0 bottom-0 w-full bg-white border-t border-gray-200 p-4">
   <ul class="grid grid-cols-3 [&_li]:text-center [&_li_a]:block">
     <li><a href="/dashboard.php">Home</a></li>
     <li><a href="/ajustes.php">Notificaciones</a></li>
     <li><a href="/ayuda.php">Ayuda</a></li>
   </ul>
-</div>
+</div> -->
 
 
 <!-- Scripts -->
