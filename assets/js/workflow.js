@@ -516,14 +516,13 @@ const actualizarDespachosLoteTienda = async () => {
           html += `<td style="border: 1px solid #ccc; padding: 8px;">${despacho.cantidad_despachada}</td>`;
           html += `<td style="border: 1px solid #ccc; padding: 8px;">
                     <input type="number" 
-                           class="cantidad-recibida-input" 
+                           class="cantidad-recibida-input w-20" 
                            data-producto="${despacho.producto}"
                            data-tienda="${despacho.tienda}"
                            data-despachado="${despacho.cantidad_despachada}"
                            min="0" 
                            max="${despacho.cantidad_despachada}" 
                            value="${despacho.cantidad_despachada}" 
-                           style="width: 100px;"
                            required>
                    </td>`;
           html += `<td style="border: 1px solid #ccc; padding: 8px;">

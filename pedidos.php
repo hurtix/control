@@ -21,8 +21,13 @@
 
     <!-- Campo de empleado oculto que se llenará automáticamente -->
     <input type="hidden" name="empleado" id="select-empleado-pedido">
-
+<div class="flex justify-between items-center my-4">
     <h3>Productos y Tiendas</h3>
+    <button type="button" onclick="agregarProductoPedido()" class="btn-icon-outline rounded-full" data-tooltip="Añadir producto">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+            </button>
+    <!-- <button type="button" class="btn-outline" onclick="agregarProductoPedido()">+ Agregar Producto</button> -->
+</div>
     <div class="table-container border border-gray-200 p-4 rounded-lg">
         <table class="pedidos-table table">
             <thead>
@@ -74,7 +79,6 @@
         </table>
     </div>
     <div class="flex justify-between mt-4">
-        <button type="button" class="btn-outline" onclick="agregarProductoPedido()">+ Agregar Producto</button>
         <button type="button" id="btn-guardar-progreso-pedidos" class="btn-outline">Guardar Progreso</button>
         <button type="button" id="btn-limpiar-progreso-pedidos" class="btn-destructive">Limpiar Todo</button>
         <button type="submit" class="btn">Registrar Pedido</button>
