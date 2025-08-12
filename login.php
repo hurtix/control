@@ -7,10 +7,10 @@ session_start();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Imperium</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-  <link rel="stylesheet" href="/assets/libs/basecoat/basecoat.cdn.min.css">
-  <script src="/assets/libs/basecoat/all.min.js" defer></script>
+  <link rel="stylesheet" href="/assets/css/basecoat.cdn.min.css">
+  <link rel="stylesheet" href="/assets/css/tailwind.out.css">
   <link rel="stylesheet" href="/assets/css/styles.css">
+  <script src="/node_modules/basecoat-css/dist/js/all.min.js" defer></script>
   <!-- <style>
     .error-message {
       color: #dc3545;
