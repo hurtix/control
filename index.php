@@ -1581,7 +1581,7 @@ $app->get('/roles/{nombre}/permiso', function ($request, $response, $args) {
 // Listar usuarios
 $app->get('/usuarios', function ($request, $response) {
     try {
-        $usuarios = Usuario::with(['rol', 'empleado'])->where('activo', true)->get();
+    $usuarios = Usuario::with(['rol', 'empleado'])->get();
         $response->getBody()->write(json_encode($usuarios));
         return $response->withHeader('Content-Type', 'application/json');
     } catch (Exception $e) {
