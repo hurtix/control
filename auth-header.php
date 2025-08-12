@@ -1,5 +1,5 @@
   <!-- Header de autenticación -->
-  <div id="auth-header" class="bg-black text-white px-8 py-2 mb-8 flex justify-between items-center gap-2">
+  <div id="auth-header" class="bg-black text-white px-8 py-2 flex justify-between items-center gap-2">
       <div class="w-full">
         <a href="/dashboard.php">
           <h1>Cafe Cauca</h1>

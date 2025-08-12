@@ -100,18 +100,18 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 // Funciones para gestión de pedidos
 const cargarTiendasDisponibles = async () => {
-  console.log('=== cargarTiendasDisponibles iniciado ===');
+  //console.log('=== cargarTiendasDisponibles iniciado ===');
   try {
     const tiendasResponse = await api('/opciones/tiendas');
-    console.log('Respuesta de /opciones/tiendas:', tiendasResponse);
+    //console.log('Respuesta de /opciones/tiendas:', tiendasResponse);
     
     tiendas = tiendasResponse;
-    console.log('Tiendas cargadas:', tiendas);
+    //console.log('Tiendas cargadas:', tiendas);
     
     // Inicializar el grid de totales por tienda
     inicializarTotalesTienda();
     
-    console.log('cargarTiendasDisponibles completado exitosamente');
+    //console.log('cargarTiendasDisponibles completado exitosamente');
   } catch (error) {
     console.error('Error cargando tiendas:', error);
     tiendas = [];
@@ -138,7 +138,7 @@ const inicializarTotalesTienda = () => {
 async function actualizarTiendasProducto(selectProducto) {
     const productoSeleccionado = selectProducto.value;
     
-    console.log('actualizarTiendasProducto - productoSeleccionado:', productoSeleccionado);
+    //console.log('actualizarTiendasProducto - productoSeleccionado:', productoSeleccionado);
     
     const fila = selectProducto.closest('.producto-tienda-item');
     const tiendasContainer = fila.querySelector('.tiendas-cantidades');
@@ -185,7 +185,7 @@ async function actualizarTiendasProducto(selectProducto) {
                 }
             });
             
-            console.log(`Inventario cargado para ${productoSeleccionado}`);
+            //console.log(`Inventario cargado para ${productoSeleccionado}`);
         } catch (error) {
             console.error('Error obteniendo inventario:', error);
             // Mostrar error en todos los divs de inventario
@@ -198,13 +198,13 @@ async function actualizarTiendasProducto(selectProducto) {
         tiendasContainer.style.visibility = 'visible';
         totalProducto.style.visibility = 'visible';
         
-        console.log('Grid de tiendas generado para:', productoSeleccionado);
+        //console.log('Grid de tiendas generado para:', productoSeleccionado);
     } else {
         // Ocultar las columnas si no hay producto seleccionado
         tiendasContainer.style.visibility = 'hidden';
         totalProducto.style.visibility = 'hidden';
         tiendasGrid.innerHTML = '';
-        console.log('Grid de tiendas ocultado');
+        //console.log('Grid de tiendas ocultado');
     }
     
     // Actualizar disponibilidad de productos

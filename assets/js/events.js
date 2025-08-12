@@ -1,25 +1,32 @@
 // Manejadores de eventos para formularios
 // Pedidos
-formPedido.onsubmit = async e => {
-  e.preventDefault();
-  const fd = new FormData(formPedido);
-  
-  // Validar que todos los campos estén completos
-  const cantidadInputs = document.querySelectorAll('.cantidad-tienda-input');
-  let camposInvalidos = false;
-  
-  cantidadInputs.forEach(input => {
-    // Si el input está visible (su producto está seleccionado)
-    if (input.closest('.tiendas-cantidades').style.visibility !== 'hidden') {
-      if (input.value === '' || isNaN(parseInt(input.value)) || parseInt(input.value) < 0) {
-        camposInvalidos = true;
-        input.classList.add('border-red-500');
-        setTimeout(() => {
-          input.classList.remove('border-red-500');
-        }, 3000);
-      }
-    }
-  });
+
+(function() {
+  // Encapsulado para evitar colisión de variables globales
+  const formPedido = document.getElementById('form-pedido');
+  if (formPedido) {
+    formPedido.onsubmit = async e => {
+      e.preventDefault();
+      const fd = new FormData(formPedido);
+
+      // Validar que todos los campos estén completos
+      const cantidadInputs = document.querySelectorAll('.cantidad-tienda-input');
+      let camposInvalidos = false;
+      
+      cantidadInputs.forEach(input => {
+        // Si el input está visible (su producto está seleccionado)
+        if (input.closest('.tiendas-cantidades').style.visibility !== 'hidden') {
+          if (input.value === '' || isNaN(parseInt(input.value)) || parseInt(input.value) < 0) {
+            camposInvalidos = true;
+            input.classList.add('border-red-500');
+            setTimeout(() => {
+              input.classList.remove('border-red-500');
+            }, 3000);
+          }
+        }
+      });
+
+// ...existing code...
   
   if (camposInvalidos) {
     alert('Por favor, complete todas las cantidades con valores numéricos (0 o mayor)');
@@ -36,19 +43,15 @@ formPedido.onsubmit = async e => {
   
   // Recopilar todos los productos y cantidades por tienda
   const productosItems = document.querySelectorAll('.producto-tienda-item');
-  
   productosItems.forEach(item => {
     const productoSelect = item.querySelector('.producto-select');
-    const producto = productoSelect.value;
-    
+    const producto = productoSelect ? productoSelect.value : '';
     if (producto) {
       // Obtener todas las cantidades por tienda para este producto
       const cantidadInputs = item.querySelectorAll('.cantidad-tienda-input');
-      
       cantidadInputs.forEach(input => {
         const tienda = input.dataset.tienda;
         const cantidad = parseInt(input.value);
-        
         // Incluir el item si tiene un valor numérico válido (incluyendo 0)
         if (!isNaN(cantidad) && cantidad >= 0) {
           data.items.push({
@@ -71,6 +74,8 @@ formPedido.onsubmit = async e => {
   
   // Limpiar formulario
   formPedido.reset();
+    // Borrar progreso guardado en localStorage
+    localStorage.removeItem('pedidos_progreso');
   const container = document.getElementById('productos-tiendas-container');
   container.innerHTML = `
     <tr class="producto-tienda-item">
@@ -113,104 +118,100 @@ formPedido.onsubmit = async e => {
       }
     }, 500);
 };
+}
+})();
 
 // Producción
-formProduccion.onsubmit = async e => {
-  e.preventDefault();
+// (Eliminada declaración duplicada de formProduccion)
+// (Eliminada declaración duplicada de resultProduccion)
+if (formProduccion) {
+  formProduccion.onsubmit = async e => {
+    e.preventDefault();
   const fd = new FormData(formProduccion);
-  const data = Object.fromEntries(fd.entries());
-  
-  // Usar fecha actual automática
-  data.fecha = obtenerFechaActualISO();
-  
-  // Asegurarse de que el nombre del empleado esté presente
-  if (!data.empleado && currentUser && currentUser.nombre) {
-    console.log("Empleado no encontrado en el formulario. Usando nombre del usuario autenticado:", currentUser.nombre);
-    data.empleado = currentUser.nombre;
-  }
-  
-  // Recopilar productos y cantidades producidas desde la tabla
-  const productosRows = document.querySelectorAll('#productos-lote-lista tr');
-  const productos = [];
-  productosRows.forEach(row => {
-    const productoId = row.dataset.producto;
-    const cantidadInput = row.querySelector('.cantidad-producida-input');
-    if (productoId && cantidadInput && cantidadInput.value && !isNaN(parseFloat(cantidadInput.value)) && parseFloat(cantidadInput.value) >= 0) {
-      productos.push({
-        producto: productoId,
-        cantidad_producida: parseFloat(cantidadInput.value),
-        empleado: data.empleado
-      });
+    const data = Object.fromEntries(fd.entries());
+    // Usar fecha actual automática
+    data.fecha = obtenerFechaActualISO();
+    // Asegurarse de que el nombre del empleado esté presente
+    if (!data.empleado && currentUser && currentUser.nombre) {
+      //console.log("Empleado no encontrado en el formulario. Usando nombre del usuario autenticado:", currentUser.nombre);
+      data.empleado = currentUser.nombre;
     }
-  });
-  if (productos.length === 0) {
-    alert('Debe especificar cantidades producidas para todos los productos');
-    return;
-  }
-  
-  data.productos = productos;
-  data.lote_id = Number(data.lote_id);
-  
-  const res = await api('/produccion', 'POST', data, 'produccion');
-  resultProduccion.textContent = JSON.stringify(res, null, 2);
-  
-  // Limpiar formulario
-  formProduccion.reset();
-  document.getElementById('productos-lote-container').style.display = 'none';
-  document.getElementById('productos-lote-lista').innerHTML = '';
-  
-  // Quitar selección de todas las tarjetas
-  document.querySelectorAll('.lote-card').forEach(card => card.classList.remove('selected'));
-  
-  // Limpiar el campo hidden
-  document.getElementById('input-lote-id').value = '';
-  
-  // Recargar lotes pendientes después de producir
-  setTimeout(async () => {
-    await cargarLotesPendientes();
-    // Ya no necesitamos recargar opciones de empleados
-  }, 500);
-};
+    // Recopilar productos y cantidades producidas desde la tabla
+    const productosRows = document.querySelectorAll('#productos-lote-lista tr');
+    const productos = [];
+    productosRows.forEach(row => {
+      const productoId = row.dataset.producto;
+      const cantidadInput = row.querySelector('.cantidad-producida-input');
+      if (productoId && cantidadInput && cantidadInput.value && !isNaN(parseFloat(cantidadInput.value)) && parseFloat(cantidadInput.value) >= 0) {
+        productos.push({
+          producto: productoId,
+          cantidad_producida: parseFloat(cantidadInput.value),
+          empleado: data.empleado
+        });
+      }
+    });
+    if (productos.length === 0) {
+      alert('Debe especificar cantidades producidas para todos los productos');
+      return;
+    }
+    data.productos = productos;
+    data.lote_id = Number(data.lote_id);
+    const res = await api('/produccion', 'POST', data, 'produccion');
+    resultProduccion.textContent = JSON.stringify(res, null, 2);
+    // Limpiar formulario
+    formProduccion.reset();
+    document.getElementById('productos-lote-container').style.display = 'none';
+    document.getElementById('productos-lote-lista').innerHTML = '';
+    // Quitar selección de todas las tarjetas
+    document.querySelectorAll('.lote-card').forEach(card => card.classList.remove('selected'));
+    // Limpiar el campo hidden
+    document.getElementById('input-lote-id').value = '';
+    // Recargar lotes pendientes después de producir
+    setTimeout(async () => {
+      await cargarLotesPendientes();
+      // Ya no necesitamos recargar opciones de empleados
+    }, 500);
+  };
+}
 
 // Despacho
-formDespacho.onsubmit = async e => {
-  e.preventDefault();
+// (Eliminada declaración duplicada de formDespacho)
+// (Eliminada declaración duplicada de resultDespacho)
+if (formDespacho) {
+  formDespacho.onsubmit = async e => {
+    e.preventDefault();
   const fd = new FormData(formDespacho);
-  const data = Object.fromEntries(fd.entries());
-  
-  // Usar fecha actual automática
-  data.fecha = obtenerFechaActualISO();
-  
-  // Asegurarse de que el nombre del empleado esté presente
-  if (!data.empleado && currentUser && currentUser.nombre) {
-    console.log("Empleado no encontrado en el formulario de despacho. Usando nombre del usuario autenticado:", currentUser.nombre);
-    data.empleado = currentUser.nombre;
-  }
-  
-  data.lote_id = Number(data.lote_id);
-  
-  const res = await api('/despacho', 'POST', data, 'despacho');
-  resultDespacho.textContent = JSON.stringify(res, null, 2);
-  
-  // Limpiar formulario
-  formDespacho.reset();
-  document.getElementById('distribucion-despacho-container').style.display = 'none';
-  document.getElementById('distribucion-despacho-lista').innerHTML = '';
-  
-  // Quitar selección de todas las tarjetas
-  document.querySelectorAll('#lotes-despacho-cards-container .lote-card').forEach(card => card.classList.remove('selected'));
-  
-  // Limpiar el campo hidden
-  document.getElementById('input-lote-id-despacho').value = '';
-  
-  // Recargar lotes producidos después de despachar
-  setTimeout(async () => {
-    await cargarLotesProducidos();
-    // Ya no necesitamos recargar opciones de empleados
-  }, 500);
-};
+    const data = Object.fromEntries(fd.entries());
+    // Usar fecha actual automática
+    data.fecha = obtenerFechaActualISO();
+    // Asegurarse de que el nombre del empleado esté presente
+    if (!data.empleado && currentUser && currentUser.nombre) {
+      //console.log("Empleado no encontrado en el formulario de despacho. Usando nombre del usuario autenticado:", currentUser.nombre);
+      data.empleado = currentUser.nombre;
+    }
+    data.lote_id = Number(data.lote_id);
+    const res = await api('/despacho', 'POST', data, 'despacho');
+    resultDespacho.textContent = JSON.stringify(res, null, 2);
+    // Limpiar formulario
+    formDespacho.reset();
+    document.getElementById('distribucion-despacho-container').style.display = 'none';
+    document.getElementById('distribucion-despacho-lista').innerHTML = '';
+    // Quitar selección de todas las tarjetas
+    document.querySelectorAll('#lotes-despacho-cards-container .lote-card').forEach(card => card.classList.remove('selected'));
+    // Limpiar el campo hidden
+    document.getElementById('input-lote-id-despacho').value = '';
+    // Recargar lotes producidos después de despachar
+    setTimeout(async () => {
+      await cargarLotesProducidos();
+      // Ya no necesitamos recargar opciones de empleados
+    }, 500);
+  };
+}
 
 // Recepción
+// (Eliminada declaración duplicada de formRecepcion)
+// (Eliminada declaración duplicada de resultRecepcion)
+if (formRecepcion) {
 formRecepcion.onsubmit = async e => {
   e.preventDefault();
   const fd = new FormData(formRecepcion);
@@ -221,7 +222,7 @@ formRecepcion.onsubmit = async e => {
   
   // Asegurarse de que el nombre del empleado esté presente
   if (!data.empleado && currentUser && currentUser.nombre) {
-    console.log("Empleado no encontrado en el formulario de recepción. Usando nombre del usuario autenticado:", currentUser.nombre);
+    //console.log("Empleado no encontrado en el formulario de recepción. Usando nombre del usuario autenticado:", currentUser.nombre);
     data.empleado = currentUser.nombre;
   }
   
@@ -337,3 +338,4 @@ formRecepcion.onsubmit = async e => {
     // Mantener el timeout para consistencia pero sin cargar opciones de empleados
   }, 500);
 };
+}

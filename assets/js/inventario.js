@@ -34,7 +34,7 @@ function guardarProgresoInventario() {
   };
   
   localStorage.setItem(`inventario_progreso_${tiendaId}`, JSON.stringify(progreso));
-  console.log('Progreso guardado:', progreso);
+  //console.log('Progreso guardado:', progreso);
 }
 
 // Función para cargar progreso desde localStorage
@@ -73,10 +73,10 @@ function cargarProgresoInventario(tiendaId) {
       }
     });
     
-    console.log('Progreso cargado:', data);
+    //console.log('Progreso cargado:', data);
     return data;
   } catch (error) {
-    console.error('Error cargando progreso:', error);
+    //console.error('Error cargando progreso:', error);
   }
 }
 
@@ -125,7 +125,7 @@ function actualizarIndicadorProgreso() {
 function limpiarProgresoInventario(tiendaId) {
   if (tiendaId) {
     localStorage.removeItem(`inventario_progreso_${tiendaId}`);
-    console.log('Progreso limpiado para tienda:', tiendaId);
+    //console.log('Progreso limpiado para tienda:', tiendaId);
   }
 }
 
@@ -193,25 +193,25 @@ function mostrarSeccionInventario(rol) {
 
 // Cargar tiendas disponibles para inventario
 async function cargarTiendasInventario() {
-  console.log('=== cargarTiendasInventario iniciado ===');
+  //console.log('=== cargarTiendasInventario iniciado ===');
   
   try {
     const select = document.getElementById('select-tienda-inventario');
     
     if (!select) {
-      console.error('Select de tienda no encontrado');
+      //console.error('Select de tienda no encontrado');
       return;
     }
     
-    console.log('Select encontrado:', select);
+    //console.log('Select encontrado:', select);
     
     // Obtener usuario actual (puede venir de main.js)
     const usuarioActual = window.currentUser || (window.obtenerUsuarioActual ? window.obtenerUsuarioActual() : null);
     
-    console.log('Usuario actual:', usuarioActual);
+    //console.log('Usuario actual:', usuarioActual);
     
     if (!usuarioActual) {
-      console.error('No hay usuario actual disponible');
+      //console.error('No hay usuario actual disponible');
       return;
     }
     
@@ -227,7 +227,7 @@ async function cargarTiendasInventario() {
         select.appendChild(option);
       });
       
-      console.log('Admin: tiendas cargadas:', tiendas);
+      //console.log('Admin: tiendas cargadas:', tiendas);
     } 
     // Si es usuario de tienda, pre-seleccionar su tienda
     else if (usuarioActual.tiendas && usuarioActual.tiendas.length > 0) {
@@ -241,12 +241,12 @@ async function cargarTiendasInventario() {
       option.selected = true;
       select.appendChild(option);
       
-      console.log('Usuario tienda: tienda preseleccionada:', tiendaNombre);
+      //console.log('Usuario tienda: tienda preseleccionada:', tiendaNombre);
     } 
     // Usuario sin tienda
     else {
       select.innerHTML = '<option value="">Sin tienda asignada</option>';
-      console.log('Usuario sin tienda asignada');
+      //console.log('Usuario sin tienda asignada');
       return;
     }
     
@@ -256,12 +256,12 @@ async function cargarTiendasInventario() {
     
     // Si hay una tienda pre-seleccionada, cargar productos automáticamente
     if (select.value && select.value !== '') {
-      console.log('Cargando productos automáticamente para tienda:', select.value);
+      //console.log('Cargando productos automáticamente para tienda:', select.value);
       await cargarInventarioProductos();
     }
     
   } catch (error) {
-    console.error('Error cargando tiendas:', error);
+    //console.error('Error cargando tiendas:', error);
     const select = document.getElementById('select-tienda-inventario');
     if (select) {
       select.innerHTML = '<option value="">Error cargando tiendas</option>';
@@ -272,15 +272,15 @@ async function cargarTiendasInventario() {
 // Cargar productos automáticamente cuando se selecciona una tienda
 // Cargar productos en formato tabla por familias
 async function cargarInventarioProductos() {
-  console.log('=== cargarInventarioProductos iniciado ===');
+  //console.log('=== cargarInventarioProductos iniciado ===');
   
   const tiendaId = document.getElementById('select-tienda-inventario').value;
   const tabla = document.getElementById('tabla-inventario');
   const loading = document.getElementById('loading-productos');
   const btnRegistrar = document.getElementById('btn-registrar-inventario');
   
-  console.log('tiendaId:', tiendaId);
-  console.log('elementos DOM encontrados:', { tabla: !!tabla, loading: !!loading, btnRegistrar: !!btnRegistrar });
+  //console.log('tiendaId:', tiendaId);
+  //console.log('elementos DOM encontrados:', { tabla: !!tabla, loading: !!loading, btnRegistrar: !!btnRegistrar });
   
   if (!tiendaId) {
     document.getElementById('productos-inventario-tbody').innerHTML = '';
@@ -289,7 +289,7 @@ async function cargarInventarioProductos() {
     document.getElementById('inventario-controles').style.display = 'none';
     loading.style.display = 'block';
     loading.textContent = 'Selecciona una tienda para cargar los productos...';
-    console.log('No hay tienda seleccionada');
+    //console.log('No hay tienda seleccionada');
     return;
   }
   
@@ -394,7 +394,7 @@ async function cargarInventarioProductos() {
     actualizarIndicadorProgreso();
     
   } catch (error) {
-    console.error('Error cargando productos:', error);
+    //console.error('Error cargando productos:', error);
     loading.style.display = 'block';
     loading.innerHTML = `<div class="text-red-500">Error cargando productos: ${error.message}</div>`;
     tabla.style.display = 'none';
@@ -404,90 +404,93 @@ async function cargarInventarioProductos() {
 }
 
 // Manejar envío del formulario de inventario
-document.getElementById('form-inventario').onsubmit = async function(e) {
-  e.preventDefault();
-  
-  const tiendaId = document.getElementById('select-tienda-inventario').value;
-  const fecha = document.getElementById('fecha-inventario').value;
-  
-  if (!tiendaId || !fecha) {
-    alert('Selecciona tienda y fecha');
-    return;
-  }
-  
-  // Recopilar datos de productos desde la tabla
-  const productos = [];
-  const tbody = document.getElementById('productos-inventario-tbody');
-  const filas = tbody.querySelectorAll('tr');
-  
-  filas.forEach(fila => {
-    const inputCantidad = fila.querySelector('input[type="number"]');
-    const inputProductoId = fila.querySelector('input[type="hidden"]');
+const formInventario = document.getElementById('form-inventario');
+if (formInventario) {
+  formInventario.onsubmit = async function(e) {
+    e.preventDefault();
     
-    if (inputCantidad && inputProductoId) {
-      const cantidad = parseInt(inputCantidad.value);
-      const productoId = parseInt(inputProductoId.value);
+    const tiendaId = document.getElementById('select-tienda-inventario').value;
+    const fecha = document.getElementById('fecha-inventario').value;
+    
+    if (!tiendaId || !fecha) {
+      alert('Selecciona tienda y fecha');
+      return;
+    }
+    
+    // Recopilar datos de productos desde la tabla
+    const productos = [];
+    const tbody = document.getElementById('productos-inventario-tbody');
+    const filas = tbody.querySelectorAll('tr');
+    
+    filas.forEach(fila => {
+      const inputCantidad = fila.querySelector('input[type="number"]');
+      const inputProductoId = fila.querySelector('input[type="hidden"]');
       
-      if (!isNaN(cantidad) && cantidad >= 0) {
-        productos.push({
-          producto_id: productoId,
-          cantidad_inicial: cantidad
-        });
+      if (inputCantidad && inputProductoId) {
+        const cantidad = parseInt(inputCantidad.value);
+        const productoId = parseInt(inputProductoId.value);
+        
+        if (!isNaN(cantidad) && cantidad >= 0) {
+          productos.push({
+            producto_id: productoId,
+            cantidad_inicial: cantidad
+          });
+        }
       }
-    }
-  });
-  
-  if (productos.length === 0) {
-    alert('Ingresa al menos un producto con cantidad válida');
-    return;
-  }
-  
-  // Confirmar antes de enviar
-  const confirmacion = confirm(`¿Confirmar registro de inventario?\n\nTienda: ${tiendaId}\nFecha: ${fecha}\nProductos: ${productos.length}\n\nEsta acción no se puede deshacer.`);
-  if (!confirmacion) {
-    return;
-  }
-  
-  try {
-    const data = {
-      fecha: fecha,
-      tienda_id: tiendaId, // Enviar como string (nombre de tienda)
-      productos: productos
-    };
-    
-    console.log('Enviando datos de inventario:', data);
-    
-    const result = await api('/inventario', 'POST', data, 'admin');
-    
-    console.log('Respuesta del servidor:', result);
-    
-    if (result.error) {
-      throw new Error(result.error);
-    }
-    
-    const mensaje = result.mensaje || 'Inventario registrado exitosamente';
-    const productosRegistrados = result.productos_registrados || productos.length;
-    
-    alert(`✓ ${mensaje}\nProductos registrados: ${productosRegistrados}`);
-    
-    // Limpiar progreso guardado después del éxito
-    limpiarProgresoInventario(tiendaId);
-    
-    // Limpiar formulario
-    const inputs = tbody.querySelectorAll('input[type="number"]');
-    inputs.forEach(input => {
-      input.value = '';
-      actualizarEstiloInput(input);
     });
     
-    // Actualizar fecha para el siguiente día
-    establecerFechasAutomaticas();
+    if (productos.length === 0) {
+      alert('Ingresa al menos un producto con cantidad válida');
+      return;
+    }
     
-  } catch (error) {
-    console.error('Error registrando inventario:', error);
-    alert(`Error: ${error.message || error}`);
-  }
-};
+    // Confirmar antes de enviar
+    const confirmacion = confirm(`¿Confirmar registro de inventario?\n\nTienda: ${tiendaId}\nFecha: ${fecha}\nProductos: ${productos.length}\n\nEsta acción no se puede deshacer.`);
+    if (!confirmacion) {
+      return;
+    }
+    
+    try {
+      const data = {
+        fecha: fecha,
+        tienda_id: tiendaId, // Enviar como string (nombre de tienda)
+        productos: productos
+      };
+      
+      //console.log('Enviando datos de inventario:', data);
+      
+      const result = await api('/inventario', 'POST', data, 'admin');
+      
+      //console.log('Respuesta del servidor:', result);
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+      
+      const mensaje = result.mensaje || 'Inventario registrado exitosamente';
+      const productosRegistrados = result.productos_registrados || productos.length;
+      
+      alert(`✓ ${mensaje}\nProductos registrados: ${productosRegistrados}`);
+      
+      // Limpiar progreso guardado después del éxito
+      limpiarProgresoInventario(tiendaId);
+      
+      // Limpiar formulario
+      const inputs = tbody.querySelectorAll('input[type="number"]');
+      inputs.forEach(input => {
+        input.value = '';
+        actualizarEstiloInput(input);
+      });
+      
+      // Actualizar fecha para el siguiente día
+      establecerFechasAutomaticas();
+      
+    } catch (error) {
+      //console.error('Error registrando inventario:', error);
+      alert(`Error: ${error.message || error}`);
+    }
+  };
+}
 
 // Función para establecer fechas automáticas
 function establecerFechasAutomaticas() {

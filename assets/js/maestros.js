@@ -11,10 +11,10 @@ const consultar = (tipo) => {
   
   api(endpoint, 'GET', null, role).then(res => {
     // Mostrar JSON para debug y luego formatear
-    console.log('Respuesta del servidor:', res);
-    console.log('Tipo de consulta:', tipo);
-    console.log('Endpoint:', endpoint);
-    console.log('Role:', role);
+    //console.log('Respuesta del servidor:', res);
+    //console.log('Tipo de consulta:', tipo);
+    //console.log('Endpoint:', endpoint);
+    //console.log('Role:', role);
     
     if (res && !res.error) {
       mostrarConsultaFormateada(tipo, res);
@@ -460,6 +460,7 @@ function mostrarAlertasFormateadas(datos) {
 }
 
 // Trazabilidad
+if (formTraza) {
 formTraza.onsubmit = async e => {
   e.preventDefault();
   const fd = new FormData(formTraza);
@@ -477,6 +478,7 @@ formTraza.onsubmit = async e => {
     resultTraza.textContent = JSON.stringify(res, null, 2);
   }
 };
+}
 
 // Función para mostrar trazabilidad formateada
 function mostrarTrazabilidadFormateada(trazabilidad) {
@@ -809,6 +811,7 @@ Object.keys(despachosPorFecha).forEach(fecha => {
 }
 
 // Gestión de datos maestros
+if (formProducto) {
 formProducto.onsubmit = async e => {
   e.preventDefault();
   const fd = new FormData(formProducto);
@@ -828,10 +831,13 @@ formProducto.onsubmit = async e => {
     resultProducto.textContent = 'Error: ' + error.message;
   }
 };
+}
 
-formEmpleadoMaestro.onsubmit = async e => {
+const formEmpleadoMaestros = document.getElementById('formEmpleadoMaestro');
+if (formEmpleadoMaestros) {
+formEmpleadoMaestros.onsubmit = async e => {
   e.preventDefault();
-  const fd = new FormData(formEmpleadoMaestro);
+  const fd = new FormData(formEmpleadoMaestros);
   const data = Object.fromEntries(fd.entries());
   
   try {
@@ -848,10 +854,13 @@ formEmpleadoMaestro.onsubmit = async e => {
     resultEmpleadoMaestro.textContent = 'Error: ' + error.message;
   }
 };
+}
 
-formTiendaMaestro.onsubmit = async e => {
+const formTiendaMaestros = document.getElementById('formTiendaMaestro');
+if (formTiendaMaestros) {
+formTiendaMaestros.onsubmit = async e => {
   e.preventDefault();
-  const fd = new FormData(formTiendaMaestro);
+  const fd = new FormData(formTiendaMaestros);
   const data = Object.fromEntries(fd.entries());
   
   try {
@@ -875,6 +884,8 @@ formTiendaMaestro.onsubmit = async e => {
     resultTiendaMaestro.textContent = 'Error: ' + error.message;
   }
 };
+}
+
 
 const verMaestros = async (tipo) => {
   try {
@@ -1054,7 +1065,7 @@ async function gestionarUsuariosTienda(tiendaId, tiendaNombre) {
   try {
     // Función para inspeccionar objetos en consola
     const debugObject = (label, obj) => {
-      console.log(`DEBUG ${label}:`, JSON.stringify(obj, null, 2));
+      //console.log(`DEBUG ${label}:`, JSON.stringify(obj, null, 2));
     };
     
     // 1. Crear el modal de gestión de usuarios
@@ -1234,7 +1245,7 @@ const asignarFamiliaProducto = async (productoId, familiaId) => {
         select.style.backgroundColor = '';
       }, 1000);
       
-      console.log(`Producto ${productoId} ${familiaId ? 'asignado a familia ' + familiaId : 'removido de familia'}`);
+      //console.log(`Producto ${productoId} ${familiaId ? 'asignado a familia ' + familiaId : 'removido de familia'}`);
     } else {
       throw new Error(response.error || 'Error al asignar familia');
     }

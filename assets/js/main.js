@@ -1,4 +1,5 @@
 // Variables globales
+// Variables globales
 const formPedido = document.getElementById('form-pedido');
 const resultPedido = document.getElementById('result-pedido');
 const formProduccion = document.getElementById('form-produccion');
@@ -80,7 +81,7 @@ const api = (endpoint, method = 'GET', data = null, role = 'admin') => {
     } else {
       // Si no es JSON, obtener el texto y crear un objeto de error
       const text = await response.text();
-      console.error('Respuesta no-JSON del servidor:', text);
+      //console.error('Respuesta no-JSON del servidor:', text);
       return { 
         error: 'Respuesta inválida del servidor', 
         details: text,
@@ -88,7 +89,7 @@ const api = (endpoint, method = 'GET', data = null, role = 'admin') => {
       };
     }
   }).catch(error => {
-    console.error('Error en la petición API:', error);
+    //console.error('Error en la petición API:', error);
     return { 
       error: 'Error de conexión', 
       details: error.message 
@@ -112,17 +113,20 @@ const cargarOpciones = async (endpoint, selectId) => {
       select.appendChild(option);
     });
   } catch (error) {
-    console.error('Error cargando opciones:', error);
+    //console.error('Error cargando opciones:', error);
   }
 };
 
 const cargarOpcionesEnSelect = async (endpoint, select) => {
+  if (!select) {
+    //console.error(`Select no encontrado para ${endpoint}`);
+    return;
+  }
   try {
     const opciones = await api(endpoint);
     const defaultOption = select.querySelector('option[value=""]');
     select.innerHTML = '';
     if (defaultOption) select.appendChild(defaultOption);
-    
     opciones.forEach(opcion => {
       const option = document.createElement('option');
       // Si opcion es un string simple, usarlo directamente
@@ -133,7 +137,7 @@ const cargarOpcionesEnSelect = async (endpoint, select) => {
       select.appendChild(option);
     });
   } catch (error) {
-    console.error(`Error cargando opciones de ${endpoint}:`, error);
+    //console.error(`Error cargando opciones de ${endpoint}:`, error);
   }
 };
 
@@ -178,28 +182,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Establecer fechas automáticas
   establecerFechasAutomaticas();
   
-  // Registrar evento submit para limpiar al registrar pedido
-  if (formPedido) {
-    formPedido.addEventListener('submit', function(e) {
-      setTimeout(() => {
-        // Lógica idéntica al botón Limpiar Todo (sin confirmación)
-        localStorage.removeItem('pedidos_progreso');
-        // Limpiar productos
-        const container = document.getElementById('productos-tiendas-container');
-        if (container) container.innerHTML = '';
-        // Limpiar totales en el footer
-        if (typeof inicializarTotalesTienda === 'function') {
-          inicializarTotalesTienda();
-        }
-        // Limpiar gran total
-        const granTotalElement = document.getElementById('gran-total');
-        if (granTotalElement) {
-          granTotalElement.textContent = '0';
-        }
-        // Opcional: agregar una fila vacía si así lo deseas
-      }, 500);
-    });
-  }
+  // El manejador de submit de pedidos se gestiona en events.js
 });
 
 // Función para establecer fechas automáticas
@@ -247,34 +230,39 @@ async function cargarLotesParaTrazabilidad() {
       });
     }
   } catch (error) {
-    console.error('Error cargando lotes para trazabilidad:', error);
+    //console.error('Error cargando lotes para trazabilidad:', error);
   }
 }
 
 // Nueva función para cargar lotes para recepción como tarjetas
 async function cargarLotesParaRecepcion() {
   try {
-    console.log('Iniciando carga de lotes para recepción...');
+    //console.log('Iniciando carga de lotes para recepción...');
     
     // Solo necesitamos lotes despachados
     const despachos = await api('/despacho');
-    console.log('Despachos obtenidos:', despachos);
+    //console.log('Despachos obtenidos:', despachos);
     
     // Obtener las tiendas del usuario actual
-    console.log('Current user:', currentUser);
+    //console.log('Current user:', currentUser);
     const tiendasUsuario = currentUser && currentUser.tiendas ? currentUser.tiendas : [];
-    console.log('Tiendas del usuario:', tiendasUsuario);
+    //console.log('Tiendas del usuario:', tiendasUsuario);
     const tiendaNombre = tiendasUsuario.length > 0 ? tiendasUsuario[0].nombre : null;
-    console.log('Tienda seleccionada:', tiendaNombre);
+    //console.log('Tienda seleccionada:', tiendaNombre);
     
     if (!tiendaNombre) {
-      console.error('El usuario no tiene tienda asignada');
+      //console.error('El usuario no tiene tienda asignada');
       // Quitado el alert que mostraba mensaje de error por tienda no asignada
       return;
     }
     
     // Guardar la tienda del usuario en el campo oculto
-    document.getElementById('tienda-usuario-actual').value = tiendaNombre;
+    const inputTiendaUsuario = document.getElementById('tienda-usuario-actual');
+    if (!inputTiendaUsuario) {
+      //console.error('Elemento tienda-usuario-actual no encontrado');
+      return;
+    }
+    inputTiendaUsuario.value = tiendaNombre;
     
     // Filtrar despachos solo para la tienda del usuario actual
     const despachosTienda = despachos.filter(d => d.tienda === tiendaNombre);
@@ -283,39 +271,39 @@ async function cargarLotesParaRecepcion() {
     const lotesIds = [...new Set(despachosTienda.map(d => d.lote_id))];
     
     // Obtener recepciones ya registradas para esta tienda
-    console.log('Obteniendo recepciones...');
+    //console.log('Obteniendo recepciones...');
     const recepciones = await api('/recepcion');
-    console.log('Recepciones obtenidas:', recepciones);
+    //console.log('Recepciones obtenidas:', recepciones);
     
     // Verificar si recepciones es válido
     if (!recepciones || recepciones.error) {
-      console.error('Error obteniendo recepciones:', recepciones);
+      //console.error('Error obteniendo recepciones:', recepciones);
       throw new Error('Error al obtener recepciones: ' + (recepciones.error || 'Respuesta inválida'));
     }
     
     const recepcionesTienda = recepciones.filter(r => r.tienda === tiendaNombre);
-    console.log('Recepciones para esta tienda:', recepcionesTienda);
+    //console.log('Recepciones para esta tienda:', recepcionesTienda);
     
     const lotesRecibidos = [...new Set(recepcionesTienda.map(r => r.lote_id))];
-    console.log('Lotes ya recibidos:', lotesRecibidos);
+    //console.log('Lotes ya recibidos:', lotesRecibidos);
     
     // Filtrar lotes que han sido despachados pero NO han sido recibidos por esta tienda
     const lotesPendientesRecepcion = lotesIds.filter(id => !lotesRecibidos.includes(id));
-    console.log('Lotes pendientes de recepción:', lotesPendientesRecepcion);
+    //console.log('Lotes pendientes de recepción:', lotesPendientesRecepcion);
     
     // Obtener información completa de los lotes pendientes
-    console.log('Obteniendo información completa de lotes...');
+    //console.log('Obteniendo información completa de lotes...');
     const lotesCompletos = await api('/lotes/todos');
-    console.log('Lotes completos:', lotesCompletos);
+    //console.log('Lotes completos:', lotesCompletos);
     
     // Verificar si lotesCompletos es válido
     if (!lotesCompletos || lotesCompletos.error) {
-      console.error('Error obteniendo lotes completos:', lotesCompletos);
+      //console.error('Error obteniendo lotes completos:', lotesCompletos);
       throw new Error('Error al obtener lotes: ' + (lotesCompletos.error || 'Respuesta inválida'));
     }
     
     const lotesFiltrados = lotesCompletos.filter(lote => lotesPendientesRecepcion.includes(lote.id));
-    console.log('Lotes filtrados para recepción:', lotesFiltrados);
+    //console.log('Lotes filtrados para recepción:', lotesFiltrados);
     
     const container = document.getElementById('lotes-recepcion-container');
     container.innerHTML = '';
@@ -358,7 +346,7 @@ async function cargarLotesParaRecepcion() {
       container.appendChild(card);
     });
   } catch (error) {
-    console.error('Error cargando lotes para recepción:', error);
+    //console.error('Error cargando lotes para recepción:', error);
     const container = document.getElementById('lotes-recepcion-container');
     container.innerHTML = '<div class="error-message">Error al cargar lotes. Intente nuevamente.</div>';
   }
@@ -372,9 +360,9 @@ async function cargarTiendasParaInventario() {
     if (!select) return;
     
     // Depurar la estructura del usuario
-    console.log('currentUser completo:', currentUser);
+    //console.log('currentUser completo:', currentUser);
     if (currentUser && currentUser.tiendas) {
-      console.log('currentUser.tiendas:', currentUser.tiendas);
+      //console.log('currentUser.tiendas:', currentUser.tiendas);
     }
     
     // Si el usuario está logueado y tiene tienda asignada
@@ -389,7 +377,7 @@ async function cargarTiendasParaInventario() {
       } else if (typeof tiendaUsuario === 'string') {
         tiendaNombre = tiendaUsuario;
       } else {
-        console.error('Formato de tienda no reconocido:', tiendaUsuario);
+        //console.error('Formato de tienda no reconocido:', tiendaUsuario);
         tiendaNombre = 'Tienda del usuario';
       }
       
@@ -404,7 +392,7 @@ async function cargarTiendasParaInventario() {
       // Deshabilitar el select ya que no puede cambiar
       select.disabled = true;
       
-      console.log('Tienda del usuario preseleccionada:', tiendaNombre);
+      //console.log('Tienda del usuario preseleccionada:', tiendaNombre);
       
     } else if (currentUser && currentUser.rol && currentUser.rol.nombre === 'admin') {
       // Admin: puede elegir cualquier tienda
@@ -430,17 +418,17 @@ async function cargarTiendasParaInventario() {
       // Habilitar el select
       select.disabled = false;
       
-      console.log('Admin: todas las tiendas disponibles:', tiendas);
+      //console.log('Admin: todas las tiendas disponibles:', tiendas);
       
     } else {
       // Usuario sin tienda asignada
       select.innerHTML = '<option value="">Sin tienda asignada</option>';
       select.disabled = true;
-      console.log('Usuario sin tienda asignada');
+      //console.log('Usuario sin tienda asignada');
     }
     
   } catch (error) {
-    console.error('Error cargando tiendas para inventario:', error);
+    //console.error('Error cargando tiendas para inventario:', error);
     const select = document.getElementById('select-tienda-inventario');
     if (select) {
       select.innerHTML = '<option value="">Error cargando tiendas</option>';
@@ -472,7 +460,7 @@ async function verificarSesion() {
       // Se pueden cargar datos iniciales según el rol
       if (currentUser.rol && currentUser.rol.nombre === 'tienda') {
         // Cargar datos de inventario si es necesario
-        console.log('Usuario de tienda detectado');
+        //console.log('Usuario de tienda detectado');
       }
       
       if (currentUser.rol && currentUser.rol.nombre === 'admin') {
@@ -483,7 +471,7 @@ async function verificarSesion() {
       }
     }
   } catch (error) {
-    console.error('Error verificando sesión:', error);
+    //console.error('Error verificando sesión:', error);
   }
 }
 
@@ -512,9 +500,10 @@ async function cargarFamiliasFormulario() {
       }
     }
   } catch (error) {
-    console.error('Error cargando familias para formulario:', error);
+    //console.error('Error cargando familias para formulario:', error);
   }
 }
+
 
 // Ejecutar verificación de sesión al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
@@ -522,3 +511,5 @@ document.addEventListener('DOMContentLoaded', function() {
   // Cargar familias para el formulario (disponible para todos los usuarios)
   cargarFamiliasFormulario();
 });
+
+

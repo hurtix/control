@@ -1,3 +1,12 @@
+<div class="fixed left-0 bottom-0 w-full bg-white border-t border-gray-200 p-4">
+  <ul class="grid grid-cols-3 [&_li]:text-center [&_li_a]:block">
+    <li><a href="/dashboard.php">Home</a></li>
+    <li><a href="/ajustes.php">Notificaciones</a></li>
+    <li><a href="/ayuda.php">Ayuda</a></li>
+  </ul>
+</div>
+
+
 <!-- Scripts -->
   <script src="assets/js/main.js"></script>
   <script src="assets/js/forms.js"></script>
@@ -50,14 +59,14 @@
         if (currentUser.nombre) {
           // Establecer el valor en los campos ocultos de empleado
           document.querySelectorAll('[id^="select-empleado"]').forEach(select => {
-            console.log(`Actualizando campo empleado: ${select.id} con valor ${currentUser.nombre}`);
+            //console.log(`Actualizando campo empleado: ${select.id} con valor ${currentUser.nombre}`);
             select.value = currentUser.nombre;
           });
 
           // Establecer explícitamente el valor del campo oculto de producción
           if (document.getElementById('select-empleado')) {
             document.getElementById('select-empleado').value = currentUser.nombre;
-            console.log(`Campo select-empleado actualizado con: ${currentUser.nombre}`);
+            //console.log(`Campo select-empleado actualizado con: ${currentUser.nombre}`);
           }
         }
       }
