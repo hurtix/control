@@ -20,7 +20,7 @@ jobs:
 
       - name: Rsync files to server
         run: |
-          rsync -avz --delete \
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no" --delete \
             --exclude='.git*' \
             --exclude='node_modules' \
             --exclude='.github' \
