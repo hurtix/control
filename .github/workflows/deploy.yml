@@ -29,4 +29,5 @@ jobs:
             --exclude='github_actions_pub' \
             --exclude='.user.ini' \
             --exclude='.DS_Store' \
+            --exclude='.ssh' \
             ./ user_imperium@209.126.4.141:/www/wwwroot/imperium.cafecauca.com
