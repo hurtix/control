@@ -27,4 +27,6 @@ jobs:
             --exclude='.vscode' \
             --exclude='github_actions' \
             --exclude='github_actions_pub' \
+            --exclude='.user.ini' \
+            --exclude='.DS_Store' \
             ./ user_imperium@209.126.4.141:/www/wwwroot/imperium.cafecauca.com
