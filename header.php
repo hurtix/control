@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/assets/css/basecoat.cdn.min.css">
   <link rel="stylesheet" href="/assets/css/tailwind.out.css">
   <link rel="stylesheet" href="/assets/css/styles.css">
-  <script src="/node_modules/basecoat-css/dist/js/all.min.js" defer></script>
+  <script src="/assets/libs/basecoat/all.min.js" defer></script>
 
 </head>
 
