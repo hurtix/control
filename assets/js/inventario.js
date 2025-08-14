@@ -1,3 +1,107 @@
+// --- Dialog resumen inventario ---
+document.addEventListener('DOMContentLoaded', function() {
+  const btnVerResumen = document.querySelector('button[onclick*="dialog-resumen"]');
+  const dialogResumen = document.getElementById('dialog-resumen');
+  const sectionResumen = document.getElementById('dialog-resumen-section');
+  const btnRegistrarDialog = document.getElementById('btn-registrar-inventario-dialog');
+  const formInventario = document.getElementById('form-inventario');
+
+  if (btnVerResumen && dialogResumen && sectionResumen && btnRegistrarDialog && formInventario) {
+    function checkInputsCompletos() {
+      const tbody = document.getElementById('productos-inventario-tbody');
+      const inputs = tbody.querySelectorAll('input[type="number"]');
+      let todosLlenos = true;
+      inputs.forEach(input => {
+        if (input.value === '' || isNaN(parseFloat(input.value))) {
+          todosLlenos = false;
+        }
+      });
+      btnRegistrarDialog.disabled = !todosLlenos;
+    }
+
+    btnVerResumen.addEventListener('click', function() {
+      // Recopilar datos
+      const tienda = document.getElementById('select-tienda-inventario').value;
+      const fecha = document.getElementById('fecha-inventario').value;
+      const tbody = document.getElementById('productos-inventario-tbody');
+      const filas = tbody.querySelectorAll('tr');
+      let productos = [];
+      filas.forEach(fila => {
+        const inputCantidad = fila.querySelector('input[type="number"]');
+        const inputProductoId = fila.querySelector('input[type="hidden"]');
+        const tdFamilia = fila.querySelector('td');
+        const tdProducto = fila.querySelectorAll('td')[1];
+        if (inputCantidad && inputProductoId && tdFamilia && tdProducto) {
+          const cantidad = inputCantidad.value;
+          if (cantidad && cantidad !== '' && !isNaN(cantidad)) {
+            productos.push({
+              familia: tdFamilia.textContent.trim(),
+              producto: tdProducto.textContent.trim(),
+              cantidad: cantidad
+            });
+          }
+        }
+      });
+      // Validaciones
+      if (!tienda || !fecha) {
+        sectionResumen.innerHTML = '<div class="text-red-500">Selecciona tienda y fecha.</div>';
+        btnRegistrarDialog.disabled = true;
+        return;
+      }
+      if (productos.length === 0) {
+        sectionResumen.innerHTML = '<div class="text-red-500">No hay productos válidos para registrar.</div>';
+        btnRegistrarDialog.disabled = true;
+        return;
+      }
+      // Renderizar resumen
+      let html = `<div class='mb-2'><b>Tienda:</b> ${tienda}</div><div class='mb-2'><b>Fecha:</b> ${fecha}</div>`;
+      html += `<table class='table mb-2'><thead><tr><th>Familia</th><th>Producto</th><th class="text-center">Cantidad</th></tr></thead><tbody>`;
+      productos.forEach(p => {
+        html += `<tr><td class="font-bold">${p.familia}</td><td>${p.producto}</td><td class="text-center">${p.cantidad}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      sectionResumen.innerHTML = html;
+      checkInputsCompletos();
+    });
+
+    // Actualizar estado del botón en tiempo real
+    const tbody = document.getElementById('productos-inventario-tbody');
+    tbody.addEventListener('input', checkInputsCompletos);
+    // Por si acaso, al abrir el dialog también se chequea
+    dialogResumen.addEventListener('show', checkInputsCompletos);
+
+    // Submit real solo desde el dialog
+    btnRegistrarDialog.addEventListener('click', function(e) {
+      e.preventDefault();
+      // Validar de nuevo antes de enviar
+      const tienda = document.getElementById('select-tienda-inventario').value;
+      const fecha = document.getElementById('fecha-inventario').value;
+      const tbody = document.getElementById('productos-inventario-tbody');
+      const filas = tbody.querySelectorAll('tr');
+      let productos = [];
+      filas.forEach(fila => {
+        const inputCantidad = fila.querySelector('input[type="number"]');
+        const inputProductoId = fila.querySelector('input[type="hidden"]');
+        if (inputCantidad && inputProductoId) {
+          const cantidad = inputCantidad.value;
+          if (cantidad && cantidad !== '' && !isNaN(cantidad)) {
+            productos.push({
+              producto_id: inputProductoId.value,
+              cantidad_inicial: cantidad
+            });
+          }
+        }
+      });
+      if (!tienda || !fecha || productos.length === 0) {
+        sectionResumen.innerHTML = '<div class="text-red-500">Faltan datos para registrar.</div>';
+        return;
+      }
+      // Enviar el form
+      formInventario.requestSubmit();
+      dialogResumen.close();
+    });
+  }
+});
 // Funciones para el manejo de inventario inicial
 
 // Función para guardar progreso en localStorage
@@ -277,28 +381,33 @@ async function cargarInventarioProductos() {
   const tiendaId = document.getElementById('select-tienda-inventario').value;
   const tabla = document.getElementById('tabla-inventario');
   const loading = document.getElementById('loading-productos');
-  const btnRegistrar = document.getElementById('btn-registrar-inventario');
+  const btnRegistrar = document.getElementById('btn-registrar-inventario') || document.getElementById('btn-registrar-inventario-dialog');
   
   //console.log('tiendaId:', tiendaId);
   //console.log('elementos DOM encontrados:', { tabla: !!tabla, loading: !!loading, btnRegistrar: !!btnRegistrar });
   
   if (!tiendaId) {
     document.getElementById('productos-inventario-tbody').innerHTML = '';
-    tabla.style.display = 'none';
-    btnRegistrar.style.display = 'none';
-    document.getElementById('inventario-controles').style.display = 'none';
-    loading.style.display = 'block';
-    loading.textContent = 'Selecciona una tienda para cargar los productos...';
+    if (tabla) tabla.style.display = 'none';
+    if (btnRegistrar) btnRegistrar.style.display = 'none';
+    const controles = document.getElementById('inventario-controles');
+    if (controles) controles.style.display = 'none';
+    if (loading) {
+      loading.style.display = 'block';
+      loading.textContent = 'Selecciona una tienda para cargar los productos...';
+    }
     //console.log('No hay tienda seleccionada');
     return;
   }
   
   try {
     // Mostrar loading
-    loading.style.display = 'block';
-    loading.textContent = 'Cargando productos...';
-    tabla.style.display = 'none';
-    btnRegistrar.style.display = 'none';
+    if (loading) {
+      loading.style.display = 'block';
+      loading.textContent = 'Cargando productos...';
+    }
+    if (tabla) tabla.style.display = 'none';
+    if (btnRegistrar) btnRegistrar.style.display = 'none';
     
     const maestros = await api('/maestros', 'GET', null, 'admin');
     const productos = maestros.filter(item => item.tipo === 'producto');
@@ -385,21 +494,23 @@ async function cargarInventarioProductos() {
     configurarBotonesInventario(tiendaId);
     
     // Mostrar tabla, controles y botón, ocultar loading
-    loading.style.display = 'none';
-    tabla.style.display = 'table';
-    btnRegistrar.style.display = 'inline-block';
-    document.getElementById('inventario-controles').style.display = 'flex';
+  if (loading) loading.style.display = 'none';
+  if (tabla) tabla.style.display = 'table';
+  if (btnRegistrar) btnRegistrar.style.display = 'inline-block';
+  const controles = document.getElementById('inventario-controles');
+  if (controles) controles.style.display = 'flex';
     
     // Actualizar indicador inicial
     actualizarIndicadorProgreso();
     
   } catch (error) {
     //console.error('Error cargando productos:', error);
-    loading.style.display = 'block';
-    loading.innerHTML = `<div class="text-red-500">Error cargando productos: ${error.message}</div>`;
-    tabla.style.display = 'none';
-    btnRegistrar.style.display = 'none';
-    document.getElementById('inventario-controles').style.display = 'none';
+  if (loading) loading.style.display = 'block';
+  if (loading) loading.innerHTML = `<div class="text-red-500">Error cargando productos: ${error.message}</div>`;
+  if (tabla) tabla.style.display = 'none';
+  if (btnRegistrar) btnRegistrar.style.display = 'none';
+  const controles = document.getElementById('inventario-controles');
+  if (controles) controles.style.display = 'none';
   }
 }
 
@@ -408,28 +519,39 @@ const formInventario = document.getElementById('form-inventario');
 if (formInventario) {
   formInventario.onsubmit = async function(e) {
     e.preventDefault();
-    
+    // Validar que todos los inputs de cantidad tengan valor
     const tiendaId = document.getElementById('select-tienda-inventario').value;
     const fecha = document.getElementById('fecha-inventario').value;
-    
-    if (!tiendaId || !fecha) {
-      alert('Selecciona tienda y fecha');
+    const tbody = document.getElementById('productos-inventario-tbody');
+    const inputs = tbody.querySelectorAll('input[type="number"]');
+    let algunVacio = false;
+    inputs.forEach(input => {
+      if (input.value === '' || isNaN(parseFloat(input.value))) {
+        algunVacio = true;
+      }
+    });
+    if (!tiendaId || !fecha || algunVacio) {
+      document.dispatchEvent(new CustomEvent('basecoat:toast', {
+        detail: {
+          config: {
+            category: 'error',
+            title: 'Datos incompletos',
+            description: 'Debes completar todos los productos, tienda y fecha.',
+            cancel: { label: 'Cerrar' }
+          }
+        }
+      }));
       return;
     }
-    
-    // Recopilar datos de productos desde la tabla
+    // ...envío original...
     const productos = [];
-    const tbody = document.getElementById('productos-inventario-tbody');
     const filas = tbody.querySelectorAll('tr');
-    
     filas.forEach(fila => {
       const inputCantidad = fila.querySelector('input[type="number"]');
       const inputProductoId = fila.querySelector('input[type="hidden"]');
-      
       if (inputCantidad && inputProductoId) {
         const cantidad = parseInt(inputCantidad.value);
         const productoId = parseInt(inputProductoId.value);
-        
         if (!isNaN(cantidad) && cantidad >= 0) {
           productos.push({
             producto_id: productoId,
@@ -438,56 +560,57 @@ if (formInventario) {
         }
       }
     });
-    
-    if (productos.length === 0) {
-      alert('Ingresa al menos un producto con cantidad válida');
-      return;
-    }
-    
-    // Confirmar antes de enviar
-    const confirmacion = confirm(`¿Confirmar registro de inventario?\n\nTienda: ${tiendaId}\nFecha: ${fecha}\nProductos: ${productos.length}\n\nEsta acción no se puede deshacer.`);
-    if (!confirmacion) {
-      return;
-    }
-    
     try {
       const data = {
         fecha: fecha,
-        tienda_id: tiendaId, // Enviar como string (nombre de tienda)
+        tienda_id: tiendaId,
         productos: productos
       };
-      
-      //console.log('Enviando datos de inventario:', data);
-      
       const result = await api('/inventario', 'POST', data, 'admin');
-      
-      //console.log('Respuesta del servidor:', result);
-      
       if (result.error) {
-        throw new Error(result.error);
+        document.dispatchEvent(new CustomEvent('basecoat:toast', {
+          detail: {
+            config: {
+              category: 'error',
+              title: 'Error en inventario',
+              description: result.error,
+              cancel: { label: 'Cerrar' }
+            }
+          }
+        }));
+        return;
       }
-      
       const mensaje = result.mensaje || 'Inventario registrado exitosamente';
       const productosRegistrados = result.productos_registrados || productos.length;
-      
-      alert(`✓ ${mensaje}\nProductos registrados: ${productosRegistrados}`);
-      
-      // Limpiar progreso guardado después del éxito
+      document.dispatchEvent(new CustomEvent('basecoat:toast', {
+        detail: {
+          config: {
+            category: 'success',
+            title: 'Inventario registrado',
+            description: `✓ ${mensaje}\nProductos registrados: ${productosRegistrados}`,
+            cancel: { label: 'Cerrar' }
+          }
+        }
+      }));
       limpiarProgresoInventario(tiendaId);
-      
       // Limpiar formulario
       const inputs = tbody.querySelectorAll('input[type="number"]');
       inputs.forEach(input => {
         input.value = '';
         actualizarEstiloInput(input);
       });
-      
-      // Actualizar fecha para el siguiente día
       establecerFechasAutomaticas();
-      
     } catch (error) {
-      //console.error('Error registrando inventario:', error);
-      alert(`Error: ${error.message || error}`);
+      document.dispatchEvent(new CustomEvent('basecoat:toast', {
+        detail: {
+          config: {
+            category: 'error',
+            title: 'Error en inventario',
+            description: error.message || error,
+            cancel: { label: 'Cerrar' }
+          }
+        }
+      }));
     }
   };
 }

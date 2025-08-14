@@ -2,7 +2,7 @@
 
 <?php include 'auth-header.php'; ?>
 
-<main>
+<main class="bg-white">
 
 <!-- Sección de Inventario Final -->
 <div id="seccion-inventario" class="mt-8">
@@ -60,10 +60,25 @@
                     </div>
                 </div>
             </div>
+            <button type="button" onclick="document.getElementById('dialog-resumen').showModal()" class="btn-outline">Ver resumen</button>
+                </form>
 
-            <button class="btn mt-4" type="submit" id="btn-registrar-inventario" style="display: none;">
-                Registrar Inventario Final
-            </button>
+                <dialog id="dialog-resumen" class="dialog w-full sm:max-w-[425px] max-h-[612px]" aria-labelledby="dialog-resumen-title" aria-describedby="dialog-resumen-description" onclick="if (event.target === this) this.close()">
+                    <article>
+                        <header>
+                            <h2 id="dialog-resumen-title">¿Confirmar registro de inventario?</h2>
+                        </header>
+                        <section id="dialog-resumen-section">
+                            <!-- Aquí se insertará el resumen dinámicamente -->
+                        </section>
+                        <footer>
+                            <button class="btn-outline" onclick="this.closest('dialog').close()">Cancel</button>
+                            <button class="btn" type="submit" id="btn-registrar-inventario-dialog">
+                                Registrar Inventario
+                            </button>
+                        </footer>
+                    </article>
+                </dialog>
         </form>
 
         <div id="result-inventario" class="result mt-4"></div>

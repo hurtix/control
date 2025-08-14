@@ -8,6 +8,9 @@
 
 
 <!-- Scripts -->
+
+<!-- Basecoat toaster container -->
+<div id="toaster" class="toaster"></div>
   <script src="assets/js/main.js"></script>
   <script src="assets/js/forms.js"></script>
   <script src="assets/js/lotes.js"></script>

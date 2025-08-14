@@ -2,7 +2,7 @@
 
 <?php include 'auth-header.php'; ?>
 
-<main>
+<main class="bg-white">
 
 <h2>Registrar Producción</h2>
 <form id="form-produccion">

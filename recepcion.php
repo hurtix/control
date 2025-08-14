@@ -2,7 +2,7 @@
 
 <?php include 'auth-header.php'; ?>
 
-<main>
+<main class="bg-white">
 
 <h2>Registrar Recepción</h2>
 <form id="form-recepcion">

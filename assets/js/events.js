@@ -70,6 +70,18 @@
   }
   
   const res = await api('/pedidos', 'POST', data, 'ventas');
+  // Mostrar toast de Basecoat
+  document.dispatchEvent(new CustomEvent('basecoat:toast', {
+    detail: {
+      config: {
+        category: res.error ? 'error' : 'success',
+        title: res.error ? 'Error al registrar pedido' : 'Pedido registrado',
+        description: res.error ? (res.details || 'Ocurrió un error inesperado') : 'El pedido fue registrado correctamente.',
+        cancel: { label: 'Cerrar' }
+      }
+    }
+  }));
+  // Si quieres debug, puedes dejar el JSON oculto:
   resultPedido.textContent = JSON.stringify(res, null, 2);
   
   // Limpiar formulario
@@ -157,6 +169,18 @@ if (formProduccion) {
     data.productos = productos;
     data.lote_id = Number(data.lote_id);
     const res = await api('/produccion', 'POST', data, 'produccion');
+    // Mostrar toast de Basecoat
+    document.dispatchEvent(new CustomEvent('basecoat:toast', {
+      detail: {
+        config: {
+          category: res.error ? 'error' : 'success',
+          title: res.error ? 'Error en producción' : 'Producción registrada',
+          description: res.error ? (res.details || 'Ocurrió un error inesperado') : 'La producción fue registrada correctamente.',
+          cancel: { label: 'Cerrar' }
+        }
+      }
+    }));
+    // Si quieres debug, puedes dejar el JSON oculto:
     resultProduccion.textContent = JSON.stringify(res, null, 2);
     // Limpiar formulario
     formProduccion.reset();
@@ -191,6 +215,18 @@ if (formDespacho) {
     }
     data.lote_id = Number(data.lote_id);
     const res = await api('/despacho', 'POST', data, 'despacho');
+    // Mostrar toast de Basecoat
+    document.dispatchEvent(new CustomEvent('basecoat:toast', {
+      detail: {
+        config: {
+          category: res.error ? 'error' : 'success',
+          title: res.error ? 'Error en despacho' : 'Despacho registrado',
+          description: res.error ? (res.details || 'Ocurrió un error inesperado') : 'El despacho fue registrado correctamente.',
+          cancel: { label: 'Cerrar' }
+        }
+      }
+    }));
+    // Si quieres debug, puedes dejar el JSON oculto:
     resultDespacho.textContent = JSON.stringify(res, null, 2);
     // Limpiar formulario
     formDespacho.reset();
@@ -268,6 +304,18 @@ formRecepcion.onsubmit = async e => {
   data.lote_id = Number(data.lote_id);
 
   const res = await api('/recepcion', 'POST', data, 'tienda');
+  // Mostrar toast de Basecoat
+  document.dispatchEvent(new CustomEvent('basecoat:toast', {
+    detail: {
+      config: {
+        category: res.error ? 'error' : 'success',
+        title: res.error ? 'Error en recepción' : 'Recepción registrada',
+        description: res.error ? (res.details || 'Ocurrió un error inesperado') : 'La recepción fue registrada correctamente.',
+        cancel: { label: 'Cerrar' }
+      }
+    }
+  }));
+  // Si quieres debug, puedes dejar el JSON oculto:
   resultRecepcion.textContent = JSON.stringify(res, null, 2);
   
   // No limpiar completamente el formulario, mantener el lote seleccionado
