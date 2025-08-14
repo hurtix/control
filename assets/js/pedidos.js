@@ -456,3 +456,11 @@ const actualizarTotalesPorTienda = () => {
   
   return totalesPorTienda;
 };
+
+document.addEventListener('change', function(e) {
+  if (e.target && e.target.classList && e.target.classList.contains('producto-select')) {
+    setTimeout(() => {
+      actualizarDisponibilidadProductos();
+    }, 50);
+  }
+});
