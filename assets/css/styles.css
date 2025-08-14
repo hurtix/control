@@ -318,4 +318,33 @@ button:hover {
   to { opacity: 1; }
 }
 
+body .dialog > article {
+    z-index: 50;
+    --tw-translate-x: calc(calc(1/2*100%)*-1) !important;
+    width: 100%;
+    max-height: calc(100% - 2rem);
+    translate: var(--tw-translate-x)var(--tw-translate-y) !important;
+    --tw-translate-y: calc(calc(1/2*100%)*-1) !important;
+    translate: var(--tw-translate-x)var(--tw-translate-y) !important;
+    gap: calc(var(--spacing)*4);
+    border-radius: var(--radius-lg);
+    border-style: var(--tw-border-style);
+    background-color: var(--color-background);
+    padding: calc(var(--spacing)*6);
+    --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color,#0000001a),0 4px 6px -4px var(--tw-shadow-color,#0000001a) !important;
+    box-shadow: var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);
+    --tw-scale-x: 95% !important;
+    --tw-scale-y: 95% !important;
+    --tw-scale-z: 95% !important;
+    scale: var(--tw-scale-x)var(--tw-scale-y) !important;
+    transition-property: all;
+    transition-timing-function: var(--tw-ease,var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration,var(--default-transition-duration));
+    border-width: 1px;
+    flex-direction: column;
+    display: flex;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+  }
 
